@@ -1,0 +1,99 @@
+{
+  "tab": "infra",
+  "vocabulary": "dev",
+  "title": "인프라",
+  "summary": "서비스가 어디서 돌고 무엇과 연결되는지. 이 프로젝트에 맞게 칸과 선을 고치세요.",
+  "work": [],
+  "phases": [],
+  "lanes": [
+    {
+      "label": "사용자",
+      "y": 30,
+      "h": 110
+    },
+    {
+      "label": "앱",
+      "y": 150,
+      "h": 110
+    },
+    {
+      "label": "데이터",
+      "y": 270,
+      "h": 110
+    },
+    {
+      "label": "바깥 서비스",
+      "y": 390,
+      "h": 110
+    }
+  ],
+  "nodes": [
+    {
+      "id": "browser",
+      "kind": "frontend",
+      "name": "사용자 브라우저",
+      "meta": "도메인",
+      "status": "없음",
+      "x": 290,
+      "y": 64,
+      "role": [
+        "사용자가 쓰는 화면입니다."
+      ]
+    },
+    {
+      "id": "app",
+      "kind": "backend",
+      "name": "앱 서버",
+      "meta": "호스팅 · 리전",
+      "status": "없음",
+      "x": 290,
+      "y": 184,
+      "role": [
+        "화면과 API를 내보냅니다."
+      ]
+    },
+    {
+      "id": "db",
+      "kind": "database",
+      "name": "데이터베이스",
+      "meta": "운영 DB",
+      "status": "없음",
+      "x": 290,
+      "y": 304,
+      "role": [
+        "운영 데이터를 둡니다."
+      ]
+    },
+    {
+      "id": "api",
+      "kind": "external",
+      "name": "바깥 API",
+      "meta": "이름",
+      "status": "없음",
+      "x": 540,
+      "y": 424,
+      "role": [
+        "앱이 부르는 외부 서비스입니다."
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "browser",
+      "to": "app",
+      "label": "HTTPS",
+      "kind": "main"
+    },
+    {
+      "from": "app",
+      "to": "db",
+      "label": "쿼리",
+      "kind": "main"
+    },
+    {
+      "from": "app",
+      "to": "api",
+      "label": "호출"
+    }
+  ]
+}

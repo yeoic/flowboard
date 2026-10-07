@@ -1,0 +1,190 @@
+{
+  "tab": "claude",
+  "vocabulary": "dev",
+  "title": "Claude 설정",
+  "summary": "Claude Code 세션이 무엇을 읽고, 무엇이 지키고, 무엇을 불러 쓰는지. 칸을 누르면 실제 파일 내용이 나옵니다.",
+  "work": [],
+  "phases": [],
+  "lanes": [
+    {
+      "label": "읽는 것",
+      "y": 30,
+      "h": 110
+    },
+    {
+      "label": "세션",
+      "y": 150,
+      "h": 110
+    },
+    {
+      "label": "지키는 것",
+      "y": 270,
+      "h": 110
+    },
+    {
+      "label": "불러 쓰는 것",
+      "y": 390,
+      "h": 110
+    }
+  ],
+  "nodes": [
+    {
+      "id": "claude-md",
+      "kind": "database",
+      "name": "CLAUDE.md",
+      "meta": "프로젝트 지침",
+      "status": "동작함",
+      "x": 290,
+      "y": 64,
+      "source": "claude-md",
+      "role": [
+        "모든 세션이 처음에 읽는 지침입니다."
+      ]
+    },
+    {
+      "id": "memory",
+      "kind": "database",
+      "name": "메모리",
+      "meta": "세션을 넘어 기억",
+      "status": "동작함",
+      "x": 540,
+      "y": 64,
+      "source": "memory",
+      "role": [
+        "세션이 바뀌어도 기억하는 사실입니다. MEMORY.md가 목차입니다."
+      ]
+    },
+    {
+      "id": "user",
+      "kind": "external",
+      "name": "사용자",
+      "meta": "요청 · 승인",
+      "status": "사람",
+      "x": 40,
+      "y": 184,
+      "role": [
+        "작업을 요청하고 위험한 일을 승인합니다."
+      ]
+    },
+    {
+      "id": "session",
+      "kind": "backend",
+      "name": "Claude Code 세션",
+      "meta": "데스크톱 앱 · CLI",
+      "status": "동작함",
+      "x": 290,
+      "y": 184,
+      "tag": "본체",
+      "role": [
+        "요청을 받아 파일을 읽고 고치고 명령을 실행합니다."
+      ]
+    },
+    {
+      "id": "hooks",
+      "kind": "security",
+      "name": "hook",
+      "meta": ".claude/settings.json",
+      "status": "동작함",
+      "x": 290,
+      "y": 304,
+      "source": "hooks",
+      "role": [
+        "도구를 쓰기 전후에 자동으로 도는 스크립트입니다."
+      ]
+    },
+    {
+      "id": "permissions",
+      "kind": "security",
+      "name": "권한",
+      "meta": "허용 · 매번 확인 · 금지",
+      "status": "동작함",
+      "x": 790,
+      "y": 304,
+      "source": "permissions",
+      "role": [
+        "어떤 명령을 묻지 않고 / 물어보고 / 막고 실행할지 정합니다."
+      ]
+    },
+    {
+      "id": "skills",
+      "kind": "messagebus",
+      "name": "skill",
+      "meta": "절차 묶음",
+      "status": "동작함",
+      "x": 540,
+      "y": 424,
+      "source": "skills",
+      "role": [
+        "특정 일을 할 때 불러 쓰는 절차 묶음입니다."
+      ]
+    },
+    {
+      "id": "agents",
+      "kind": "backend",
+      "name": "agent",
+      "meta": "서브에이전트",
+      "status": "동작함",
+      "x": 1040,
+      "y": 424,
+      "source": "agents",
+      "role": [
+        "일을 따로 맡기는 하위 Claude입니다."
+      ]
+    },
+    {
+      "id": "plugins",
+      "kind": "external",
+      "name": "플러그인 · MCP",
+      "meta": "외부 도구",
+      "status": "동작함",
+      "x": 1040,
+      "y": 184,
+      "role": [
+        "계정이나 프로젝트에 연결된 외부 도구입니다."
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "user",
+      "to": "session",
+      "label": "요청",
+      "kind": "main"
+    },
+    {
+      "from": "claude-md",
+      "to": "session",
+      "label": "시작할 때 읽음"
+    },
+    {
+      "from": "memory",
+      "to": "session",
+      "label": "관련 기억"
+    },
+    {
+      "from": "session",
+      "to": "hooks",
+      "label": "도구 전 검사"
+    },
+    {
+      "from": "session",
+      "to": "permissions",
+      "label": "권한 확인"
+    },
+    {
+      "from": "session",
+      "to": "skills",
+      "label": "불러옴"
+    },
+    {
+      "from": "session",
+      "to": "agents",
+      "label": "일 맡김"
+    },
+    {
+      "from": "session",
+      "to": "plugins",
+      "label": "도구 호출"
+    }
+  ]
+}

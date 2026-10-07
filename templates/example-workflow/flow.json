@@ -1,0 +1,122 @@
+{
+  "tab": "workflow",
+  "vocabulary": "actor",
+  "title": "예시 워크플로우",
+  "summary": "사람 · 스크립트 · AI 에이전트가 주고받는 흐름의 예시입니다. 지우거나 고쳐 쓰세요.",
+  "work": [
+    {
+      "name": "입력 고르기",
+      "desc": "사람이 처리할 대상을 정함",
+      "who": [
+        "human"
+      ],
+      "status": "사람"
+    },
+    {
+      "name": "자료 모으기",
+      "desc": "스크립트가 정해진 규칙으로 모음",
+      "who": [
+        "script",
+        "service"
+      ],
+      "status": "없음"
+    },
+    {
+      "name": "판단",
+      "desc": "AI 에이전트가 지시문대로 판단",
+      "who": [
+        "agent"
+      ],
+      "status": "없음"
+    },
+    {
+      "name": "검수",
+      "desc": "사람이 결과를 확인",
+      "who": [
+        "human"
+      ],
+      "status": "사람"
+    }
+  ],
+  "phases": [],
+  "lanes": [],
+  "nodes": [
+    {
+      "id": "input",
+      "kind": "human",
+      "name": "입력",
+      "meta": "대상 목록",
+      "status": "사람",
+      "x": 40,
+      "y": 60,
+      "role": [
+        "처리할 대상을 정합니다."
+      ]
+    },
+    {
+      "id": "collect",
+      "kind": "script",
+      "name": "자료 모으기",
+      "meta": "step-1 · script.py",
+      "status": "없음",
+      "x": 290,
+      "y": 60,
+      "step": "step-1-collect",
+      "role": [
+        "규칙으로 자료를 모읍니다."
+      ],
+      "outputs": [
+        "runs/<run-id>/step-1.json"
+      ]
+    },
+    {
+      "id": "judge",
+      "kind": "agent",
+      "name": "판단 에이전트",
+      "meta": "claude -p",
+      "status": "없음",
+      "x": 540,
+      "y": 60,
+      "step": "step-1-collect",
+      "runner": "claude -p",
+      "model": "claude-sonnet-5-5",
+      "tools": "없음 · MCP 끔",
+      "prompt": "step-1-collect/prompt.md",
+      "role": [
+        "지시문대로 판단합니다."
+      ]
+    },
+    {
+      "id": "review",
+      "kind": "human",
+      "name": "검수",
+      "meta": "사람",
+      "status": "사람",
+      "x": 790,
+      "y": 60,
+      "role": [
+        "결과를 확인합니다."
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "input",
+      "to": "collect",
+      "label": "대상",
+      "kind": "main"
+    },
+    {
+      "from": "collect",
+      "to": "judge",
+      "label": "모은 자료",
+      "kind": "main"
+    },
+    {
+      "from": "judge",
+      "to": "review",
+      "label": "step-1.json",
+      "kind": "main"
+    }
+  ]
+}

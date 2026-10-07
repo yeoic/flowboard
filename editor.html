@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>flowboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+/* 색 · 글꼴 · 칸 모양 · 연결 강조는 Archify(MIT, © 2026 tt-a1i, © 2025 Cocoon AI)의 방식을 따랐습니다. */
+:root {
+  --bg: #020617; --panel: #0f172a; --panel-2: #111c33; --line: #1e293b; --lane: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --faint: #7d8da1; --arrow: #64748b; --emph: #34d399; --accent: #38bdf8; --danger: #fb7185; --warn: #fbbf24;
+  --frontend: #22d3ee; --backend: #34d399; --database: #a78bfa; --cloud: #fbbf24; --security: #fb7185; --messagebus: #fb923c; --external: #94a3b8;
+  --human: #fb923c; --script: #94a3b8; --agent: #a78bfa; --service: #22d3ee;
+  --tint: 12%; --mono: "JetBrains Mono", "Apple SD Gothic Neo", ui-monospace, Menlo, monospace;
+}
+:root[data-theme="light"] {
+  --bg: #f8fafc; --panel: #ffffff; --panel-2: #f1f5f9; --line: #e2e8f0; --lane: #cbd5e1;
+  --text: #0f172a; --muted: #64748b; --faint: #64748b; --arrow: #94a3b8; --emph: #059669; --accent: #0369a1; --danger: #e11d48; --warn: #b45309;
+  --frontend: #0891b2; --backend: #059669; --database: #7c3aed; --cloud: #d97706; --security: #e11d48; --messagebus: #ea580c; --external: #64748b;
+  --human: #ea580c; --script: #64748b; --agent: #7c3aed; --service: #0891b2; --tint: 8%;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 var(--mono); }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: var(--accent); }
+
+/* 상단 탭 */
+.apptabs { position: sticky; top: 0; z-index: 6; background: var(--panel); border-bottom: 1px solid var(--line); display: flex; align-items: stretch; gap: 2px; padding: 0 20px; }
+.apptabs .brand { font-weight: 700; color: var(--faint); align-self: center; margin-right: 16px; }
+.apptab { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; padding: 14px 16px 11px; font-size: 15px; font-weight: 700; color: var(--muted); cursor: pointer; min-height: 50px; }
+.apptab:hover { color: var(--text); }
+.apptab[aria-selected="true"] { color: var(--text); border-color: var(--emph); }
+.apptabs .grow { flex: 1; }
+.theme-btn { align-self: center; }
+
+.bar { position: sticky; top: 50px; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 10px 20px; }
+.bar h1 { font-size: 18px; margin: 0 10px 0 0; }
+.grow { flex: 1; }
+.btn { appearance: none; border: 1px solid var(--lane); background: var(--panel); border-radius: 8px; padding: 6px 12px; min-height: 40px; cursor: pointer; font-size: 13.5px; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--emph); border-color: var(--emph); color: #022c22; font-weight: 700; }
+.btn.primary:disabled { opacity: .4; cursor: default; }
+.btn.on { border-color: var(--accent); color: var(--accent); }
+.btn.danger { color: var(--danger); }
+select, input[type=text], textarea { background: var(--bg); border: 1px solid var(--lane); border-radius: 8px; padding: 7px 10px; }
+select { min-height: 40px; }
+textarea { width: 100%; min-height: 80px; resize: vertical; line-height: 1.5; font-size: 13.5px; }
+textarea.code { min-height: 320px; font-size: 13px; }
+input[type=text] { width: 100%; font-size: 13.5px; }
+.save-state { font-size: 13px; color: var(--muted); }
+.save-state.dirty { color: var(--warn); font-weight: 700; }
+
+.main { padding: 14px 20px 60px; }
+.main.empty { padding-top: 40px; }
+.main.empty p { max-width: 760px; }
+.summary { color: var(--muted); margin: 0 0 10px; font-size: 14px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; border: 2px solid var(--c); }
+h2 { font-size: 17px; margin: 18px 0 4px; }
+.note { color: var(--muted); font-size: 13.5px; margin: 0 0 10px; }
+
+/* 일의 흐름 */
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 8px; }
+.work { appearance: none; text-align: left; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 5px; cursor: pointer; }
+.work:hover { border-color: var(--lane); }
+.work.selected { border-color: var(--accent); }
+.work .num { font-size: 12px; color: var(--faint); }
+.work .name { font-size: 15px; font-weight: 700; line-height: 1.35; }
+.work .desc { font-size: 13px; color: var(--muted); }
+.who { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; }
+.chip { font-size: 11.5px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--c); color: var(--c); font-weight: 600; white-space: nowrap; }
+.work.add { align-items: center; justify-content: center; color: var(--muted); border-style: dashed; min-height: 110px; }
+.status { font-size: 11.5px; padding: 1px 8px; border-radius: 6px; font-weight: 700; align-self: flex-start; white-space: nowrap; border: 1px solid var(--lane); color: var(--muted); }
+.st-ok { color: var(--emph); border-color: var(--emph); } .st-warn { color: var(--warn); border-color: var(--warn); } .st-none { border-style: dashed; }
+.st-human { color: var(--human); border-color: var(--human); }
+
+/* 캔버스 */
+.stage { position: relative; overflow: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); max-height: 76vh; }
+.canvas { position: relative; }
+.canvas.connecting .node { cursor: crosshair; }
+.lane { position: absolute; left: 16px; right: 16px; border: 1px dashed var(--lane); border-radius: 10px; pointer-events: none; }
+.lane span { position: absolute; left: 14px; top: 6px; color: var(--faint); font-size: 12px; }
+.phase { position: absolute; top: 6px; font-size: 12px; color: var(--muted); pointer-events: none; }
+svg.layer { position: absolute; left: 0; top: 0; overflow: visible; }
+svg.wires { z-index: 0; pointer-events: none; }
+svg.labels { z-index: 3; pointer-events: none; }
+.wire { fill: none; stroke: var(--arrow); stroke-width: 1.6; transition: opacity .15s, stroke-width .15s; }
+.wire.main { stroke: var(--emph); stroke-width: 2.2; }
+.wire.loop { stroke: var(--agent); stroke-dasharray: 6 5; }
+.wire.selected { stroke: var(--accent); stroke-width: 3; }
+.wire-hit { fill: none; stroke: transparent; stroke-width: 14; pointer-events: stroke; cursor: pointer; }
+.wire-label { font: 11px var(--mono); fill: var(--muted); paint-order: stroke; stroke: var(--bg); stroke-width: 5px; transition: opacity .15s; }
+.node { position: absolute; z-index: 2; width: 172px; appearance: none; text-align: left; cursor: grab; padding: 9px 12px; border: 2px solid var(--c); border-radius: 10px; color: var(--text);
+  background: color-mix(in srgb, var(--c) var(--tint), var(--bg)); display: flex; flex-direction: column; gap: 1px; user-select: none; touch-action: none; transition: opacity .15s, box-shadow .15s; }
+.node .t { font-size: 10.5px; font-weight: 700; color: var(--c); text-transform: uppercase; letter-spacing: .05em; }
+.node .n { font-size: 14.5px; font-weight: 700; line-height: 1.35; }
+.node .s { font-size: 11.5px; color: var(--muted); }
+.node .tag { position: absolute; right: -8px; top: -11px; font-size: 10.5px; background: var(--bg); border: 1px solid var(--c); color: var(--c); border-radius: 999px; padding: 0 7px; white-space: nowrap; }
+.node.planned { border-style: dashed; }
+.node.dragging { cursor: grabbing; box-shadow: 0 10px 28px rgba(0,0,0,.35); }
+.node.selected { box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 35%, transparent); }
+.node.source { outline: 3px solid var(--accent); outline-offset: 3px; }
+.node:focus-visible { outline: 3px solid var(--c); outline-offset: 3px; }
+/* 마우스를 올리면 연결된 칸과 선만 남기고 흐리게 */
+.canvas.hovering .node:not(.hl) { opacity: .22; }
+.canvas.hovering .wire:not(.hl) { opacity: .12; }
+.canvas.hovering .wire-label:not(.hl) { opacity: .15; }
+.canvas.hovering .wire.hl { stroke-width: 2.6; }
+.canvas.hovering .node.hl { box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent); }
+.hint { font-size: 13px; color: var(--accent); min-height: 20px; margin: 0 0 6px; }
+
+/* 오른쪽 패널 */
+.panel { position: fixed; top: 0; right: 0; height: 100vh; width: min(640px, 100vw); background: var(--panel); border-left: 1px solid var(--lane); box-shadow: -12px 0 40px rgba(0,0,0,.35); z-index: 10; display: flex; flex-direction: column; transform: translateX(105%); transition: transform .2s; }
+.panel.open { transform: none; }
+.panel-head { padding: 16px 22px 0; display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; }
+.panel-head .k { font-size: 11px; font-weight: 700; color: var(--c, var(--muted)); text-transform: uppercase; letter-spacing: .06em; }
+.panel-head h3 { margin: 2px 0 0; font-size: 20px; }
+.close { appearance: none; border: 1px solid var(--lane); background: var(--bg); border-radius: 8px; width: 44px; height: 44px; font-size: 20px; cursor: pointer; }
+.tabs { display: flex; gap: 2px; padding: 10px 22px 0; border-bottom: 1px solid var(--line); }
+.tab { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; padding: 9px 12px; font-weight: 700; color: var(--muted); cursor: pointer; font-size: 13.5px; }
+.tab[aria-selected="true"] { color: var(--text); border-color: var(--c, var(--accent)); }
+.panel-body { padding: 16px 22px 48px; overflow-y: auto; flex: 1; }
+.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+.field label { font-size: 12px; color: var(--muted); font-weight: 600; }
+.field .help { font-size: 12px; color: var(--faint); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.checks { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13.5px; }
+.checks label { display: inline-flex; gap: 6px; align-items: center; color: var(--text); font-weight: 500; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.panel-body h4 { font-size: 14.5px; margin: 20px 0 8px; }
+code { font-size: 12.5px; background: var(--bg); border: 1px solid var(--line); padding: 0 5px; border-radius: 5px; }
+pre { font-size: 12.5px; line-height: 1.55; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow: auto; max-height: 460px; white-space: pre-wrap; word-break: break-word; margin: 0; }
+details { border: 1px solid var(--line); border-radius: 8px; margin-bottom: 10px; }
+details > summary { cursor: pointer; padding: 10px 12px; font-weight: 700; list-style: none; display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::after { content: "펼치기"; font-size: 12px; color: var(--faint); font-weight: 500; }
+details[open] > summary::after { content: "접기"; }
+details > .inner { padding: 0 12px 12px; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.stat { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; min-width: 100px; }
+.stat b { display: block; font-size: 16px; }
+.stat span { font-size: 12px; color: var(--muted); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 7px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; }
+.empty { color: var(--muted); border: 1px dashed var(--lane); border-radius: 8px; padding: 14px; font-size: 13.5px; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 9px 16px; border-radius: 8px; z-index: 20; font-weight: 700; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.toast.show { opacity: 1; }
+@media (max-width: 700px) { .apptabs { padding: 0 10px; overflow-x: auto; } .bar, .main { padding-left: 16px; padding-right: 16px; } .row2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav class="apptabs" role="tablist" aria-label="작업실 탭">
+  <span class="brand" id="brand">flowboard</span>
+  <button class="apptab" role="tab" data-view="dev">개발</button>
+  <button class="apptab" role="tab" data-view="infra">인프라</button>
+  <button class="apptab" role="tab" data-view="workflow">워크플로우</button>
+  <button class="apptab" role="tab" data-view="claude">Claude</button>
+  <span class="grow"></span>
+  <button class="btn theme-btn" id="theme" aria-label="밝기 바꾸기">Light</button>
+</nav>
+
+<div class="bar">
+  <h1 id="title"></h1>
+  <select id="flow-select" aria-label="흐름 고르기"></select>
+  <select id="run-select" aria-label="실행 기록 고르기"></select>
+  <button class="btn" id="reload-runs">기록 새로 읽기</button>
+  <button class="btn" id="add-node">+ 칸 추가</button>
+  <button class="btn" id="connect">선 잇기</button>
+  <span class="grow"></span>
+  <span class="save-state" id="save-state">저장됨</span>
+  <button class="btn primary" id="save" disabled>저장</button>
+</div>
+
+<div class="main empty" id="empty" hidden></div>
+<div class="main" id="content">
+  <p class="summary" id="summary"></p>
+  <div class="legend" id="legend"></div>
+  <div id="work-section">
+    <h2>일의 흐름</h2>
+    <p class="note">무슨 일을 어떤 순서로 하는지. 카드를 누르면 고칠 수 있습니다.</p>
+    <div class="flow" id="work"></div>
+    <h2>구성</h2>
+  </div>
+  <p class="note">칸은 끌어서 옮기고, 누르면 설정이 열립니다. 마우스를 올리면 연결된 것만 보입니다. 선을 누르면 라벨을 고치거나 지웁니다.</p>
+  <p class="hint" id="hint" aria-live="polite"></p>
+  <div class="stage" id="stage">
+    <div class="canvas" id="canvas">
+      <svg class="layer wires" id="wires" aria-hidden="true"></svg>
+      <svg class="layer labels" id="labels" aria-hidden="true"></svg>
+    </div>
+  </div>
+</div>
+
+<aside class="panel" id="panel" aria-labelledby="p-name">
+  <div class="panel-head">
+    <div><div class="k" id="p-kind"></div><h3 id="p-name"></h3></div>
+    <button class="close" id="p-close" aria-label="닫기">×</button>
+  </div>
+  <div class="tabs" role="tablist" id="tabs">
+    <button class="tab" role="tab" data-tab="role">업무 내용</button>
+    <button class="tab" role="tab" data-tab="run" id="tab-run">이번 배치 기록</button>
+  </div>
+  <div class="panel-body" id="p-body"></div>
+</aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ── 어휘: 흐름마다 vocabulary 로 고릅니다 ─────────────────────── */
+const VOCAB = {
+  dev: { frontend: "frontend 화면", backend: "backend 처리", database: "database 데이터", cloud: "cloud 배포·호스팅", security: "security 검사·차단", messagebus: "messagebus 전달", external: "external 바깥" },
+  actor: { human: "사람", script: "스크립트", agent: "AI 에이전트", service: "외부 서비스" },
+};
+const STATUSES = ["동작함", "고치는 중", "명령만 있음", "없음", "사람"];
+const STATUS_CLASS = { "동작함": "st-ok", "고치는 중": "st-warn", "명령만 있음": "", "없음": "st-none", "사람": "st-human" };
+const NODE_W = 172;
+
+const state = { view: null, name: null, flow: null, runs: [], runId: null, run: null, dirty: false, flows: [], info: null,
+  sel: null, tab: "role", connecting: false, source: null, claude: null };
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const lines = v => (v || []).join("\n");
+const toList = text => text.split("\n").map(s => s.trim()).filter(Boolean);
+const kinds = () => VOCAB[state.flow?.vocabulary] || VOCAB.actor;
+const kindLabel = k => kinds()[k] || k;
+const shortKind = k => state.flow?.vocabulary === "dev" ? k : kindLabel(k);
+
+async function api(path, opts = {}) {
+  const res = await fetch(path, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || res.statusText);
+  return data;
+}
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2200); }
+function setDirty(v = true) { state.dirty = v; $("#save").disabled = !v; $("#save-state").textContent = v ? "저장 안 된 변경 있음" : "저장됨"; $("#save-state").classList.toggle("dirty", v); }
+function hint(msg) { $("#hint").textContent = msg || ""; }
+
+/* ── 밝기 ──────────────────────────────────────────────────────── */
+function applyTheme(t) { document.documentElement.dataset.theme = t; $("#theme").textContent = t === "dark" ? "Light" : "Dark"; try { localStorage.setItem("theme", t); } catch {} }
+let savedTheme = "dark"; try { savedTheme = localStorage.getItem("theme") || "dark"; } catch {}
+applyTheme(savedTheme);
+$("#theme").addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+
+/* ── 탭 · 불러오기 · 저장 ──────────────────────────────────────── */
+const TABS = ["dev", "infra", "workflow", "claude"];
+const flowsOf = view => state.flows.filter(f => f.tab === view);
+async function showView(view, flowName) {
+  if (!TABS.includes(view)) view = state.flows.length ? (state.flows.find(f => f.tab === "workflow") || state.flows[0]).tab : "workflow";
+  const list = flowsOf(view);
+  const want = flowName || (list.some(f => f.name === state.name) && view === state.view ? state.name : list[0]?.name) || null;
+  if (state.dirty && want !== state.name && !confirm("저장 안 된 변경이 있습니다. 버리고 이동할까요?")) { history.replaceState(null, "", "#" + state.view); return; }
+  state.view = view;
+  document.querySelectorAll(".apptab").forEach(t => t.setAttribute("aria-selected", t.dataset.view === view));
+  $("#flow-select").innerHTML = list.map(f => `<option value="${esc(f.name)}"${f.name === want ? " selected" : ""}>${esc(f.title)}</option>`).join("");
+  $("#flow-select").hidden = list.length < 2;
+  if (location.hash !== "#" + view) history.replaceState(null, "", "#" + view);
+  closePanel();
+  if (view === "claude" && !state.claude) state.claude = await api("/api/claude").catch(() => null);
+  if (!want) return showEmpty(view);
+  $("#empty").hidden = true; $("#content").hidden = false;
+  if (want !== state.name) await loadFlow(want); else renderAll();
+}
+function showEmpty(view) {
+  Object.assign(state, { name: null, flow: null, sel: null });
+  $("#content").hidden = true; $("#empty").hidden = false;
+  for (const id of ["#run-select", "#reload-runs", "#add-node", "#connect", "#save", "#save-state"]) $(id).hidden = true;
+  $("#title").textContent = { dev: "개발", infra: "인프라", workflow: "워크플로우", claude: "Claude" }[view];
+  $("#empty").innerHTML = `<p>이 프로젝트에는 <b>${esc(view)}</b> 탭 흐름이 없습니다.</p>
+    <p class="note"><code>${esc(state.info.flowsDir)}/&lt;이름&gt;/flow.json</code>에 <code>"tab": "${esc(view)}"</code>를 적은 흐름을 두면 이 탭에 나옵니다.
+    기본 흐름이 필요하면 터미널에서 <code>flowboard init ${esc(state.info.root)}</code></p>`;
+}
+async function loadFlows() {
+  state.info = await api("/api/info");
+  state.flows = state.info.flows;
+  $("#brand").textContent = state.info.project;
+  document.title = `${state.info.project} · flowboard`;
+}
+async function loadFlow(name) {
+  const data = await api(`/api/flow?name=${encodeURIComponent(name)}`);
+  Object.assign(state, { name, flow: data.flow, runs: data.runs, sel: null, run: null, runId: null });
+  for (const k of ["work", "phases", "lanes", "nodes", "edges"]) state.flow[k] ??= [];
+  $("#title").textContent = state.flow.title || name;
+  $("#summary").textContent = state.flow.summary || "";
+  for (const id of ["#add-node", "#connect", "#save", "#save-state"]) $(id).hidden = false;
+  for (const id of ["#run-select", "#reload-runs"]) $(id).hidden = !state.runs.length;
+  renderLegend(); renderRuns(); setDirty(false); renderAll();
+  if (state.runs.length) await loadRun(state.runs[0].id);
+}
+function renderLegend() {
+  $("#legend").innerHTML = Object.entries(kinds()).map(([k, t]) => `<span style="--c:var(--${k})"><i></i>${esc(t)}</span>`).join("")
+    + `<span style="--c:var(--emph)"><i style="border-radius:0;height:0;border-width:1px 0 1px"></i>주 경로</span>`;
+}
+function renderRuns() {
+  const fmt = t => new Date(t * 1000).toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+  $("#run-select").innerHTML = state.runs.length ? state.runs.map(r => `<option value="${esc(r.id)}">${esc(r.id)} · ${fmt(r.mtime)}</option>`).join("") : `<option value="">실행 기록 없음</option>`;
+}
+async function loadRun(id) {
+  state.runId = id || null;
+  state.run = id ? await api(`/api/run?name=${encodeURIComponent(state.name)}&id=${encodeURIComponent(id)}`) : null;
+  if (state.sel && state.tab === "run") renderPanel();
+}
+async function save() {
+  try { await api(`/api/flow?name=${encodeURIComponent(state.name)}`, { method: "PUT", body: JSON.stringify(state.flow) }); setDirty(false); toast("flow.json 저장됨"); }
+  catch (e) { toast("저장 실패: " + e.message); }
+}
+
+/* ── 일의 흐름 ─────────────────────────────────────────────────── */
+function renderWork() {
+  const show = state.flow.work.length > 0 || state.view === "workflow";
+  $("#work-section").hidden = !show;
+  if (!show) return;
+  const items = state.flow.work.map((w, i) => `
+    <button class="work${state.sel?.type === "work" && state.sel.index === i ? " selected" : ""}" data-index="${i}">
+      <span class="num">${String(i + 1).padStart(2, "0")}</span>
+      <span class="name">${esc(w.name)}</span>
+      <span class="status ${STATUS_CLASS[w.status] ?? ""}">${esc(w.status)}</span>
+      <span class="desc">${esc(w.desc)}</span>
+      <span class="who">${(w.who || []).map(k => `<span class="chip" style="--c:var(--${k})">${esc(VOCAB.actor[k] || k)}</span>`).join("")}</span>
+    </button>`).join("");
+  $("#work").innerHTML = items + `<button class="work add" id="add-work">+ 일 추가</button>`;
+  $("#work").querySelectorAll(".work[data-index]").forEach(el => el.addEventListener("click", () => select({ type: "work", index: +el.dataset.index })));
+  $("#add-work").addEventListener("click", () => { state.flow.work.push({ name: "새 일", desc: "", who: [], status: "없음" }); setDirty(); select({ type: "work", index: state.flow.work.length - 1 }); });
+}
+
+/* ── 캔버스 ────────────────────────────────────────────────────── */
+const nodeById = id => state.flow.nodes.find(n => n.id === id);
+function renderCanvas() {
+  const canvas = $("#canvas");
+  canvas.querySelectorAll(".node, .phase, .lane").forEach(el => el.remove());
+  canvas.classList.toggle("connecting", state.connecting);
+  for (const l of state.flow.lanes) canvas.insertAdjacentHTML("afterbegin", `<div class="lane" style="top:${l.y}px;height:${l.h}px"><span>${esc(l.label)}</span></div>`);
+  for (const p of state.flow.phases) canvas.insertAdjacentHTML("beforeend", `<div class="phase" style="left:${p.x}px">${esc(p.label)}</div>`);
+  for (const n of state.flow.nodes) {
+    const el = document.createElement("button");
+    el.className = `node${n.status === "없음" ? " planned" : ""}${state.sel?.type === "node" && state.sel.id === n.id ? " selected" : ""}${state.source === n.id ? " source" : ""}`;
+    el.id = "n-" + n.id; el.dataset.id = n.id;
+    el.style.cssText = `left:${n.x}px;top:${n.y}px;--c:var(--${n.kind})`;
+    el.innerHTML = `<span class="t">${esc(shortKind(n.kind))}${n.status && n.status !== "동작함" ? " · " + esc(n.status) : ""}</span><span class="n">${esc(n.name)}</span><span class="s">${esc(n.meta)}</span>${n.tag ? `<span class="tag">${esc(n.tag)}</span>` : ""}`;
+    attachNode(el, n);
+    canvas.appendChild(el);
+  }
+  sizeCanvas(); drawWires();
+}
+function sizeCanvas() {
+  const w = Math.max(...state.flow.nodes.map(n => n.x + NODE_W), ...state.flow.phases.map(p => p.x + 200), 900) + 80;
+  const h = Math.max(...state.flow.nodes.map(n => n.y + 110), ...state.flow.lanes.map(l => l.y + l.h), 300) + 40;
+  const c = $("#canvas"); c.style.width = w + "px"; c.style.height = h + "px";
+  for (const s of ["#wires", "#labels"]) { $(s).setAttribute("width", w); $(s).setAttribute("height", h); }
+}
+function box(id) {
+  const el = $("#n-" + CSS.escape(id)); const n = nodeById(id);
+  const w = el.offsetWidth, h = el.offsetHeight;
+  return { l: n.x, r: n.x + w, t: n.y, b: n.y + h, cx: n.x + w / 2, cy: n.y + h / 2 };
+}
+// 둥근 모서리 꺾은선 — 가로로 나가 x에서 꺾여 세로로, 다시 가로로 들어갑니다.
+function elbow(x1, y1, x2, y2, x) {
+  if (Math.abs(y1 - y2) < 4) return `M${x1},${y1} L${x2},${y1}`;
+  const dy = Math.sign(y2 - y1), s1 = Math.sign(x - x1) || 1, s2 = Math.sign(x2 - x) || 1;
+  const r = Math.min(10, Math.abs(y2 - y1) / 2, Math.abs(x - x1), Math.abs(x2 - x));
+  return `M${x1},${y1} L${x - r * s1},${y1} Q${x},${y1} ${x},${y1 + r * dy} L${x},${y2 - r * dy} Q${x},${y2} ${x + r * s2},${y2} L${x2},${y2}`;
+}
+function elbowV(x1, y1, x2, y2, y) {
+  if (Math.abs(x1 - x2) < 4) return `M${x1},${y1} L${x1},${y2}`;
+  const dx = Math.sign(x2 - x1), s1 = Math.sign(y - y1) || 1, s2 = Math.sign(y2 - y) || 1;
+  const r = Math.min(10, Math.abs(x2 - x1) / 2, Math.abs(y - y1), Math.abs(y2 - y));
+  return `M${x1},${y1} L${x1},${y - r * s1} Q${x1},${y} ${x1 + r * dx},${y} L${x2 - r * dx},${y} Q${x2},${y} ${x2},${y + r * s2} L${x2},${y2}`;
+}
+function drawWires() {
+  let wires = "", labels = "";
+  state.flow.edges.forEach((e, i) => {
+    if (!nodeById(e.from) || !nodeById(e.to)) return;
+    const a = box(e.from), b = box(e.to);
+    let d, lx, ly, anchor = "middle";
+    if (e.kind === "loop") {
+      const x = Math.min(a.l, b.l) - 22; d = elbow(a.l, a.cy, b.l, b.cy, x); lx = x - 6; ly = (a.cy + b.cy) / 2 + 4; anchor = "end";
+    } else if (b.l >= a.r + 16 || b.r <= a.l - 16) {
+      const right = b.l >= a.r + 16, x1 = right ? a.r : a.l, x2 = right ? b.l : b.r, x = (x1 + x2) / 2;
+      d = elbow(x1, a.cy, x2, b.cy, x); lx = x; ly = Math.abs(a.cy - b.cy) < 4 ? a.cy - 8 : (a.cy + b.cy) / 2 + 4;
+    } else {
+      const down = b.cy > a.cy, y1 = down ? a.b : a.t, y2 = down ? b.t : b.b, y = (y1 + y2) / 2;
+      d = elbowV(a.cx, y1, b.cx, y2, y); lx = (a.cx + b.cx) / 2 + 10; ly = y + 4; anchor = "start";
+    }
+    const sel = state.sel?.type === "edge" && state.sel.index === i;
+    const cls = `wire${e.kind === "main" ? " main" : ""}${e.kind === "loop" ? " loop" : ""}${sel ? " selected" : ""}`;
+    const marker = sel ? "arrow-sel" : e.kind === "main" ? "arrow-main" : e.kind === "loop" ? "arrow-loop" : "arrow";
+    wires += `<path class="${cls}" data-index="${i}" d="${d}" marker-end="url(#${marker})"/><path class="wire-hit" data-index="${i}" d="${d}"><title>${esc(e.label || "선")}</title></path>`;
+    if (e.label) labels += `<text class="wire-label" data-index="${i}" x="${lx}" y="${ly}" text-anchor="${anchor}">${esc(e.label)}</text>`;
+  });
+  const m = (id, color) => `<marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${color}"/></marker>`;
+  $("#wires").innerHTML = `<defs>${m("arrow", "var(--arrow)")}${m("arrow-main", "var(--emph)")}${m("arrow-loop", "var(--agent)")}${m("arrow-sel", "var(--accent)")}</defs>` + wires;
+  $("#labels").innerHTML = labels;
+  $("#wires").querySelectorAll(".wire-hit").forEach(p => p.addEventListener("click", () => select({ type: "edge", index: +p.dataset.index })));
+}
+function highlight(id) {
+  const canvas = $("#canvas");
+  canvas.querySelectorAll(".hl").forEach(el => el.classList.remove("hl"));
+  if (!id) { canvas.classList.remove("hovering"); return; }
+  canvas.classList.add("hovering");
+  $("#n-" + CSS.escape(id))?.classList.add("hl");
+  state.flow.edges.forEach((e, i) => {
+    if (e.from !== id && e.to !== id) return;
+    canvas.querySelectorAll(`[data-index="${i}"]`).forEach(el => el.classList.add("hl"));
+    $("#n-" + CSS.escape(e.from === id ? e.to : e.from))?.classList.add("hl");
+  });
+}
+function attachNode(el, n) {
+  let start = null;
+  el.addEventListener("pointerenter", () => { if (!start?.moved) highlight(n.id); });
+  el.addEventListener("pointerleave", () => { if (!start?.moved) highlight(null); });
+  el.addEventListener("focus", () => highlight(n.id));
+  el.addEventListener("blur", () => highlight(null));
+  el.addEventListener("pointerdown", ev => { if (ev.button !== 0) return; start = { x: ev.clientX, y: ev.clientY, nx: n.x, ny: n.y, moved: false }; el.setPointerCapture(ev.pointerId); });
+  el.addEventListener("pointermove", ev => {
+    if (!start || state.connecting) return;
+    const dx = ev.clientX - start.x, dy = ev.clientY - start.y;
+    if (!start.moved && Math.hypot(dx, dy) < 5) return;
+    if (!start.moved) highlight(null);
+    start.moved = true; el.classList.add("dragging");
+    n.x = Math.max(0, Math.round((start.nx + dx) / 10) * 10); n.y = Math.max(30, Math.round((start.ny + dy) / 10) * 10);
+    el.style.left = n.x + "px"; el.style.top = n.y + "px"; drawWires();
+  });
+  el.addEventListener("pointerup", () => {
+    if (!start) return;
+    const moved = start.moved; start = null; el.classList.remove("dragging");
+    if (moved) { setDirty(); sizeCanvas(); highlight(n.id); return; }
+    nodeClicked(n.id);
+  });
+  el.addEventListener("click", ev => { if (ev.detail === 0) nodeClicked(n.id); });
+}
+function nodeClicked(id) {
+  if (!state.connecting) return select({ type: "node", id });
+  if (!state.source) { state.source = id; hint("이어질 칸을 누르세요. (Esc: 취소)"); return renderCanvas(); }
+  if (state.source === id) return;
+  state.flow.edges.push({ from: state.source, to: id, label: "" });
+  const index = state.flow.edges.length - 1;
+  stopConnecting(); setDirty(); select({ type: "edge", index }); toast("선을 이었습니다. 라벨을 적어 주세요.");
+}
+function startConnecting() { state.connecting = true; state.source = null; $("#connect").classList.add("on"); hint("시작할 칸을 누르세요. (Esc: 취소)"); renderCanvas(); }
+function stopConnecting() { state.connecting = false; state.source = null; $("#connect").classList.remove("on"); hint(""); renderCanvas(); }
+function addNode() {
+  const first = Object.keys(kinds())[0];
+  let i = 1; while (nodeById(`node-${i}`)) i++;
+  const stage = $("#stage");
+  state.flow.nodes.push({ id: `node-${i}`, kind: first, name: "새 칸", meta: "", status: "없음", x: Math.round((stage.scrollLeft + 60) / 10) * 10, y: Math.round((stage.scrollTop + 60) / 10) * 10, role: [], inputs: [], outputs: [] });
+  setDirty(); renderCanvas(); select({ type: "node", id: `node-${i}` });
+}
+
+/* ── 패널 ──────────────────────────────────────────────────────── */
+function select(sel) { state.sel = sel; if (sel.type !== "node") state.tab = "role"; renderAll(); renderPanel(); }
+function closePanel() { $("#panel").classList.remove("open"); state.sel = null; if (state.flow) renderAll(); }
+function renderAll() { renderWork(); renderCanvas(); }
+const secondTab = n => n.source ? "내용" : state.runs.length || state.flow.vocabulary !== "dev" ? "이번 배치 기록" : null;
+function renderPanel() {
+  const panel = $("#panel"), sel = state.sel; if (!sel) return;
+  panel.classList.add("open");
+  if (sel.type === "node") {
+    const n = nodeById(sel.id); panel.style.setProperty("--c", `var(--${n.kind})`);
+    const second = secondTab(n);
+    if (!second && state.tab === "run") state.tab = "role";
+    $("#tabs").hidden = !second; $("#tab-run").textContent = second || "";
+    document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === state.tab));
+    $("#p-kind").textContent = `${kindLabel(n.kind)} · ${n.status || ""}`;
+    $("#p-name").textContent = n.name;
+    if (state.tab === "role") { $("#p-body").innerHTML = nodeForm(n); bindNodeForm(n); }
+    else $("#p-body").innerHTML = n.source ? claudeContent(n.source) : runView(n);
+    if (state.tab === "run" && n.source === "claude-md") bindClaudeMd();
+  } else if (sel.type === "edge") {
+    const e = state.flow.edges[sel.index]; panel.style.setProperty("--c", "var(--accent)"); $("#tabs").hidden = true;
+    $("#p-kind").textContent = "선"; $("#p-name").textContent = `${nodeById(e.from)?.name} → ${nodeById(e.to)?.name}`;
+    $("#p-body").innerHTML = edgeForm(e); bindEdgeForm(e, sel.index);
+  } else {
+    const w = state.flow.work[sel.index]; panel.style.setProperty("--c", "var(--accent)"); $("#tabs").hidden = true;
+    $("#p-kind").textContent = `일의 흐름 ${sel.index + 1}번`; $("#p-name").textContent = w.name;
+    $("#p-body").innerHTML = workForm(w); bindWorkForm(w, sel.index);
+  }
+}
+const opt = (list, cur) => list.map(([v, t]) => `<option value="${esc(v)}"${v === cur ? " selected" : ""}>${esc(t)}</option>`).join("");
+const field = (label, html, help = "") => `<div class="field"><label>${label}</label>${html}${help ? `<span class="help">${help}</span>` : ""}</div>`;
+const input = (k, v, ph = "") => `<input type="text" data-k="${k}" value="${esc(v)}" placeholder="${esc(ph)}">`;
+const area = (k, v) => `<textarea data-k="${k}" data-list>${esc(lines(v))}</textarea>`;
+
+function nodeForm(n) {
+  const isAgent = n.kind === "agent" || n.runner;
+  return `
+    <div class="row2">
+      ${field("이름", input("name", n.name))}
+      ${field("칸 id", input("id", n.id), "영문 소문자·숫자·-. 실행 기록 폴더 이름")}
+      ${field("종류", `<select data-k="kind">${opt(Object.entries(kinds()), n.kind)}</select>`)}
+      ${field("상태", `<select data-k="status">${opt(STATUSES.map(s => [s, s]), n.status)}</select>`)}
+    </div>
+    <div class="row2">
+      ${field("한 줄 설명", input("meta", n.meta))}
+      ${field("꼬리표", input("tag", n.tag, "예: 사용자 확인"), "칸 오른쪽 위 작은 표시")}
+    </div>
+    ${field("맡은 일", area("role", n.role), "한 줄에 하나")}
+    ${isAgent ? `<div class="row2">${field("실행 방식", input("runner", n.runner, "claude -p · Codex"))}${field("모델", input("model", n.model, "claude-sonnet-5-5"), n.runner === "claude -p" && n.step ? "step 스크립트가 이 값을 그대로 씁니다" : "")}</div>${field("도구", input("tools", n.tools, "없음 · MCP 끔"))}` : ""}
+    <div class="row2">${field("입력", area("inputs", n.inputs))}${field("출력", area("outputs", n.outputs))}</div>
+    ${field("통과 기준", area("criteria", n.criteria))}
+    ${state.flow.vocabulary !== "dev" || n.step || n.prompt ? `<div class="row2">${field("단계 폴더", input("step", n.step, "step-1-search-recipe"))}${field("지시문 파일", input("prompt", n.prompt, "step-1-search-recipe/prompt.md"))}</div>` : ""}
+    ${field("실행 명령 · 파일", input("command", n.command))}
+    ${n.prompt ? `<h4>지시문 <code>${esc(n.prompt)}</code></h4><textarea class="code" id="prompt-text" placeholder="불러오는 중…"></textarea>
+      <div class="actions"><button class="btn" id="save-prompt">지시문 저장</button><span class="help" style="align-self:center">이 버튼으로 파일에 바로 저장됩니다.</span></div>` : ""}
+    <h4>칸 삭제</h4><div class="actions"><button class="btn danger" id="delete-node">이 칸과 연결된 선 지우기</button></div>`;
+}
+function bindNodeForm(n) {
+  $("#p-body").querySelectorAll("[data-k]").forEach(el => el.addEventListener("input", () => {
+    const k = el.dataset.k; let v = el.hasAttribute("data-list") ? toList(el.value) : el.value;
+    if (k === "id") {
+      v = v.trim();
+      if (!/^[a-z0-9-]+$/.test(v) || (v !== n.id && nodeById(v))) { el.style.borderColor = "var(--danger)"; return; }
+      el.style.borderColor = ""; state.flow.edges.forEach(e => { if (e.from === n.id) e.from = v; if (e.to === n.id) e.to = v; }); state.sel.id = v;
+    }
+    if (v === "" || (Array.isArray(v) && !v.length)) delete n[k]; else n[k] = v;
+    if (k === "kind" || k === "status") renderPanel();
+    if (k === "name") $("#p-name").textContent = v;
+    setDirty(); renderCanvas();
+  }));
+  if (n.prompt) {
+    api(`/api/file?name=${encodeURIComponent(state.name)}&path=${encodeURIComponent(n.prompt)}`)
+      .then(d => { $("#prompt-text").value = d.text ?? ""; $("#prompt-text").placeholder = d.text == null ? "아직 파일이 없습니다. 적고 저장하면 만들어집니다." : ""; }).catch(e => toast(e.message));
+    $("#save-prompt").addEventListener("click", async () => {
+      try { await api(`/api/file?name=${encodeURIComponent(state.name)}&path=${encodeURIComponent(n.prompt)}`, { method: "PUT", body: $("#prompt-text").value }); toast("지시문 저장됨"); }
+      catch (e) { toast("저장 실패: " + e.message); }
+    });
+  }
+  $("#delete-node").addEventListener("click", () => {
+    if (!confirm(`'${n.name}' 칸과 연결된 선을 지울까요? (저장해야 파일에 반영됩니다)`)) return;
+    state.flow.nodes = state.flow.nodes.filter(x => x !== n); state.flow.edges = state.flow.edges.filter(e => e.from !== n.id && e.to !== n.id);
+    setDirty(); closePanel();
+  });
+}
+function edgeForm(e) {
+  return `${field("라벨", `<input type="text" id="edge-label" value="${esc(e.label)}">`, "주고받는 것 — 예: step-1.json, 고칠 점")}
+    ${field("모양", `<select id="edge-kind">${opt([["", "보통"], ["main", "주 경로(초록)"], ["loop", "되돌아가는 반복(점선)"]], e.kind || "")}</select>`)}
+    <div class="actions"><button class="btn" id="edge-flip">방향 바꾸기</button><button class="btn danger" id="edge-delete">선 지우기</button></div>`;
+}
+function bindEdgeForm(e, i) {
+  $("#edge-label").addEventListener("input", ev => { e.label = ev.target.value; setDirty(); drawWires(); });
+  $("#edge-kind").addEventListener("change", ev => { if (ev.target.value) e.kind = ev.target.value; else delete e.kind; setDirty(); drawWires(); });
+  $("#edge-flip").addEventListener("click", () => { [e.from, e.to] = [e.to, e.from]; setDirty(); renderPanel(); drawWires(); });
+  $("#edge-delete").addEventListener("click", () => { state.flow.edges.splice(i, 1); setDirty(); closePanel(); });
+}
+function workForm(w) {
+  return `${field("이름", `<input type="text" data-k="name" value="${esc(w.name)}">`)}
+    ${field("설명", `<textarea data-k="desc">${esc(w.desc)}</textarea>`)}
+    ${field("상태", `<select data-k="status">${opt(STATUSES.map(s => [s, s]), w.status)}</select>`)}
+    ${field("누가", `<div class="checks">${Object.entries(VOCAB.actor).map(([k, t]) => `<label><input type="checkbox" data-who="${k}"${(w.who || []).includes(k) ? " checked" : ""}> ${t}</label>`).join("")}</div>`)}
+    <div class="actions"><button class="btn" id="work-left">← 앞으로</button><button class="btn" id="work-right">뒤로 →</button><button class="btn danger" id="work-delete">지우기</button></div>`;
+}
+function bindWorkForm(w, i) {
+  $("#p-body").querySelectorAll("[data-k]").forEach(el => el.addEventListener("input", () => { w[el.dataset.k] = el.value; if (el.dataset.k === "name") $("#p-name").textContent = el.value; setDirty(); renderWork(); }));
+  $("#p-body").querySelectorAll("[data-who]").forEach(b => b.addEventListener("change", () => { w.who = Object.keys(VOCAB.actor).filter(k => $(`[data-who="${k}"]`).checked); setDirty(); renderWork(); }));
+  const move = d => { const j = i + d; if (j < 0 || j >= state.flow.work.length) return; const l = state.flow.work; [l[i], l[j]] = [l[j], l[i]]; setDirty(); select({ type: "work", index: j }); };
+  $("#work-left").addEventListener("click", () => move(-1)); $("#work-right").addEventListener("click", () => move(1));
+  $("#work-delete").addEventListener("click", () => { state.flow.work.splice(i, 1); setDirty(); closePanel(); });
+}
+
+/* ── 이번 배치 기록(워크플로우) ────────────────────────────────── */
+const pre = v => `<pre>${esc(typeof v === "string" ? v : JSON.stringify(v, null, 2))}</pre>`;
+const block = (title, body, open = false) => `<details${open ? " open" : ""}><summary>${title}</summary><div class="inner">${body}</div></details>`;
+function runView(n) {
+  if (!state.run) return `<p class="empty">실행 기록이 없습니다.</p>`;
+  const prefix = n.id + "/";
+  const own = Object.fromEntries(Object.entries(state.run).filter(([k]) => k.startsWith(prefix)).map(([k, v]) => [k.slice(prefix.length), v]));
+  const extra = (n.runFiles || []).filter(f => f in state.run);
+  if (!Object.keys(own).length && !extra.length) return `<p class="empty">${esc(state.runId)} 실행에서 이 칸의 기록이 없습니다.<br>기록 위치: <code>runs/${esc(state.runId)}/${esc(n.id)}/</code></p>`;
+  let h = `<p>실행 <code>${esc(state.runId)}</code></p>`;
+  const meta = own["meta.json"];
+  if (meta && Object.keys(meta).length) h += `<div class="stats">${[["모델", meta.model], ["비용", meta.usd != null ? "$" + meta.usd : "—"], ["시간", meta.seconds != null ? meta.seconds + "초" : "—"], ["입력 토큰", meta.inputTokens], ["출력 토큰", meta.outputTokens]].map(([k, v]) => `<div class="stat"><b>${esc(v ?? "—")}</b><span>${k}</span></div>`).join("")}</div>`;
+  if (own["prompt.md"] != null) h += block("실제로 보낸 프롬프트", pre(own["prompt.md"]));
+  if (n.kind === "agent") h += block("생각 과정", own["thinking.md"] != null ? pre(own["thinking.md"]) : `<p class="empty">저장된 생각 과정이 없습니다. 스크립트가 실행 기록 전체(stream-json)를 남기도록 바꾸면 여기에 나옵니다.</p>`);
+  if (own["output.json"] != null) h += block("결과물", resultView(own["output.json"]), true);
+  if (own["response.json"] != null) h += block("claude 응답 원문", pre(own["response.json"]));
+  for (const f of extra) h += block(`단계 결과 <code>${esc(f)}</code>`, resultView(state.run[f]), !own["output.json"]);
+  return h;
+}
+function resultView(v) {
+  if (v && Array.isArray(v.judgments)) return `<table><tr><th>판정</th><th>영상</th><th>요리</th><th>이유</th></tr>${v.judgments.map(j => `<tr><td>${j.verdict === "keep" ? "통과" : "탈락 · " + esc(j.rule)}</td><td><code>${esc(j.videoId)}</code></td><td>${esc(j.dish)}</td><td>${esc(j.reason)}</td></tr>`).join("")}</table>`;
+  if (v && Array.isArray(v.candidates)) {
+    const reasons = {}; (v.dropped || []).forEach(d => { const k = String(d.reason).split(" ")[0]; reasons[k] = (reasons[k] || 0) + 1; });
+    return `<div class="stats">${[["목표 요리", (v.targetDishes || []).length + "개"], ["본 영상", (v.candidates.length + (v.dropped || []).length) + "편"], ["통과", v.candidates.length + "편"], ["LLM", v.llm]].map(([k, x]) => `<div class="stat"><b>${esc(x)}</b><span>${k}</span></div>`).join("")}</div>
+      <table><tr><th>조회수</th><th>초</th><th>요리</th><th>채널 / 제목</th></tr>${v.candidates.map(c => `<tr><td>${Number(c.views).toLocaleString("ko-KR")}</td><td>${c.durationSec}</td><td>${esc(c.targetDish || c.searchedDish)}</td><td><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.channel)} / ${esc(c.title)}</a></td></tr>`).join("")}</table>
+      <h4>탈락 사유</h4><table><tr><th>규칙</th><th>편수</th></tr>${Object.entries(reasons).sort((a, b) => b[1] - a[1]).map(([k, x]) => `<tr><td>${esc(k)}</td><td>${x}</td></tr>`).join("")}</table>
+      <details style="margin-top:12px"><summary>파일 원문</summary><div class="inner">${pre(v)}</div></details>`;
+  }
+  return pre(v);
+}
+
+/* ── Claude 칸 내용 ────────────────────────────────────────────── */
+function claudeContent(source) {
+  const d = state.claude; if (!d) return `<p class="empty">Claude 설정을 불러오지 못했습니다.</p>`;
+  if (source === "claude-md") return `<p class="note">${d.claudeMd.split("\n").length}줄 / 상한 250줄 · <code>${esc(d.paths.claudeMd)}</code></p>
+    <textarea class="code" id="claude-md-text">${esc(d.claudeMd)}</textarea><div class="actions"><button class="btn primary" id="claude-md-save">CLAUDE.md 저장</button></div>`;
+  if (source === "hooks") {
+    const rows = Object.entries(d.settings.hooks || {}).flatMap(([ev, groups]) => groups.flatMap(g => (g.hooks || []).map(x => `<tr><td><b>${esc(ev)}</b></td><td><code>${esc(g.matcher || "모두")}</code></td><td>${esc(x.statusMessage || "")}</td></tr>`)));
+    return `<p class="note"><code>${esc(d.paths.settings)}</code></p>${rows.length ? `<table><tr><th>언제</th><th>어떤 도구</th><th>표시</th></tr>${rows.join("")}</table>` : `<p class="empty">등록된 hook이 없습니다.</p>`}
+      <h4>스크립트</h4>${Object.entries(d.hookFiles).map(([f, t]) => block(esc(f), pre(t), true)).join("")}`;
+  }
+  if (source === "permissions") {
+    const p = d.settings.permissions || {};
+    return `<table><tr><th>구분</th><th>규칙</th></tr>${[["허용(묻지 않음)", p.allow], ["매번 확인", p.ask], ["금지", p.deny]].map(([k, v]) => `<tr><td><b>${k}</b></td><td>${(v || []).map(x => `<code>${esc(x)}</code>`).join("<br>") || "—"}</td></tr>`).join("")}</table>`;
+  }
+  if (source === "skills" || source === "agents") {
+    const list = d.extensions.filter(x => x.kind === (source === "skills" ? "skill" : "agent"));
+    return `<p class="note">${list.length}개 · 플러그인으로 들어온 것은 빠져 있습니다.</p>` + (list.length ? list.map(x => block(`${esc(x.name)} <span class="chip" style="--c:var(--muted)">${esc(x.scope)}</span>`, `<p class="note">${esc(x.description || "(설명 없음)")}</p><p class="note"><code>${esc(x.path)}</code></p>${pre(x.text)}`)).join("") : `<p class="empty">없습니다.</p>`);
+  }
+  if (source === "memory") {
+    const types = [...new Set(d.memories.map(m => m.type || "기타"))];
+    return `<p class="note">${d.memories.length}개 · <code>${esc(d.paths.memory)}</code></p>${block("MEMORY.md (목차)", pre(d.memoryIndex))}`
+      + types.map(t => `<h4>${esc(t)}</h4>` + d.memories.filter(m => (m.type || "기타") === t).map(m => block(esc(m.name), `<p class="note">${esc(m.description)}</p>${pre(m.body)}`)).join("")).join("");
+  }
+  return `<p class="empty">내용 없음</p>`;
+}
+function bindClaudeMd() {
+  $("#claude-md-save")?.addEventListener("click", async () => {
+    try { await api("/api/claude-md", { method: "PUT", body: $("#claude-md-text").value }); state.claude.claudeMd = $("#claude-md-text").value; toast("CLAUDE.md 저장됨"); }
+    catch (e) { toast("저장 실패: " + e.message); }
+  });
+}
+
+/* ── 이벤트 ────────────────────────────────────────────────────── */
+document.querySelectorAll(".apptab").forEach(t => t.addEventListener("click", () => showView(t.dataset.view)));
+window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
+$("#flow-select").addEventListener("change", e => showView(state.view, e.target.value));
+$("#run-select").addEventListener("change", e => loadRun(e.target.value));
+$("#reload-runs").addEventListener("click", async () => {
+  const data = await api(`/api/flow?name=${encodeURIComponent(state.name)}`); state.runs = data.runs; renderRuns();
+  if (state.runs.length) { $("#run-select").value = state.runs[0].id; await loadRun(state.runs[0].id); }
+  toast("실행 기록을 다시 읽었습니다");
+});
+$("#save").addEventListener("click", save);
+$("#add-node").addEventListener("click", addNode);
+$("#connect").addEventListener("click", () => state.connecting ? stopConnecting() : startConnecting());
+$("#p-close").addEventListener("click", closePanel);
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => { state.tab = t.dataset.tab; renderPanel(); }));
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { if (state.connecting) stopConnecting(); else closePanel(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); if (state.dirty) save(); }
+});
+window.addEventListener("beforeunload", e => { if (state.dirty) { e.preventDefault(); e.returnValue = ""; } });
+loadFlows().then(() => showView(location.hash.slice(1))).catch(e => document.body.insertAdjacentHTML("afterbegin", `<p class="empty" style="margin:16px">불러오기 실패: ${esc(e.message)}</p>`));
+</script>
+</body>
+</html>
