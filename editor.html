@@ -4,126 +4,46 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>flowboard</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap">
 <style>
-/* 색 · 글꼴 · 칸 모양 · 연결 강조는 Archify(MIT, © 2026 tt-a1i, © 2025 Cocoon AI)의 방식을 따랐습니다. */
+/* 색 · 글꼴 · 카드 모양은 Archify(MIT, © 2026 tt-a1i, © 2025 Cocoon AI)의 방식을 따랐습니다. */
 :root {
-  --bg: #020617; --panel: #0f172a; --panel-2: #111c33; --line: #1e293b; --lane: #334155;
-  --text: #f8fafc; --muted: #94a3b8; --faint: #7d8da1; --arrow: #64748b; --emph: #34d399; --accent: #38bdf8; --danger: #fb7185; --warn: #fbbf24;
-  --frontend: #22d3ee; --backend: #34d399; --database: #a78bfa; --cloud: #fbbf24; --security: #fb7185; --messagebus: #fb923c; --external: #94a3b8;
-  --human: #fb923c; --script: #94a3b8; --agent: #a78bfa; --service: #22d3ee;
+  --bg: #020617; --panel: #0f172a; --line: #1e293b; --lane: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --faint: #7d8da1; --emph: #34d399; --accent: #38bdf8; --danger: #fb7185; --warn: #fbbf24;
+  --c1: #22d3ee; --c2: #34d399; --c3: #a78bfa; --c4: #fbbf24; --c5: #fb7185; --c6: #fb923c;
+  --f0: #0e7490; --f1: #c2410c; --f2: #7c3aed; --f3: #15803d; --f4: #be185d; --f5: #a16207;
   --tint: 12%; --mono: "JetBrains Mono", "Apple SD Gothic Neo", ui-monospace, Menlo, monospace;
 }
 :root[data-theme="light"] {
-  --bg: #f8fafc; --panel: #ffffff; --panel-2: #f1f5f9; --line: #e2e8f0; --lane: #cbd5e1;
-  --text: #0f172a; --muted: #64748b; --faint: #64748b; --arrow: #94a3b8; --emph: #059669; --accent: #0369a1; --danger: #e11d48; --warn: #b45309;
-  --frontend: #0891b2; --backend: #059669; --database: #7c3aed; --cloud: #d97706; --security: #e11d48; --messagebus: #ea580c; --external: #64748b;
-  --human: #ea580c; --script: #64748b; --agent: #7c3aed; --service: #0891b2; --tint: 8%;
+  --bg: #f8fafc; --panel: #ffffff; --line: #e2e8f0; --lane: #cbd5e1;
+  --text: #0f172a; --muted: #64748b; --faint: #64748b; --emph: #059669; --accent: #0369a1; --danger: #e11d48; --warn: #b45309;
+  --c1: #0891b2; --c2: #059669; --c3: #7c3aed; --c4: #d97706; --c5: #e11d48; --c6: #ea580c; --tint: 8%;
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 var(--mono); }
 button, input, select, textarea { font: inherit; color: inherit; }
 a { color: var(--accent); }
 
-/* 상단 탭 */
-.apptabs { position: sticky; top: 0; z-index: 6; background: var(--panel); border-bottom: 1px solid var(--line); display: flex; align-items: stretch; gap: 2px; padding: 0 20px; }
-.apptabs .brand { font-weight: 700; color: var(--faint); align-self: center; margin-right: 16px; }
-.apptab { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; padding: 14px 16px 11px; font-size: 15px; font-weight: 700; color: var(--muted); cursor: pointer; min-height: 50px; white-space: nowrap; }
-.apptab:hover { color: var(--text); }
-.apptab[aria-selected="true"] { color: var(--text); border-color: var(--emph); }
-.apptabs .grow { flex: 1; }
-.theme-btn { align-self: center; }
-
-.bar { position: sticky; top: 50px; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 10px 20px; }
-.bar h1 { font-size: 18px; margin: 0 10px 0 0; }
+.bar { position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 10px 20px; }
+.bar .brand { font-weight: 700; color: var(--faint); }
+.bar h1 { font-size: 18px; margin: 0 6px 0 0; }
 .grow { flex: 1; }
 .btn { appearance: none; border: 1px solid var(--lane); background: var(--panel); border-radius: 8px; padding: 6px 12px; min-height: 40px; cursor: pointer; font-size: 13.5px; }
 .btn:hover { border-color: var(--muted); }
 .btn.primary { background: var(--emph); border-color: var(--emph); color: #022c22; font-weight: 700; }
 .btn.primary:disabled { opacity: .4; cursor: default; }
-.btn.on { border-color: var(--accent); color: var(--accent); }
 .btn.danger { color: var(--danger); }
 select, input[type=text], input[type=number], textarea { background: var(--bg); border: 1px solid var(--lane); border-radius: 8px; padding: 7px 10px; }
-input[type=number] { width: 100%; font-size: 13.5px; }
-input[type=range] { width: 100%; accent-color: var(--emph); }
-select { min-height: 40px; }
+select { min-height: 40px; max-width: 100%; }
 textarea { width: 100%; min-height: 80px; resize: vertical; line-height: 1.5; font-size: 13.5px; }
-textarea.code { min-height: 320px; font-size: 13px; }
-input[type=text] { width: 100%; font-size: 13.5px; }
+input[type=text], input[type=number] { width: 100%; font-size: 13.5px; }
+input[type=range] { width: 100%; accent-color: var(--emph); }
 .save-state { font-size: 13px; color: var(--muted); }
 .save-state.dirty { color: var(--warn); font-weight: 700; }
 
 .main { padding: 14px 20px 60px; }
-.main.empty { padding-top: 40px; }
-.main.empty p { max-width: 760px; }
-.summary { color: var(--muted); margin: 0 0 10px; font-size: 14px; }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 12px; color: var(--muted); font-size: 13px; }
-.legend span { display: inline-flex; gap: 6px; align-items: center; }
-.legend i { width: 12px; height: 12px; border-radius: 3px; border: 2px solid var(--c); }
-h2 { font-size: 17px; margin: 18px 0 4px; }
+h2 { font-size: 17px; margin: 18px 0 8px; }
 .note { color: var(--muted); font-size: 13.5px; margin: 0 0 10px; }
-
-/* 일의 흐름 */
-.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 8px; }
-.work { appearance: none; text-align: left; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 5px; cursor: pointer; }
-.work:hover { border-color: var(--lane); }
-.work.selected { border-color: var(--accent); }
-.work .num { font-size: 12px; color: var(--faint); }
-.work .name { font-size: 15px; font-weight: 700; line-height: 1.35; }
-.work .desc { font-size: 13px; color: var(--muted); }
-.who { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; }
-.chip { font-size: 11.5px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--c); color: var(--c); font-weight: 600; white-space: nowrap; }
-.work.add { align-items: center; justify-content: center; color: var(--muted); border-style: dashed; min-height: 110px; }
-.status { font-size: 11.5px; padding: 1px 8px; border-radius: 6px; font-weight: 700; align-self: flex-start; white-space: nowrap; border: 1px solid var(--lane); color: var(--muted); }
-.st-ok { color: var(--emph); border-color: var(--emph); } .st-warn { color: var(--warn); border-color: var(--warn); } .st-none { border-style: dashed; }
-.st-human { color: var(--human); border-color: var(--human); }
-
-/* 캔버스 */
-.stage { position: relative; overflow: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); max-height: 76vh; }
-.canvas { position: relative; }
-.canvas.connecting .node { cursor: crosshair; }
-.lane { position: absolute; left: 16px; right: 16px; border: 1px dashed var(--lane); border-radius: 10px; pointer-events: none; }
-.lane span { position: absolute; left: 14px; top: 6px; color: var(--faint); font-size: 12px; }
-.phase { position: absolute; top: 6px; font-size: 12px; color: var(--muted); pointer-events: none; }
-svg.layer { position: absolute; left: 0; top: 0; overflow: visible; }
-svg.wires { z-index: 0; pointer-events: none; }
-svg.labels { z-index: 3; pointer-events: none; }
-.wire { fill: none; stroke: var(--arrow); stroke-width: 1.6; transition: opacity .15s, stroke-width .15s; }
-.wire.main { stroke: var(--emph); stroke-width: 2.2; }
-.wire.loop { stroke: var(--agent); stroke-dasharray: 6 5; }
-.wire.selected { stroke: var(--accent); stroke-width: 3; }
-.wire-hit { fill: none; stroke: transparent; stroke-width: 14; pointer-events: stroke; cursor: pointer; }
-.wire-label { font: 11px var(--mono); fill: var(--muted); paint-order: stroke; stroke: var(--bg); stroke-width: 5px; transition: opacity .15s; }
-.node { position: absolute; z-index: 2; width: 172px; appearance: none; text-align: left; cursor: grab; padding: 9px 12px; border: 2px solid var(--c); border-radius: 10px; color: var(--text);
-  background: color-mix(in srgb, var(--c) var(--tint), var(--bg)); display: flex; flex-direction: column; gap: 1px; user-select: none; touch-action: none; transition: opacity .15s, box-shadow .15s; }
-.node .t { font-size: 10.5px; font-weight: 700; color: var(--c); text-transform: uppercase; letter-spacing: .05em; }
-.node .n { font-size: 14.5px; font-weight: 700; line-height: 1.35; }
-.node .s { font-size: 11.5px; color: var(--muted); }
-.node .tag { position: absolute; right: -8px; top: -11px; font-size: 10.5px; background: var(--bg); border: 1px solid var(--c); color: var(--c); border-radius: 999px; padding: 0 7px; white-space: nowrap; }
-.node.planned { border-style: dashed; }
-.node.dragging { cursor: grabbing; box-shadow: 0 10px 28px rgba(0,0,0,.35); }
-.node.selected { box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 35%, transparent); }
-.node.source { outline: 3px solid var(--accent); outline-offset: 3px; }
-.node:focus-visible { outline: 3px solid var(--c); outline-offset: 3px; }
-/* 마우스를 올리면 연결된 칸과 선만 남기고 흐리게 */
-.canvas.hovering .node:not(.hl) { opacity: .22; }
-.canvas.hovering .wire:not(.hl) { opacity: .12; }
-.canvas.hovering .wire-label:not(.hl) { opacity: .15; }
-.canvas.hovering .wire.hl { stroke-width: 2.6; }
-.canvas.hovering .node.hl { box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent); }
-.hint { font-size: 13px; color: var(--accent); min-height: 20px; margin: 0 0 6px; }
-
-/* 오른쪽 패널 */
-.panel { position: fixed; top: 0; right: 0; height: 100vh; width: min(640px, 100vw); background: var(--panel); border-left: 1px solid var(--lane); box-shadow: -12px 0 40px rgba(0,0,0,.35); z-index: 10; display: flex; flex-direction: column; transform: translateX(105%); transition: transform .2s; }
-.panel.open { transform: none; }
-.panel-head { padding: 16px 22px 0; display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; }
-.panel-head .k { font-size: 11px; font-weight: 700; color: var(--c, var(--muted)); text-transform: uppercase; letter-spacing: .06em; }
-.panel-head h3 { margin: 2px 0 0; font-size: 20px; }
-.close { appearance: none; border: 1px solid var(--lane); background: var(--bg); border-radius: 8px; width: 44px; height: 44px; font-size: 20px; cursor: pointer; }
-.tabs { display: flex; gap: 2px; padding: 10px 22px 0; border-bottom: 1px solid var(--line); }
-.tab { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; padding: 9px 12px; font-weight: 700; color: var(--muted); cursor: pointer; font-size: 13.5px; }
-.tab[aria-selected="true"] { color: var(--text); border-color: var(--c, var(--accent)); }
-.panel-body { padding: 16px 22px 48px; overflow-y: auto; flex: 1; }
 .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
 .field label { font-size: 12px; color: var(--muted); font-weight: 600; }
 .field .help { font-size: 12px; color: var(--faint); }
@@ -131,26 +51,12 @@ svg.labels { z-index: 3; pointer-events: none; }
 .checks { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13.5px; }
 .checks label { display: inline-flex; gap: 6px; align-items: center; color: var(--text); font-weight: 500; }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-.panel-body h4 { font-size: 14.5px; margin: 20px 0 8px; }
 code { font-size: 12.5px; background: var(--bg); border: 1px solid var(--line); padding: 0 5px; border-radius: 5px; }
-pre { font-size: 12.5px; line-height: 1.55; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow: auto; max-height: 460px; white-space: pre-wrap; word-break: break-word; margin: 0; }
-details { border: 1px solid var(--line); border-radius: 8px; margin-bottom: 10px; }
-details > summary { cursor: pointer; padding: 10px 12px; font-weight: 700; list-style: none; display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; }
-details > summary::-webkit-details-marker { display: none; }
-details > summary::after { content: "펼치기"; font-size: 12px; color: var(--faint); font-weight: 500; }
-details[open] > summary::after { content: "접기"; }
-details > .inner { padding: 0 12px 12px; }
-.stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.stat { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; min-width: 100px; }
-.stat b { display: block; font-size: 16px; }
-.stat span { font-size: 12px; color: var(--muted); }
-table { border-collapse: collapse; width: 100%; font-size: 13px; }
-th, td { text-align: left; padding: 7px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { color: var(--muted); font-weight: 600; font-size: 12px; }
+pre { font-size: 12.5px; line-height: 1.55; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow: auto; white-space: pre-wrap; word-break: break-word; margin: 0; }
 .empty { color: var(--muted); border: 1px dashed var(--lane); border-radius: 8px; padding: 14px; font-size: 13.5px; }
 .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 9px 16px; border-radius: 8px; z-index: 20; font-weight: 700; opacity: 0; transition: opacity .2s; pointer-events: none; }
 .toast.show { opacity: 1; }
-/* 영상 기획 */
+
 :root { --f0: #0e7490; --f1: #c2410c; --f2: #7c3aed; --f3: #15803d; --f4: #be185d; --f5: #a16207; }
 #video { max-width: 1240px; }
 .vnav { display: flex; flex-wrap: wrap; gap: 2px; border-bottom: 1px solid var(--line); margin: 0 0 16px; }
@@ -258,7 +164,8 @@ button.card { cursor: pointer; }
 .capv .cap { position: absolute; inset: 0; }
 .capv .sub { position: absolute; left: 6%; right: 6%; bottom: 9%; text-align: center; font-size: 13px; font-weight: 700; color: #fff; text-shadow: 0 1px 3px #000, 0 0 2px #000; }
 .capv .top { position: absolute; left: 6%; right: 6%; top: 7%; text-align: center; font-size: 13px; font-weight: 700; color: #111; background: #fde047; padding: 2px 4px; border-radius: 4px; }
-.capv.tall .sub, .capv.tall .top { font-size: 11px; }
+.capv.tall .sub, .capv.tall .top { font-size: 11px; right: 14%; }
+.capv.tall .sub { bottom: 28%; } .capv.tall .top { top: 17%; } /* 쇼츠 안전 영역 안쪽 */
 .capv .pop, .capv .kw { position: absolute; inset: 0; display: grid; place-items: center; font-size: 22px; font-weight: 800; color: #fff; text-shadow: 0 2px 0 #000, 0 0 6px #000; animation: pop .25s ease-out; }
 .capv .pop em { font-style: normal; color: #fde047; }
 .capv .kw { color: #fde047; font-size: 24px; }
@@ -277,91 +184,122 @@ button.card { cursor: pointer; }
 .rule { display: grid; grid-template-columns: 130px 1fr auto; gap: 8px; align-items: center; margin-bottom: 6px; }
 pre.brief { max-height: none; }
 @media (max-width: 700px) { .ref { grid-template-columns: 1fr; } .rule { grid-template-columns: 1fr auto; } .rule select { grid-column: 1 / -1; } }
-@media (max-width: 700px) { .apptabs { padding: 0 10px; overflow-x: auto; } .bar, .main { padding-left: 16px; padding-right: 16px; } .row2 { grid-template-columns: 1fr; } }
+/* 화면 효과 미리보기: 같은 장면(.sc)에 효과를 겹칩니다. 한 바퀴 3.2초 */
+.fx { position: relative; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #000; --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.fx .sc { position: absolute; inset: 0; display: grid; place-items: center; background: linear-gradient(135deg, var(--f0), #082f49); }
+.fx .sc b { font-size: 30px; font-weight: 800; color: rgba(255,255,255,.85); }
+.fx .sc .o { position: absolute; width: 20%; aspect-ratio: 1; border-radius: 50%; left: 62%; top: 22%; background: #fde68a; opacity: .75; }
+.fx .s2, .fx .s3, .fx .ov, .fx .ov2 { display: none; }
+.fx .ov, .fx .ov2 { position: absolute; inset: 0; pointer-events: none; }
+.fx .sc, .fx .ov, .fx .ov2, .fx .sc b, .fx .sc .o { animation-duration: 3.2s; animation-iteration-count: infinite; animation-timing-function: linear; }
+/* 글리치: 가로 조각이 어긋나며 색이 튐 */
+.fx[data-fx="glitch"] .s2, .fx[data-fx="glitch"] .s3 { display: grid; opacity: 0; }
+.fx[data-fx="glitch"] .s2 { clip-path: inset(28% 0 52% 0); animation-name: fx-slice-a; }
+.fx[data-fx="glitch"] .s3 { clip-path: inset(62% 0 18% 0); animation-name: fx-slice-b; }
+.fx[data-fx="glitch"] .sc:first-child { animation-name: fx-jitter; }
+@keyframes fx-slice-a { 0%, 30%, 38%, 70%, 74%, 100% { opacity: 0; transform: none } 31%, 34% { opacity: 1; transform: translateX(14px); filter: hue-rotate(120deg) saturate(3) } 35%, 37% { opacity: 1; transform: translateX(-9px); filter: hue-rotate(-90deg) } 71%, 73% { opacity: 1; transform: translateX(20px); filter: invert(1) } }
+@keyframes fx-slice-b { 0%, 32%, 37%, 71%, 75%, 100% { opacity: 0; transform: none } 33%, 36% { opacity: 1; transform: translateX(-16px); filter: hue-rotate(200deg) saturate(4) } 72%, 74% { opacity: 1; transform: translateX(-12px); filter: hue-rotate(90deg) } }
+@keyframes fx-jitter { 0%, 30%, 38%, 70%, 75%, 100% { transform: none; filter: none } 31% { transform: translate(-4px, 1px) } 33% { transform: translate(3px, -2px) skewX(6deg); filter: saturate(3) } 35% { transform: translate(-2px, 0) } 72% { transform: translate(5px, 0) skewX(-8deg); filter: contrast(1.6) } }
+/* RGB 분리 */
+.fx[data-fx="rgb"] .sc b { animation-name: fx-rgb-t; } .fx[data-fx="rgb"] .sc .o { animation-name: fx-rgb-o; }
+@keyframes fx-rgb-t { 0%, 100% { text-shadow: -2px 0 rgba(255,0,60,.9), 2px 0 rgba(0,240,255,.9) } 45% { text-shadow: -9px 0 rgba(255,0,60,.9), 9px 0 rgba(0,240,255,.9) } 50% { text-shadow: -3px 2px rgba(255,0,60,.9), 4px -2px rgba(0,240,255,.9) } }
+@keyframes fx-rgb-o { 0%, 100% { box-shadow: -3px 0 rgba(255,0,60,.8), 3px 0 rgba(0,240,255,.8) } 45% { box-shadow: -12px 0 rgba(255,0,60,.8), 12px 0 rgba(0,240,255,.8) } }
+/* VHS: 주사선 · 색 번짐 · 위아래로 지나가는 잡음 띠 */
+.fx[data-fx="vhs"] .sc { filter: saturate(1.6) contrast(1.1) blur(.4px); animation-name: fx-wobble; }
+.fx[data-fx="vhs"] .sc b { text-shadow: -3px 0 rgba(255,0,80,.7), 3px 0 rgba(0,200,255,.7); }
+.fx[data-fx="vhs"] .ov { display: block; background: repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 2px, transparent 2px 4px); }
+.fx[data-fx="vhs"] .ov::after { content: "▶ PLAY  00:12"; position: absolute; left: 8px; top: 6px; font: 700 11px var(--mono); color: #fff; text-shadow: 0 0 4px #fff; }
+.fx[data-fx="vhs"] .ov2 { display: block; inset: auto 0 auto 0; height: 14%; background: var(--noise); opacity: .55; mix-blend-mode: screen; animation-name: fx-band; }
+@keyframes fx-wobble { 0%, 100% { transform: none } 20% { transform: translateX(1px) } 21% { transform: translateX(-2px) } 60% { transform: translateX(2px) skewX(1deg) } 61% { transform: none } }
+@keyframes fx-band { from { top: -15% } to { top: 105% } }
+/* TV 노이즈: 화면 전체가 지지직 */
+.fx[data-fx="static"] .ov { display: block; background: var(--noise); background-size: 180px; animation: fx-noise .25s steps(1) infinite, fx-static-burst 3.2s linear infinite; }
+@keyframes fx-noise { 0% { background-position: 0 0 } 25% { background-position: -60px 40px } 50% { background-position: 50px -70px } 75% { background-position: -90px -30px } }
+@keyframes fx-static-burst { 0%, 35%, 65%, 100% { opacity: 0 } 38%, 62% { opacity: .95 } }
+/* 필름 그레인: 잔 입자 · 깜빡임 · 세로 흠집 */
+.fx[data-fx="grain"] .sc { filter: sepia(.55) contrast(1.1); animation-name: fx-flicker; }
+.fx[data-fx="grain"] .ov { display: block; background: var(--noise); background-size: 140px; opacity: .3; mix-blend-mode: overlay; animation: fx-noise .2s steps(1) infinite; }
+.fx[data-fx="grain"] .ov2 { display: block; inset: 0 auto 0 30%; width: 2px; background: rgba(255,255,255,.55); animation-name: fx-scratch; animation-timing-function: steps(6); }
+@keyframes fx-flicker { 0%, 100% { filter: sepia(.55) brightness(1) } 10% { filter: sepia(.55) brightness(.85) } 12% { filter: sepia(.55) brightness(1.08) } 50% { filter: sepia(.55) brightness(.9) } 52% { filter: sepia(.55) brightness(1) } }
+@keyframes fx-scratch { 0% { left: 30%; opacity: .8 } 40% { left: 70%; opacity: 0 } 60% { left: 45%; opacity: .6 } 100% { left: 20%; opacity: .2 } }
+/* CRT: 주사선 + 둥근 모서리 어둠 + 미세 깜빡임 */
+.fx[data-fx="crt"] .sc { animation-name: fx-flicker-soft; }
+.fx[data-fx="crt"] .ov { display: block; background: repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.75) 100%); border-radius: 14px / 10px; box-shadow: inset 0 0 18px rgba(0,0,0,.8); }
+@keyframes fx-flicker-soft { 0%, 100% { opacity: 1 } 50% { opacity: .93 } 51% { opacity: 1 } }
+/* 화면 흔들림 */
+.fx[data-fx="shake"] .sc { animation-name: fx-shake; }
+@keyframes fx-shake { 0%, 40%, 60%, 100% { transform: scale(1.06) } 42% { transform: scale(1.06) translate(-6px, 4px) rotate(-1deg) } 44% { transform: scale(1.06) translate(5px, -5px) rotate(1deg) } 46% { transform: scale(1.06) translate(-4px, -2px) } 48% { transform: scale(1.06) translate(3px, 3px) } 52% { transform: scale(1.06) translate(-2px, 1px) } 56% { transform: scale(1.06) translate(1px, -1px) } }
+/* 비트 줌 */
+.fx[data-fx="zoompulse"] .sc { animation-name: fx-zoompulse; animation-duration: .8s; animation-timing-function: ease-out; }
+@keyframes fx-zoompulse { 0% { transform: scale(1.14) } 60%, 100% { transform: scale(1) } }
+/* 플래시 · 스트로브 */
+.fx[data-fx="strobe"] .ov { display: block; background: #fff; animation-name: fx-strobe; }
+@keyframes fx-strobe { 0%, 30%, 34%, 38%, 42%, 46%, 100% { opacity: 0 } 31%, 35%, 39%, 43% { opacity: .9 } }
+/* 네거티브 반전 */
+.fx[data-fx="invert"] .sc { animation-name: fx-invert; }
+@keyframes fx-invert { 0%, 40%, 47%, 100% { filter: none } 41%, 46% { filter: invert(1) hue-rotate(180deg) } }
+/* 라이트 릭 */
+.fx[data-fx="leak"] .ov { display: block; background: radial-gradient(circle at 20% 30%, rgba(255,150,40,.9), transparent 45%), radial-gradient(circle at 80% 70%, rgba(255,60,90,.7), transparent 40%); mix-blend-mode: screen; animation-name: fx-leak; animation-timing-function: ease-in-out; }
+@keyframes fx-leak { 0%, 100% { opacity: 0; transform: translateX(-20%) } 50% { opacity: 1; transform: translateX(15%) } }
+/* 레터박스 (시네마 바) */
+.fx[data-fx="letterbox"] .ov { display: block; background: linear-gradient(#000, #000) top / 100% var(--bar) no-repeat, linear-gradient(#000, #000) bottom / 100% var(--bar) no-repeat; animation-name: fx-bars; animation-timing-function: ease-in-out; }
+@property --bar { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+@keyframes fx-bars { 0%, 15% { --bar: 0% } 35%, 85% { --bar: 13% } 100% { --bar: 0% } }
+/* 흑백 → 컬러 */
+.fx[data-fx="bw"] .sc { animation-name: fx-bw; animation-timing-function: ease-in-out; }
+@keyframes fx-bw { 0%, 30% { filter: grayscale(1) } 60%, 100% { filter: none } }
+/* 포커스 인 */
+.fx[data-fx="focus"] .sc { animation-name: fx-focus; animation-timing-function: ease-out; }
+@keyframes fx-focus { 0%, 15% { filter: blur(10px); transform: scale(1.08) } 50%, 100% { filter: none; transform: none } }
+/* 스피드 램프: 빨라졌다 느려짐 */
+.fx[data-fx="ramp"] .sc .o { animation-name: fx-ramp; animation-timing-function: cubic-bezier(.9, 0, .1, 1); }
+.fx[data-fx="ramp"] .ov { display: block; }
+.fx[data-fx="ramp"] .ov::after { content: "×1 → ×4 → ×0.3"; position: absolute; right: 8px; bottom: 6px; font: 700 11px var(--mono); color: #fff; }
+@keyframes fx-ramp { 0% { left: 2% } 100% { left: 78% } }
+/* 프리즈 프레임 */
+.fx[data-fx="freeze"] .sc { animation-name: fx-freeze-sc; animation-timing-function: steps(1); }
+.fx[data-fx="freeze"] .sc .o { animation-name: fx-freeze-o; }
+.fx[data-fx="freeze"] .ov { display: block; animation-name: fx-freeze-t; animation-timing-function: steps(1); }
+.fx[data-fx="freeze"] .ov::after { content: "잠깐!"; position: absolute; left: 10%; top: 12%; font: 800 20px var(--mono); color: #111; background: #fde047; padding: 0 8px; border-radius: 4px; transform: rotate(-6deg); }
+@keyframes fx-freeze-o { 0% { left: 5%; outline: 0 solid #fff } 45%, 85% { left: 45%; outline: 0 solid #fff } 46%, 84% { outline: 4px solid #fff; outline-offset: 3px } 100% { left: 75% } }
+@keyframes fx-freeze-sc { 0%, 45%, 85%, 100% { filter: none } 46% { filter: grayscale(.7) brightness(.8) } }
+@keyframes fx-freeze-t { 0%, 45%, 85%, 100% { opacity: 0 } 46% { opacity: 1 } }
+/* 효과음 */
+.sfx { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 8px 10px; }
+.sfx.on { border-color: var(--emph); }
+.sfx .play { appearance: none; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--lane); background: var(--bg); cursor: pointer; flex: none; font-size: 14px; }
+.sfx .play:hover { border-color: var(--emph); color: var(--emph); }
+.sfx .txt { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.sfx .txt b { font-size: 14px; } .sfx .txt span { font-size: 12px; color: var(--muted); }
+.sfx-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 8px; }
+.ear { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; color: var(--faint); }
+/* 쇼츠 안전 영역: 앱 UI가 덮는 곳을 빗금으로 */
+.safe .capv.tall::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(45deg, rgba(251,113,133,.45) 0 4px, transparent 4px 8px) top / 100% 15% no-repeat,
+    repeating-linear-gradient(45deg, rgba(251,113,133,.45) 0 4px, transparent 4px 8px) bottom / 100% 25% no-repeat,
+    repeating-linear-gradient(45deg, rgba(251,113,133,.45) 0 4px, transparent 4px 8px) right / 12% 100% no-repeat; }
+@media (prefers-reduced-motion: reduce) { .fx:not(:hover) * { animation-play-state: paused !important; } }
+@media (max-width: 700px) { .bar, .main { padding-left: 16px; padding-right: 16px; } .row2 { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-<nav class="apptabs" role="tablist" aria-label="작업실 탭">
+<header class="bar">
   <span class="brand" id="brand">flowboard</span>
-  <button class="apptab" role="tab" data-view="dev">개발</button>
-  <button class="apptab" role="tab" data-view="infra">인프라</button>
-  <button class="apptab" role="tab" data-view="workflow">워크플로우</button>
-  <button class="apptab" role="tab" data-view="video">영상</button>
-  <button class="apptab" role="tab" data-view="claude">Claude</button>
-  <span class="grow"></span>
-  <button class="btn theme-btn" id="theme" aria-label="밝기 바꾸기">Light</button>
-</nav>
-
-<div class="bar">
-  <h1 id="title"></h1>
-  <select id="flow-select" aria-label="흐름 고르기"></select>
-  <select id="run-select" aria-label="실행 기록 고르기"></select>
-  <button class="btn" id="reload-runs">기록 새로 읽기</button>
-  <button class="btn" id="add-node">+ 칸 추가</button>
-  <button class="btn" id="connect">선 잇기</button>
-  <button class="btn" id="add-video" hidden>+ 새 영상</button>
+  <h1>영상 기획</h1>
+  <select id="video-select" aria-label="영상 고르기" hidden></select>
+  <button class="btn" id="add-video">+ 새 영상</button>
   <span class="grow"></span>
   <span class="save-state" id="save-state">저장됨</span>
   <button class="btn primary" id="save" disabled>저장</button>
-</div>
-
-<div class="main empty" id="empty" hidden></div>
-<div class="main" id="content">
-  <p class="summary" id="summary"></p>
-  <div class="legend" id="legend"></div>
-  <div id="work-section">
-    <h2>일의 흐름</h2>
-    <p class="note">무슨 일을 어떤 순서로 하는지. 카드를 누르면 고칠 수 있습니다.</p>
-    <div class="flow" id="work"></div>
-    <h2>구성</h2>
-  </div>
-  <p class="note">칸은 끌어서 옮기고, 누르면 설정이 열립니다. 마우스를 올리면 연결된 것만 보입니다. 선을 누르면 라벨을 고치거나 지웁니다.</p>
-  <p class="hint" id="hint" aria-live="polite"></p>
-  <div class="stage" id="stage">
-    <div class="canvas" id="canvas">
-      <svg class="layer wires" id="wires" aria-hidden="true"></svg>
-      <svg class="layer labels" id="labels" aria-hidden="true"></svg>
-    </div>
-  </div>
-</div>
-
-<div class="main" id="video" hidden></div>
-
-<aside class="panel" id="panel" aria-labelledby="p-name">
-  <div class="panel-head">
-    <div><div class="k" id="p-kind"></div><h3 id="p-name"></h3></div>
-    <button class="close" id="p-close" aria-label="닫기">×</button>
-  </div>
-  <div class="tabs" role="tablist" id="tabs">
-    <button class="tab" role="tab" data-tab="role">업무 내용</button>
-    <button class="tab" role="tab" data-tab="run" id="tab-run">이번 배치 기록</button>
-  </div>
-  <div class="panel-body" id="p-body"></div>
-</aside>
+  <button class="btn" id="theme" aria-label="밝기 바꾸기">Light</button>
+</header>
+<main class="main" id="video"></main>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-/* ── 어휘: 흐름마다 vocabulary 로 고릅니다 ─────────────────────── */
-const VOCAB = {
-  dev: { frontend: "frontend 화면", backend: "backend 처리", database: "database 데이터", cloud: "cloud 배포·호스팅", security: "security 검사·차단", messagebus: "messagebus 전달", external: "external 바깥" },
-  actor: { human: "사람", script: "스크립트", agent: "AI 에이전트", service: "외부 서비스" },
-};
-const STATUSES = ["동작함", "고치는 중", "명령만 있음", "없음", "사람"];
-const STATUS_CLASS = { "동작함": "st-ok", "고치는 중": "st-warn", "명령만 있음": "", "없음": "st-none", "사람": "st-human" };
-const NODE_W = 172;
-
-const state = { view: null, name: null, flow: null, runs: [], runId: null, run: null, dirty: false, flows: [], info: null,
-  sel: null, tab: "role", connecting: false, source: null, claude: null,
-  video: null, vname: null, brief: null, vsec: "basic", styleDirty: false };
-
+const state = { video: null, vname: null, brief: null, vsec: "basic", dirty: false, styleDirty: false, safe: false };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const lines = v => (v || []).join("\n");
-const toList = text => text.split("\n").map(s => s.trim()).filter(Boolean);
-const kinds = () => VOCAB[state.flow?.vocabulary] || VOCAB.actor;
-const kindLabel = k => kinds()[k] || k;
-const shortKind = k => state.flow?.vocabulary === "dev" ? k : kindLabel(k);
-
 async function api(path, opts = {}) {
   const res = await fetch(path, opts);
   const data = await res.json();
@@ -370,7 +308,8 @@ async function api(path, opts = {}) {
 }
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2200); }
 function setDirty(v = true) { state.dirty = v; $("#save").disabled = !v; $("#save-state").textContent = v ? "저장 안 된 변경 있음" : "저장됨"; $("#save-state").classList.toggle("dirty", v); }
-function hint(msg) { $("#hint").textContent = msg || ""; }
+const opt = (list, cur) => list.map(([v, t]) => `<option value="${esc(v)}"${v === cur ? " selected" : ""}>${esc(t)}</option>`).join("");
+const field = (label, html, help = "") => `<div class="field"><label>${label}</label>${html}${help ? `<span class="help">${help}</span>` : ""}</div>`;
 
 /* ── 밝기 ──────────────────────────────────────────────────────── */
 function applyTheme(t) { document.documentElement.dataset.theme = t; $("#theme").textContent = t === "dark" ? "Light" : "Dark"; try { localStorage.setItem("theme", t); } catch {} }
@@ -378,391 +317,7 @@ let savedTheme = "dark"; try { savedTheme = localStorage.getItem("theme") || "da
 applyTheme(savedTheme);
 $("#theme").addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 
-/* ── 탭 · 불러오기 · 저장 ──────────────────────────────────────── */
-const TABS = ["dev", "infra", "workflow", "claude"];
-const flowsOf = view => state.flows.filter(f => f.tab === view);
-async function showView(view, flowName) {
-  if (view === "video") return showVideo(flowName);
-  if (state.view === "video") {
-    if (state.dirty && !confirm("저장 안 된 변경이 있습니다. 버리고 이동할까요?")) { history.replaceState(null, "", "#video"); return; }
-    setDirty(false); Object.assign(state, { view: null, name: null, brief: null, styleDirty: false });
-    $("#video").hidden = true; $("#add-video").hidden = true;
-  }
-  if (!TABS.includes(view)) view = state.flows.length ? (state.flows.find(f => f.tab === "workflow") || state.flows[0]).tab : "workflow";
-  const list = flowsOf(view);
-  const want = flowName || (list.some(f => f.name === state.name) && view === state.view ? state.name : list[0]?.name) || null;
-  if (state.dirty && want !== state.name && !confirm("저장 안 된 변경이 있습니다. 버리고 이동할까요?")) { history.replaceState(null, "", "#" + state.view); return; }
-  state.view = view;
-  document.querySelectorAll(".apptab").forEach(t => t.setAttribute("aria-selected", t.dataset.view === view));
-  $("#flow-select").innerHTML = list.map(f => `<option value="${esc(f.name)}"${f.name === want ? " selected" : ""}>${esc(f.title)}</option>`).join("");
-  $("#flow-select").hidden = list.length < 2;
-  if (location.hash !== "#" + view) history.replaceState(null, "", "#" + view);
-  closePanel();
-  if (view === "claude" && !state.claude) state.claude = await api("/api/claude").catch(() => null);
-  if (!want) return showEmpty(view);
-  $("#empty").hidden = true; $("#content").hidden = false;
-  if (want !== state.name) await loadFlow(want); else renderAll();
-}
-function showEmpty(view) {
-  Object.assign(state, { name: null, flow: null, sel: null });
-  $("#content").hidden = true; $("#empty").hidden = false;
-  for (const id of ["#run-select", "#reload-runs", "#add-node", "#connect", "#save", "#save-state"]) $(id).hidden = true;
-  $("#title").textContent = { dev: "개발", infra: "인프라", workflow: "워크플로우", claude: "Claude" }[view];
-  $("#empty").innerHTML = `<p>이 프로젝트에는 <b>${esc(view)}</b> 탭 흐름이 없습니다.</p>
-    <p class="note"><code>${esc(state.info.flowsDir)}/&lt;이름&gt;/flow.json</code>에 <code>"tab": "${esc(view)}"</code>를 적은 흐름을 두면 이 탭에 나옵니다.
-    기본 흐름이 필요하면 터미널에서 <code>flowboard init ${esc(state.info.root)}</code></p>`;
-}
-async function loadFlows() {
-  state.info = await api("/api/info");
-  state.flows = state.info.flows;
-  $("#brand").textContent = state.info.project;
-  document.title = `${state.info.project} · flowboard`;
-}
-async function loadFlow(name) {
-  const data = await api(`/api/flow?name=${encodeURIComponent(name)}`);
-  Object.assign(state, { name, flow: data.flow, runs: data.runs, sel: null, run: null, runId: null });
-  for (const k of ["work", "phases", "lanes", "nodes", "edges"]) state.flow[k] ??= [];
-  $("#title").textContent = state.flow.title || name;
-  $("#summary").textContent = state.flow.summary || "";
-  for (const id of ["#add-node", "#connect", "#save", "#save-state"]) $(id).hidden = false;
-  for (const id of ["#run-select", "#reload-runs"]) $(id).hidden = !state.runs.length;
-  renderLegend(); renderRuns(); setDirty(false); renderAll();
-  if (state.runs.length) await loadRun(state.runs[0].id);
-}
-function renderLegend() {
-  $("#legend").innerHTML = Object.entries(kinds()).map(([k, t]) => `<span style="--c:var(--${k})"><i></i>${esc(t)}</span>`).join("")
-    + `<span style="--c:var(--emph)"><i style="border-radius:0;height:0;border-width:1px 0 1px"></i>주 경로</span>`;
-}
-function renderRuns() {
-  const fmt = t => new Date(t * 1000).toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
-  $("#run-select").innerHTML = state.runs.length ? state.runs.map(r => `<option value="${esc(r.id)}">${esc(r.id)} · ${fmt(r.mtime)}</option>`).join("") : `<option value="">실행 기록 없음</option>`;
-}
-async function loadRun(id) {
-  state.runId = id || null;
-  state.run = id ? await api(`/api/run?name=${encodeURIComponent(state.name)}&id=${encodeURIComponent(id)}`) : null;
-  if (state.sel && state.tab === "run") renderPanel();
-}
-async function save() {
-  if (state.view === "video") return saveVideo();
-  try { await api(`/api/flow?name=${encodeURIComponent(state.name)}`, { method: "PUT", body: JSON.stringify(state.flow) }); setDirty(false); toast("flow.json 저장됨"); }
-  catch (e) { toast("저장 실패: " + e.message); }
-}
-
-/* ── 일의 흐름 ─────────────────────────────────────────────────── */
-function renderWork() {
-  const show = state.flow.work.length > 0 || state.view === "workflow";
-  $("#work-section").hidden = !show;
-  if (!show) return;
-  const items = state.flow.work.map((w, i) => `
-    <button class="work${state.sel?.type === "work" && state.sel.index === i ? " selected" : ""}" data-index="${i}">
-      <span class="num">${String(i + 1).padStart(2, "0")}</span>
-      <span class="name">${esc(w.name)}</span>
-      <span class="status ${STATUS_CLASS[w.status] ?? ""}">${esc(w.status)}</span>
-      <span class="desc">${esc(w.desc)}</span>
-      <span class="who">${(w.who || []).map(k => `<span class="chip" style="--c:var(--${k})">${esc(VOCAB.actor[k] || k)}</span>`).join("")}</span>
-    </button>`).join("");
-  $("#work").innerHTML = items + `<button class="work add" id="add-work">+ 일 추가</button>`;
-  $("#work").querySelectorAll(".work[data-index]").forEach(el => el.addEventListener("click", () => select({ type: "work", index: +el.dataset.index })));
-  $("#add-work").addEventListener("click", () => { state.flow.work.push({ name: "새 일", desc: "", who: [], status: "없음" }); setDirty(); select({ type: "work", index: state.flow.work.length - 1 }); });
-}
-
-/* ── 캔버스 ────────────────────────────────────────────────────── */
-const nodeById = id => state.flow.nodes.find(n => n.id === id);
-function renderCanvas() {
-  const canvas = $("#canvas");
-  canvas.querySelectorAll(".node, .phase, .lane").forEach(el => el.remove());
-  canvas.classList.toggle("connecting", state.connecting);
-  for (const l of state.flow.lanes) canvas.insertAdjacentHTML("afterbegin", `<div class="lane" style="top:${l.y}px;height:${l.h}px"><span>${esc(l.label)}</span></div>`);
-  for (const p of state.flow.phases) canvas.insertAdjacentHTML("beforeend", `<div class="phase" style="left:${p.x}px">${esc(p.label)}</div>`);
-  for (const n of state.flow.nodes) {
-    const el = document.createElement("button");
-    el.className = `node${n.status === "없음" ? " planned" : ""}${state.sel?.type === "node" && state.sel.id === n.id ? " selected" : ""}${state.source === n.id ? " source" : ""}`;
-    el.id = "n-" + n.id; el.dataset.id = n.id;
-    el.style.cssText = `left:${n.x}px;top:${n.y}px;--c:var(--${n.kind})`;
-    el.innerHTML = `<span class="t">${esc(shortKind(n.kind))}${n.status && n.status !== "동작함" ? " · " + esc(n.status) : ""}</span><span class="n">${esc(n.name)}</span><span class="s">${esc(n.meta)}</span>${n.tag ? `<span class="tag">${esc(n.tag)}</span>` : ""}`;
-    attachNode(el, n);
-    canvas.appendChild(el);
-  }
-  sizeCanvas(); drawWires();
-}
-function sizeCanvas() {
-  const w = Math.max(...state.flow.nodes.map(n => n.x + NODE_W), ...state.flow.phases.map(p => p.x + 200), 900) + 80;
-  const h = Math.max(...state.flow.nodes.map(n => n.y + 110), ...state.flow.lanes.map(l => l.y + l.h), 300) + 40;
-  const c = $("#canvas"); c.style.width = w + "px"; c.style.height = h + "px";
-  for (const s of ["#wires", "#labels"]) { $(s).setAttribute("width", w); $(s).setAttribute("height", h); }
-}
-function box(id) {
-  const el = $("#n-" + CSS.escape(id)); const n = nodeById(id);
-  const w = el.offsetWidth, h = el.offsetHeight;
-  return { l: n.x, r: n.x + w, t: n.y, b: n.y + h, cx: n.x + w / 2, cy: n.y + h / 2 };
-}
-// 둥근 모서리 꺾은선 — 가로로 나가 x에서 꺾여 세로로, 다시 가로로 들어갑니다.
-function elbow(x1, y1, x2, y2, x) {
-  if (Math.abs(y1 - y2) < 4) return `M${x1},${y1} L${x2},${y1}`;
-  const dy = Math.sign(y2 - y1), s1 = Math.sign(x - x1) || 1, s2 = Math.sign(x2 - x) || 1;
-  const r = Math.min(10, Math.abs(y2 - y1) / 2, Math.abs(x - x1), Math.abs(x2 - x));
-  return `M${x1},${y1} L${x - r * s1},${y1} Q${x},${y1} ${x},${y1 + r * dy} L${x},${y2 - r * dy} Q${x},${y2} ${x + r * s2},${y2} L${x2},${y2}`;
-}
-function elbowV(x1, y1, x2, y2, y) {
-  if (Math.abs(x1 - x2) < 4) return `M${x1},${y1} L${x1},${y2}`;
-  const dx = Math.sign(x2 - x1), s1 = Math.sign(y - y1) || 1, s2 = Math.sign(y2 - y) || 1;
-  const r = Math.min(10, Math.abs(x2 - x1) / 2, Math.abs(y - y1), Math.abs(y2 - y));
-  return `M${x1},${y1} L${x1},${y - r * s1} Q${x1},${y} ${x1 + r * dx},${y} L${x2 - r * dx},${y} Q${x2},${y} ${x2},${y + r * s2} L${x2},${y2}`;
-}
-function drawWires() {
-  let wires = "", labels = "";
-  state.flow.edges.forEach((e, i) => {
-    if (!nodeById(e.from) || !nodeById(e.to)) return;
-    const a = box(e.from), b = box(e.to);
-    let d, lx, ly, anchor = "middle";
-    if (e.kind === "loop") {
-      const x = Math.min(a.l, b.l) - 22; d = elbow(a.l, a.cy, b.l, b.cy, x); lx = x - 6; ly = (a.cy + b.cy) / 2 + 4; anchor = "end";
-    } else if (b.l >= a.r + 16 || b.r <= a.l - 16) {
-      const right = b.l >= a.r + 16, x1 = right ? a.r : a.l, x2 = right ? b.l : b.r, x = (x1 + x2) / 2;
-      d = elbow(x1, a.cy, x2, b.cy, x); lx = x; ly = Math.abs(a.cy - b.cy) < 4 ? a.cy - 8 : (a.cy + b.cy) / 2 + 4;
-    } else {
-      const down = b.cy > a.cy, y1 = down ? a.b : a.t, y2 = down ? b.t : b.b, y = (y1 + y2) / 2;
-      d = elbowV(a.cx, y1, b.cx, y2, y); lx = (a.cx + b.cx) / 2 + 10; ly = y + 4; anchor = "start";
-    }
-    const sel = state.sel?.type === "edge" && state.sel.index === i;
-    const cls = `wire${e.kind === "main" ? " main" : ""}${e.kind === "loop" ? " loop" : ""}${sel ? " selected" : ""}`;
-    const marker = sel ? "arrow-sel" : e.kind === "main" ? "arrow-main" : e.kind === "loop" ? "arrow-loop" : "arrow";
-    wires += `<path class="${cls}" data-index="${i}" d="${d}" marker-end="url(#${marker})"/><path class="wire-hit" data-index="${i}" d="${d}"><title>${esc(e.label || "선")}</title></path>`;
-    if (e.label) labels += `<text class="wire-label" data-index="${i}" x="${lx}" y="${ly}" text-anchor="${anchor}">${esc(e.label)}</text>`;
-  });
-  const m = (id, color) => `<marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${color}"/></marker>`;
-  $("#wires").innerHTML = `<defs>${m("arrow", "var(--arrow)")}${m("arrow-main", "var(--emph)")}${m("arrow-loop", "var(--agent)")}${m("arrow-sel", "var(--accent)")}</defs>` + wires;
-  $("#labels").innerHTML = labels;
-  $("#wires").querySelectorAll(".wire-hit").forEach(p => p.addEventListener("click", () => select({ type: "edge", index: +p.dataset.index })));
-}
-function highlight(id) {
-  const canvas = $("#canvas");
-  canvas.querySelectorAll(".hl").forEach(el => el.classList.remove("hl"));
-  if (!id) { canvas.classList.remove("hovering"); return; }
-  canvas.classList.add("hovering");
-  $("#n-" + CSS.escape(id))?.classList.add("hl");
-  state.flow.edges.forEach((e, i) => {
-    if (e.from !== id && e.to !== id) return;
-    canvas.querySelectorAll(`[data-index="${i}"]`).forEach(el => el.classList.add("hl"));
-    $("#n-" + CSS.escape(e.from === id ? e.to : e.from))?.classList.add("hl");
-  });
-}
-function attachNode(el, n) {
-  let start = null;
-  el.addEventListener("pointerenter", () => { if (!start?.moved) highlight(n.id); });
-  el.addEventListener("pointerleave", () => { if (!start?.moved) highlight(null); });
-  el.addEventListener("focus", () => highlight(n.id));
-  el.addEventListener("blur", () => highlight(null));
-  el.addEventListener("pointerdown", ev => { if (ev.button !== 0) return; start = { x: ev.clientX, y: ev.clientY, nx: n.x, ny: n.y, moved: false }; el.setPointerCapture(ev.pointerId); });
-  el.addEventListener("pointermove", ev => {
-    if (!start || state.connecting) return;
-    const dx = ev.clientX - start.x, dy = ev.clientY - start.y;
-    if (!start.moved && Math.hypot(dx, dy) < 5) return;
-    if (!start.moved) highlight(null);
-    start.moved = true; el.classList.add("dragging");
-    n.x = Math.max(0, Math.round((start.nx + dx) / 10) * 10); n.y = Math.max(30, Math.round((start.ny + dy) / 10) * 10);
-    el.style.left = n.x + "px"; el.style.top = n.y + "px"; drawWires();
-  });
-  el.addEventListener("pointerup", () => {
-    if (!start) return;
-    const moved = start.moved; start = null; el.classList.remove("dragging");
-    if (moved) { setDirty(); sizeCanvas(); highlight(n.id); return; }
-    nodeClicked(n.id);
-  });
-  el.addEventListener("click", ev => { if (ev.detail === 0) nodeClicked(n.id); });
-}
-function nodeClicked(id) {
-  if (!state.connecting) return select({ type: "node", id });
-  if (!state.source) { state.source = id; hint("이어질 칸을 누르세요. (Esc: 취소)"); return renderCanvas(); }
-  if (state.source === id) return;
-  state.flow.edges.push({ from: state.source, to: id, label: "" });
-  const index = state.flow.edges.length - 1;
-  stopConnecting(); setDirty(); select({ type: "edge", index }); toast("선을 이었습니다. 라벨을 적어 주세요.");
-}
-function startConnecting() { state.connecting = true; state.source = null; $("#connect").classList.add("on"); hint("시작할 칸을 누르세요. (Esc: 취소)"); renderCanvas(); }
-function stopConnecting() { state.connecting = false; state.source = null; $("#connect").classList.remove("on"); hint(""); renderCanvas(); }
-function addNode() {
-  const first = Object.keys(kinds())[0];
-  let i = 1; while (nodeById(`node-${i}`)) i++;
-  const stage = $("#stage");
-  state.flow.nodes.push({ id: `node-${i}`, kind: first, name: "새 칸", meta: "", status: "없음", x: Math.round((stage.scrollLeft + 60) / 10) * 10, y: Math.round((stage.scrollTop + 60) / 10) * 10, role: [], inputs: [], outputs: [] });
-  setDirty(); renderCanvas(); select({ type: "node", id: `node-${i}` });
-}
-
-/* ── 패널 ──────────────────────────────────────────────────────── */
-function select(sel) { state.sel = sel; if (sel.type !== "node") state.tab = "role"; renderAll(); renderPanel(); }
-function closePanel() { $("#panel").classList.remove("open"); state.sel = null; if (state.flow) renderAll(); }
-function renderAll() { renderWork(); renderCanvas(); }
-const secondTab = n => n.source ? "내용" : state.runs.length || state.flow.vocabulary !== "dev" ? "이번 배치 기록" : null;
-function renderPanel() {
-  const panel = $("#panel"), sel = state.sel; if (!sel) return;
-  panel.classList.add("open");
-  if (sel.type === "node") {
-    const n = nodeById(sel.id); panel.style.setProperty("--c", `var(--${n.kind})`);
-    const second = secondTab(n);
-    if (!second && state.tab === "run") state.tab = "role";
-    $("#tabs").hidden = !second; $("#tab-run").textContent = second || "";
-    document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === state.tab));
-    $("#p-kind").textContent = `${kindLabel(n.kind)} · ${n.status || ""}`;
-    $("#p-name").textContent = n.name;
-    if (state.tab === "role") { $("#p-body").innerHTML = nodeForm(n); bindNodeForm(n); }
-    else $("#p-body").innerHTML = n.source ? claudeContent(n.source) : runView(n);
-    if (state.tab === "run" && n.source === "claude-md") bindClaudeMd();
-  } else if (sel.type === "edge") {
-    const e = state.flow.edges[sel.index]; panel.style.setProperty("--c", "var(--accent)"); $("#tabs").hidden = true;
-    $("#p-kind").textContent = "선"; $("#p-name").textContent = `${nodeById(e.from)?.name} → ${nodeById(e.to)?.name}`;
-    $("#p-body").innerHTML = edgeForm(e); bindEdgeForm(e, sel.index);
-  } else {
-    const w = state.flow.work[sel.index]; panel.style.setProperty("--c", "var(--accent)"); $("#tabs").hidden = true;
-    $("#p-kind").textContent = `일의 흐름 ${sel.index + 1}번`; $("#p-name").textContent = w.name;
-    $("#p-body").innerHTML = workForm(w); bindWorkForm(w, sel.index);
-  }
-}
-const opt = (list, cur) => list.map(([v, t]) => `<option value="${esc(v)}"${v === cur ? " selected" : ""}>${esc(t)}</option>`).join("");
-const field = (label, html, help = "") => `<div class="field"><label>${label}</label>${html}${help ? `<span class="help">${help}</span>` : ""}</div>`;
-const input = (k, v, ph = "") => `<input type="text" data-k="${k}" value="${esc(v)}" placeholder="${esc(ph)}">`;
-const area = (k, v) => `<textarea data-k="${k}" data-list>${esc(lines(v))}</textarea>`;
-
-function nodeForm(n) {
-  const isAgent = n.kind === "agent" || n.runner;
-  return `
-    <div class="row2">
-      ${field("이름", input("name", n.name))}
-      ${field("칸 id", input("id", n.id), "영문 소문자·숫자·-. 실행 기록 폴더 이름")}
-      ${field("종류", `<select data-k="kind">${opt(Object.entries(kinds()), n.kind)}</select>`)}
-      ${field("상태", `<select data-k="status">${opt(STATUSES.map(s => [s, s]), n.status)}</select>`)}
-    </div>
-    <div class="row2">
-      ${field("한 줄 설명", input("meta", n.meta))}
-      ${field("꼬리표", input("tag", n.tag, "예: 사용자 확인"), "칸 오른쪽 위 작은 표시")}
-    </div>
-    ${field("맡은 일", area("role", n.role), "한 줄에 하나")}
-    ${isAgent ? `<div class="row2">${field("실행 방식", input("runner", n.runner, "claude -p · Codex"))}${field("모델", input("model", n.model, "claude-sonnet-5-5"), n.runner === "claude -p" && n.step ? "step 스크립트가 이 값을 그대로 씁니다" : "")}</div>${field("도구", input("tools", n.tools, "없음 · MCP 끔"))}` : ""}
-    <div class="row2">${field("입력", area("inputs", n.inputs))}${field("출력", area("outputs", n.outputs))}</div>
-    ${field("통과 기준", area("criteria", n.criteria))}
-    ${state.flow.vocabulary !== "dev" || n.step || n.prompt ? `<div class="row2">${field("단계 폴더", input("step", n.step, "step-1-search-recipe"))}${field("지시문 파일", input("prompt", n.prompt, "step-1-search-recipe/prompt.md"))}</div>` : ""}
-    ${field("실행 명령 · 파일", input("command", n.command))}
-    ${n.prompt ? `<h4>지시문 <code>${esc(n.prompt)}</code></h4><textarea class="code" id="prompt-text" placeholder="불러오는 중…"></textarea>
-      <div class="actions"><button class="btn" id="save-prompt">지시문 저장</button><span class="help" style="align-self:center">이 버튼으로 파일에 바로 저장됩니다.</span></div>` : ""}
-    <h4>칸 삭제</h4><div class="actions"><button class="btn danger" id="delete-node">이 칸과 연결된 선 지우기</button></div>`;
-}
-function bindNodeForm(n) {
-  $("#p-body").querySelectorAll("[data-k]").forEach(el => el.addEventListener("input", () => {
-    const k = el.dataset.k; let v = el.hasAttribute("data-list") ? toList(el.value) : el.value;
-    if (k === "id") {
-      v = v.trim();
-      if (!/^[a-z0-9-]+$/.test(v) || (v !== n.id && nodeById(v))) { el.style.borderColor = "var(--danger)"; return; }
-      el.style.borderColor = ""; state.flow.edges.forEach(e => { if (e.from === n.id) e.from = v; if (e.to === n.id) e.to = v; }); state.sel.id = v;
-    }
-    if (v === "" || (Array.isArray(v) && !v.length)) delete n[k]; else n[k] = v;
-    if (k === "kind" || k === "status") renderPanel();
-    if (k === "name") $("#p-name").textContent = v;
-    setDirty(); renderCanvas();
-  }));
-  if (n.prompt) {
-    api(`/api/file?name=${encodeURIComponent(state.name)}&path=${encodeURIComponent(n.prompt)}`)
-      .then(d => { $("#prompt-text").value = d.text ?? ""; $("#prompt-text").placeholder = d.text == null ? "아직 파일이 없습니다. 적고 저장하면 만들어집니다." : ""; }).catch(e => toast(e.message));
-    $("#save-prompt").addEventListener("click", async () => {
-      try { await api(`/api/file?name=${encodeURIComponent(state.name)}&path=${encodeURIComponent(n.prompt)}`, { method: "PUT", body: $("#prompt-text").value }); toast("지시문 저장됨"); }
-      catch (e) { toast("저장 실패: " + e.message); }
-    });
-  }
-  $("#delete-node").addEventListener("click", () => {
-    if (!confirm(`'${n.name}' 칸과 연결된 선을 지울까요? (저장해야 파일에 반영됩니다)`)) return;
-    state.flow.nodes = state.flow.nodes.filter(x => x !== n); state.flow.edges = state.flow.edges.filter(e => e.from !== n.id && e.to !== n.id);
-    setDirty(); closePanel();
-  });
-}
-function edgeForm(e) {
-  return `${field("라벨", `<input type="text" id="edge-label" value="${esc(e.label)}">`, "주고받는 것 — 예: step-1.json, 고칠 점")}
-    ${field("모양", `<select id="edge-kind">${opt([["", "보통"], ["main", "주 경로(초록)"], ["loop", "되돌아가는 반복(점선)"]], e.kind || "")}</select>`)}
-    <div class="actions"><button class="btn" id="edge-flip">방향 바꾸기</button><button class="btn danger" id="edge-delete">선 지우기</button></div>`;
-}
-function bindEdgeForm(e, i) {
-  $("#edge-label").addEventListener("input", ev => { e.label = ev.target.value; setDirty(); drawWires(); });
-  $("#edge-kind").addEventListener("change", ev => { if (ev.target.value) e.kind = ev.target.value; else delete e.kind; setDirty(); drawWires(); });
-  $("#edge-flip").addEventListener("click", () => { [e.from, e.to] = [e.to, e.from]; setDirty(); renderPanel(); drawWires(); });
-  $("#edge-delete").addEventListener("click", () => { state.flow.edges.splice(i, 1); setDirty(); closePanel(); });
-}
-function workForm(w) {
-  return `${field("이름", `<input type="text" data-k="name" value="${esc(w.name)}">`)}
-    ${field("설명", `<textarea data-k="desc">${esc(w.desc)}</textarea>`)}
-    ${field("상태", `<select data-k="status">${opt(STATUSES.map(s => [s, s]), w.status)}</select>`)}
-    ${field("누가", `<div class="checks">${Object.entries(VOCAB.actor).map(([k, t]) => `<label><input type="checkbox" data-who="${k}"${(w.who || []).includes(k) ? " checked" : ""}> ${t}</label>`).join("")}</div>`)}
-    <div class="actions"><button class="btn" id="work-left">← 앞으로</button><button class="btn" id="work-right">뒤로 →</button><button class="btn danger" id="work-delete">지우기</button></div>`;
-}
-function bindWorkForm(w, i) {
-  $("#p-body").querySelectorAll("[data-k]").forEach(el => el.addEventListener("input", () => { w[el.dataset.k] = el.value; if (el.dataset.k === "name") $("#p-name").textContent = el.value; setDirty(); renderWork(); }));
-  $("#p-body").querySelectorAll("[data-who]").forEach(b => b.addEventListener("change", () => { w.who = Object.keys(VOCAB.actor).filter(k => $(`[data-who="${k}"]`).checked); setDirty(); renderWork(); }));
-  const move = d => { const j = i + d; if (j < 0 || j >= state.flow.work.length) return; const l = state.flow.work; [l[i], l[j]] = [l[j], l[i]]; setDirty(); select({ type: "work", index: j }); };
-  $("#work-left").addEventListener("click", () => move(-1)); $("#work-right").addEventListener("click", () => move(1));
-  $("#work-delete").addEventListener("click", () => { state.flow.work.splice(i, 1); setDirty(); closePanel(); });
-}
-
-/* ── 이번 배치 기록(워크플로우) ────────────────────────────────── */
-const pre = v => `<pre>${esc(typeof v === "string" ? v : JSON.stringify(v, null, 2))}</pre>`;
-const block = (title, body, open = false) => `<details${open ? " open" : ""}><summary>${title}</summary><div class="inner">${body}</div></details>`;
-function runView(n) {
-  if (!state.run) return `<p class="empty">실행 기록이 없습니다.</p>`;
-  const prefix = n.id + "/";
-  const own = Object.fromEntries(Object.entries(state.run).filter(([k]) => k.startsWith(prefix)).map(([k, v]) => [k.slice(prefix.length), v]));
-  const extra = (n.runFiles || []).filter(f => f in state.run);
-  if (!Object.keys(own).length && !extra.length) return `<p class="empty">${esc(state.runId)} 실행에서 이 칸의 기록이 없습니다.<br>기록 위치: <code>runs/${esc(state.runId)}/${esc(n.id)}/</code></p>`;
-  let h = `<p>실행 <code>${esc(state.runId)}</code></p>`;
-  const meta = own["meta.json"];
-  if (meta && Object.keys(meta).length) h += `<div class="stats">${[["모델", meta.model], ["비용", meta.usd != null ? "$" + meta.usd : "—"], ["시간", meta.seconds != null ? meta.seconds + "초" : "—"], ["입력 토큰", meta.inputTokens], ["출력 토큰", meta.outputTokens]].map(([k, v]) => `<div class="stat"><b>${esc(v ?? "—")}</b><span>${k}</span></div>`).join("")}</div>`;
-  if (own["prompt.md"] != null) h += block("실제로 보낸 프롬프트", pre(own["prompt.md"]));
-  if (n.kind === "agent") h += block("생각 과정", own["thinking.md"] != null ? pre(own["thinking.md"]) : `<p class="empty">저장된 생각 과정이 없습니다. 스크립트가 실행 기록 전체(stream-json)를 남기도록 바꾸면 여기에 나옵니다.</p>`);
-  if (own["output.json"] != null) h += block("결과물", resultView(own["output.json"]), true);
-  if (own["response.json"] != null) h += block("claude 응답 원문", pre(own["response.json"]));
-  for (const f of extra) h += block(`단계 결과 <code>${esc(f)}</code>`, resultView(state.run[f]), !own["output.json"]);
-  return h;
-}
-function resultView(v) {
-  if (v && Array.isArray(v.judgments)) return `<table><tr><th>판정</th><th>영상</th><th>요리</th><th>이유</th></tr>${v.judgments.map(j => `<tr><td>${j.verdict === "keep" ? "통과" : "탈락 · " + esc(j.rule)}</td><td><code>${esc(j.videoId)}</code></td><td>${esc(j.dish)}</td><td>${esc(j.reason)}</td></tr>`).join("")}</table>`;
-  if (v && Array.isArray(v.candidates)) {
-    const reasons = {}; (v.dropped || []).forEach(d => { const k = String(d.reason).split(" ")[0]; reasons[k] = (reasons[k] || 0) + 1; });
-    return `<div class="stats">${[["목표 요리", (v.targetDishes || []).length + "개"], ["본 영상", (v.candidates.length + (v.dropped || []).length) + "편"], ["통과", v.candidates.length + "편"], ["LLM", v.llm]].map(([k, x]) => `<div class="stat"><b>${esc(x)}</b><span>${k}</span></div>`).join("")}</div>
-      <table><tr><th>조회수</th><th>초</th><th>요리</th><th>채널 / 제목</th></tr>${v.candidates.map(c => `<tr><td>${Number(c.views).toLocaleString("ko-KR")}</td><td>${c.durationSec}</td><td>${esc(c.targetDish || c.searchedDish)}</td><td><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.channel)} / ${esc(c.title)}</a></td></tr>`).join("")}</table>
-      <h4>탈락 사유</h4><table><tr><th>규칙</th><th>편수</th></tr>${Object.entries(reasons).sort((a, b) => b[1] - a[1]).map(([k, x]) => `<tr><td>${esc(k)}</td><td>${x}</td></tr>`).join("")}</table>
-      <details style="margin-top:12px"><summary>파일 원문</summary><div class="inner">${pre(v)}</div></details>`;
-  }
-  return pre(v);
-}
-
-/* ── Claude 칸 내용 ────────────────────────────────────────────── */
-function claudeContent(source) {
-  const d = state.claude; if (!d) return `<p class="empty">Claude 설정을 불러오지 못했습니다.</p>`;
-  if (source === "claude-md") return `<p class="note">${d.claudeMd.split("\n").length}줄 / 상한 250줄 · <code>${esc(d.paths.claudeMd)}</code></p>
-    <textarea class="code" id="claude-md-text">${esc(d.claudeMd)}</textarea><div class="actions"><button class="btn primary" id="claude-md-save">CLAUDE.md 저장</button></div>`;
-  if (source === "hooks") {
-    const rows = Object.entries(d.settings.hooks || {}).flatMap(([ev, groups]) => groups.flatMap(g => (g.hooks || []).map(x => `<tr><td><b>${esc(ev)}</b></td><td><code>${esc(g.matcher || "모두")}</code></td><td>${esc(x.statusMessage || "")}</td></tr>`)));
-    return `<p class="note"><code>${esc(d.paths.settings)}</code></p>${rows.length ? `<table><tr><th>언제</th><th>어떤 도구</th><th>표시</th></tr>${rows.join("")}</table>` : `<p class="empty">등록된 hook이 없습니다.</p>`}
-      <h4>스크립트</h4>${Object.entries(d.hookFiles).map(([f, t]) => block(esc(f), pre(t), true)).join("")}`;
-  }
-  if (source === "permissions") {
-    const p = d.settings.permissions || {};
-    return `<table><tr><th>구분</th><th>규칙</th></tr>${[["허용(묻지 않음)", p.allow], ["매번 확인", p.ask], ["금지", p.deny]].map(([k, v]) => `<tr><td><b>${k}</b></td><td>${(v || []).map(x => `<code>${esc(x)}</code>`).join("<br>") || "—"}</td></tr>`).join("")}</table>`;
-  }
-  if (source === "skills" || source === "agents") {
-    const list = d.extensions.filter(x => x.kind === (source === "skills" ? "skill" : "agent"));
-    return `<p class="note">${list.length}개 · 플러그인으로 들어온 것은 빠져 있습니다.</p>` + (list.length ? list.map(x => block(`${esc(x.name)} <span class="chip" style="--c:var(--muted)">${esc(x.scope)}</span>`, `<p class="note">${esc(x.description || "(설명 없음)")}</p><p class="note"><code>${esc(x.path)}</code></p>${pre(x.text)}`)).join("") : `<p class="empty">없습니다.</p>`);
-  }
-  if (source === "memory") {
-    const types = [...new Set(d.memories.map(m => m.type || "기타"))];
-    return `<p class="note">${d.memories.length}개 · <code>${esc(d.paths.memory)}</code></p>${block("MEMORY.md (목차)", pre(d.memoryIndex))}`
-      + types.map(t => `<h4>${esc(t)}</h4>` + d.memories.filter(m => (m.type || "기타") === t).map(m => block(esc(m.name), `<p class="note">${esc(m.description)}</p>${pre(m.body)}`)).join("")).join("");
-  }
-  return `<p class="empty">내용 없음</p>`;
-}
-function bindClaudeMd() {
-  $("#claude-md-save")?.addEventListener("click", async () => {
-    try { await api("/api/claude-md", { method: "PUT", body: $("#claude-md-text").value }); state.claude.claudeMd = $("#claude-md-text").value; toast("CLAUDE.md 저장됨"); }
-    catch (e) { toast("저장 실패: " + e.message); }
-  });
-}
-
-/* ── 영상 기획: 고를 수 있는 것들 ──────────────────────────────── */
+/* ── 고를 수 있는 것들 ─────────────────────────────────────────── */
 const FORMATS = {
   shorts: { name: "쇼츠 · 릴스", ratio: "9:16", dur: 45, desc: "세로 9:16 · 보통 15–60초 (유튜브 쇼츠는 3분까지)" },
   long: { name: "롱폼", ratio: "16:9", dur: 480, desc: "가로 16:9 · 보통 5–20분" },
@@ -874,13 +429,14 @@ const TOOL_GROUPS = [
 const PLATFORMS = ["유튜브", "인스타그램", "틱톡", "기타"];
 const REF_TAKE = ["스토리", "컷", "트랜지션", "자막", "음악", "색감", "썸네일", "말투"];
 const RULE_AREAS = ["스토리", "컷", "트랜지션", "자막", "음악", "화면", "도구", "기타"];
-const VSECS = [["basic", "기본"], ["story", "스토리"], ["cut", "컷 편집"], ["trans", "트랜지션"], ["caption", "자막"], ["music", "배경음악"], ["tools", "도구"], ["refs", "레퍼런스"], ["rules", "늘 하는 말"], ["brief", "기획서"]];
-const DEFAULT_KEYS = ["format", "ratio", "duration", "platforms", "story", "cut", "transitions", "captions", "music", "tools"];
-const BEAT_C = ["frontend", "backend", "database", "cloud", "security", "messagebus"];
+const VSECS = [["basic", "기본"], ["story", "스토리"], ["cut", "컷 편집"], ["trans", "트랜지션"], ["fx", "효과"], ["caption", "자막"], ["music", "배경음악"], ["sfx", "효과음"], ["tools", "도구"], ["refs", "레퍼런스"], ["rules", "늘 하는 말"], ["brief", "기획서"]];
+const DEFAULT_KEYS = ["format", "ratio", "duration", "platforms", "story", "cut", "transitions", "effects", "captions", "music", "sfx", "tools"];
+const BEAT_C = ["c1", "c2", "c3", "c4", "c5", "c6"];
 
 const blankBrief = () => ({ title: "", logline: "", target: "", platforms: ["유튜브"], format: "shorts", ratio: "9:16", duration: 45,
-  story: { template: "", beats: [] }, cut: { styles: [], notes: "" }, transitions: { use: [], avoid: [], notes: "" },
+  story: { template: "", beats: [] }, cut: { styles: [], notes: "" }, transitions: { use: [], avoid: [], notes: "" }, effects: { use: [], avoid: [], notes: "" },
   captions: { style: "", notes: "" }, music: { mood: "", bpm: null, genre: "", source: "", refs: "", volume: "", notes: "" },
+  sfx: { use: [], source: "", volume: "", notes: "" },
   tools: { editor: "", picks: {}, notes: "" }, references: [], notes: "" });
 const clone = v => v == null ? v : JSON.parse(JSON.stringify(v));
 const isObj = v => v && typeof v === "object" && !Array.isArray(v);
@@ -971,37 +527,25 @@ function tick(now) {
 }
 requestAnimationFrame(tick);
 
-/* ── 영상 탭: 불러오기 · 저장 ──────────────────────────────────── */
-const FLOW_ONLY = ["#run-select", "#reload-runs", "#add-node", "#connect"];
-async function showVideo(name) {
-  if (state.view !== "video") {
-    if (state.dirty && !confirm("저장 안 된 변경이 있습니다. 버리고 이동할까요?")) { history.replaceState(null, "", "#" + state.view); return; }
-    setDirty(false); Object.assign(state, { name: null, brief: null });
-  } else if (state.dirty && name && name !== state.vname) {
-    if (!confirm("저장 안 된 변경이 있습니다. 버리고 이동할까요?")) { $("#flow-select").value = state.vname; return; }
-    setDirty(false); state.styleDirty = false;
-  }
-  state.view = "video";
-  document.querySelectorAll(".apptab").forEach(t => t.setAttribute("aria-selected", t.dataset.view === "video"));
-  if (location.hash !== "#video") history.replaceState(null, "", "#video");
-  closePanel();
-  $("#content").hidden = $("#empty").hidden = true; $("#video").hidden = false;
-  for (const id of FLOW_ONLY) $(id).hidden = true;
-  for (const id of ["#add-video", "#save", "#save-state"]) $(id).hidden = false;
-  $("#title").textContent = "영상";
-  if (!state.dirty) { state.video = await api("/api/videos"); state.video.style = normStyle(state.video.style); }
-  const list = state.video.videos;
-  const want = name || (list.some(v => v.name === state.vname) ? state.vname : list[0]?.name) || null;
-  $("#flow-select").innerHTML = list.map(v => `<option value="${esc(v.name)}"${v.name === want ? " selected" : ""}>${esc(v.title)}</option>`).join("");
-  $("#flow-select").hidden = list.length < 2;
+/* ── 불러오기 · 저장 ─────────────────────────────────────────────── */
+async function loadVideo(name) {
+  if (state.brief && name === state.vname) return;
+  if (state.dirty && !confirm("저장 안 된 변경이 있습니다. 버리고 이동할까요?")) { $("#video-select").value = state.vname; history.replaceState(null, "", "#" + encodeURIComponent(state.vname)); return; }
+  setDirty(false); state.styleDirty = false;
+  state.video = await api("/api/videos"); state.video.style = normStyle(state.video.style);
+  $("#brand").textContent = state.video.project; document.title = `${state.video.project} · flowboard`;
+  const list = state.video.videos, want = list.some(v => v.name === name) ? name : list[0]?.name || null;
+  $("#video-select").innerHTML = list.map(v => `<option value="${esc(v.name)}"${v.name === want ? " selected" : ""}>${esc(v.title)}</option>`).join("");
+  $("#video-select").hidden = list.length < 2;
   if (!want) { Object.assign(state, { vname: null, brief: null }); return renderVideoEmpty(); }
-  if (!state.dirty || want !== state.vname) { state.brief = normBrief((await api(`/api/video?name=${encodeURIComponent(want)}`)).brief); state.vname = want; }
+  state.brief = normBrief((await api(`/api/video?name=${encodeURIComponent(want)}`)).brief); state.vname = want;
+  if (location.hash !== "#" + encodeURIComponent(want)) history.replaceState(null, "", "#" + encodeURIComponent(want));
   renderVideo();
 }
 function renderVideoEmpty() {
   $("#video").innerHTML = `<p>이 프로젝트에는 아직 영상 기획이 없습니다.</p>
     <p class="note"><b>+ 새 영상</b>을 누르면 <code>${esc(state.video.dir)}/&lt;이름&gt;/</code>에 기획서가 만들어집니다.
-    형식 · 스토리 · 컷 편집 · 트랜지션 · 자막 · 배경음악 · 도구 · 레퍼런스를 고르고, 매번 하는 지적은 <b>늘 하는 말</b>에 모아 두면 다음 영상부터 자동으로 들어갑니다.</p>
+    형식 · 스토리 · 컷 편집 · 트랜지션 · 효과 · 자막 · 배경음악 · 효과음 · 도구 · 레퍼런스를 고르고, 매번 하는 지적은 <b>늘 하는 말</b>에 모아 두면 다음 영상부터 자동으로 들어갑니다.</p>
     <div class="actions"><button class="btn primary" id="first-video">+ 첫 영상 만들기</button></div>`;
   $("#first-video").addEventListener("click", newVideo);
 }
@@ -1013,23 +557,23 @@ async function newVideo() {
   const brief = normBrief(state.video?.style.defaults); brief.title = raw.replace(/^\d{4}-\d{2}-\d{2}-?/, "") || raw;
   try { await api(`/api/video?name=${encodeURIComponent(name)}&create=1`, { method: "PUT", body: JSON.stringify({ brief, markdown: briefMarkdown(brief, name) }) }); }
   catch (e) { return toast(e.message); }
-  setDirty(false); state.styleDirty = false; state.vsec = "basic"; await showVideo(name);
+  setDirty(false); state.styleDirty = false; state.vsec = "basic"; state.brief = null; await loadVideo(name);
 }
 async function saveVideo() {
   try {
-    if (state.styleDirty) { await api("/api/video-style", { method: "PUT", body: JSON.stringify(state.video.style) }); state.styleDirty = false; }
+    if (state.styleDirty) { await api("/api/style", { method: "PUT", body: JSON.stringify(state.video.style) }); state.styleDirty = false; }
     if (state.brief) {
       await api(`/api/video?name=${encodeURIComponent(state.vname)}`, { method: "PUT", body: JSON.stringify({ brief: state.brief, markdown: briefMarkdown(state.brief, state.vname) }) });
-      const o = $("#flow-select").selectedOptions[0]; if (o) o.textContent = state.brief.title || state.vname;
+      const o = $("#video-select").selectedOptions[0]; if (o) o.textContent = state.brief.title || state.vname;
     }
     setDirty(false); toast("저장됨 — brief.json · brief.md");
   } catch (e) { toast("저장 실패: " + e.message); }
 }
 
-/* ── 영상 탭: 그리기 ───────────────────────────────────────────── */
+/* ── 그리기 ───────────────────────────────────────────── */
 function vbadge(k) {
   const b = state.brief, n = { story: b.story.beats.length, cut: b.cut.styles.length, trans: b.transitions.use.length + b.transitions.avoid.length,
-    refs: b.references.length, rules: state.video.style.rules.length }[k];
+    fx: b.effects.use.length + b.effects.avoid.length, sfx: b.sfx.use.length, refs: b.references.length, rules: state.video.style.rules.length }[k];
   const set = { basic: b.title || b.logline, caption: b.captions.style, music: b.music.mood, tools: b.tools.editor }[k];
   return n ? String(n) : set ? "✓" : "";
 }
@@ -1055,7 +599,7 @@ const toggle = (list, k) => list.includes(k) ? list.filter(x => x !== k) : [...l
 function defaultsSummary(d) {
   if (!d || !Object.keys(d).length) return "없음";
   return [FORMATS[d.format]?.name, STORIES[d.story?.template]?.name, d.cut?.styles?.length && `컷 ${d.cut.styles.length}개`, CAPS[d.captions?.style]?.name,
-    MOODS[d.music?.mood]?.name, EDITORS[d.tools?.editor]?.name].filter(Boolean).map(esc).join(" · ") || "형식만";
+    MOODS[d.music?.mood]?.name, d.sfx?.use?.length && `효과음 ${d.sfx.use.length}개`, EDITORS[d.tools?.editor]?.name].filter(Boolean).map(esc).join(" · ") || "형식만";
 }
 
 const SECTIONS = {
@@ -1133,11 +677,39 @@ const SECTIONS = {
       t[tr] = toggle(t[tr], k); t[other] = t[other].filter(x => x !== k); vchanged(); renderSec();
     })),
   },
+  fx: {
+    html: b => `<p class="note">자주 쓰는 화면 효과 모음입니다. <b>쓴다</b> · <b>안 쓴다</b>를 골라 두면 기획서에 들어갑니다. ▶ 로 같이 쓰면 좋은 효과음을 들어 볼 수 있어요.</p>
+      <div class="cards">${Object.entries(EFFECTS).map(([k, x]) => { const use = b.effects.use.includes(k), no = b.effects.avoid.includes(k);
+        return `<div class="card${use ? " on" : no ? " avoid" : ""}">${fxPreview(k)}<span class="name">${x.name}</span><span class="desc">${x.desc}</span><span class="when">어울림: ${x.when}${x.avoid ? ` · 주의: ${x.avoid}` : ""}</span>${ear(x.sfx)}
+          <div class="pick"><button class="mini${use ? " on" : ""}" data-ef="use" data-k="${k}" aria-pressed="${use}">${use ? "✓ " : ""}쓴다</button><button class="mini${no ? " no" : ""}" data-ef="avoid" data-k="${k}" aria-pressed="${no}">${no ? "✕ " : ""}안 쓴다</button></div></div>`; }).join("")}</div>
+      <h2>효과 메모</h2>${vta("effects.notes", b.effects.notes, "예: 글리치는 반전 순간에 한 번만, 0.3초 이내")}`,
+    bind: b => {
+      bindHear();
+      $$("[data-ef]").forEach(el => el.addEventListener("click", () => {
+        const { ef, k } = el.dataset, e = b.effects, other = ef === "use" ? "avoid" : "use";
+        e[ef] = toggle(e[ef], k); e[other] = e[other].filter(x => x !== k); vchanged(); renderSec();
+      }));
+    },
+  },
+  sfx: {
+    html: b => `<p class="note">▶ 를 누르면 느낌을 들어 볼 수 있습니다. 브라우저가 합성한 견본이라 실제 음원과는 다릅니다.</p>
+      <div class="sfx-list">${Object.entries(SFX).map(([k, x]) => { const on = b.sfx.use.includes(k); return `<div class="sfx${on ? " on" : ""}"><button class="play" data-hear="${k}" aria-label="${x.name} 들어 보기">▶</button><span class="txt"><b>${x.name}</b><span>${x.desc}</span></span><button class="mini${on ? " on" : ""}" data-sx="${k}" aria-pressed="${on}">${on ? "✓ 쓴다" : "쓰기"}</button></div>`; }).join("")}</div>
+      <div class="row2" style="margin-top:14px">${field("효과음 출처", vin("sfx.source", b.sfx.source, "예: 유튜브 오디오 보관함, Epidemic Sound, freesound"))}${field("효과음 크기", vin("sfx.volume", b.sfx.volume, "예: 말소리보다 작게"))}</div>
+      ${field("효과음 메모", vta("sfx.notes", b.sfx.notes, "예: 자막마다 뽁은 과함 — 핵심 장면 세 번만"))}`,
+    bind: b => {
+      bindHear();
+      $$("[data-sx]").forEach(el => el.addEventListener("click", () => { b.sfx.use = toggle(b.sfx.use, el.dataset.sx); vchanged(); renderSec(); }));
+    },
+  },
   caption: {
     html: b => { const tall = b.format !== "long"; return `<p class="note">자막 방식을 하나 고르세요. 미리보기는 ${tall ? "세로 9:16" : "가로 16:9"} 화면입니다(형식에 따라 바뀜).</p>
-      <div class="cards">${Object.entries(CAPS).map(([k, c]) => `<button class="card${b.captions.style === k ? " on" : ""}" data-cap="${k}" aria-pressed="${b.captions.style === k}"><div class="capv${tall ? " tall" : ""}" data-capv="${k}" aria-hidden="true"><div class="cap"></div></div><span class="name">${c.name}</span><span class="desc">${c.desc}</span></button>`).join("")}</div>
-      <h2>자막 메모</h2>${vta("captions.notes", b.captions.notes, "글꼴 · 크기 · 색 · 위치. 예: 강조어는 노란색, 화면 아래 15% 위치")}`; },
-    bind: b => $$("[data-cap]").forEach(el => el.addEventListener("click", () => { b.captions.style = b.captions.style === el.dataset.cap ? "" : el.dataset.cap; vchanged(); renderSec(); })),
+      ${tall ? `<div class="checks" style="margin-bottom:10px"><label><input type="checkbox" id="safe-toggle"${state.safe ? " checked" : ""}> 쇼츠 안전 영역 보기 — 빗금은 앱 버튼 · 설명 글이 덮는 곳(위 15% · 아래 25% · 오른쪽 12% 대략)</label></div>` : ""}
+      <div class="cards${state.safe ? " safe" : ""}" id="cap-cards">${Object.entries(CAPS).map(([k, c]) => `<button class="card${b.captions.style === k ? " on" : ""}" data-cap="${k}" aria-pressed="${b.captions.style === k}"><div class="capv${tall ? " tall" : ""}" data-capv="${k}" aria-hidden="true"><div class="cap"></div></div><span class="name">${c.name}</span><span class="desc">${c.desc}</span></button>`).join("")}</div>
+      <h2>자막 메모</h2>${vta("captions.notes", b.captions.notes, "글꼴 · 크기 · 색 · 위치. 예: 강조어는 노란색, 화면 아래에서 30% 높이")}`; },
+    bind: b => {
+      $$("[data-cap]").forEach(el => el.addEventListener("click", () => { b.captions.style = b.captions.style === el.dataset.cap ? "" : el.dataset.cap; vchanged(); renderSec(); }));
+      $("#safe-toggle")?.addEventListener("change", e => { state.safe = e.target.checked; $("#cap-cards").classList.toggle("safe", state.safe); });
+    },
   },
   music: {
     html: b => { const m = b.music, mood = MOODS[m.mood];
@@ -1147,7 +719,7 @@ const SECTIONS = {
             <span class="name">${x.name}${x.bpm ? ` <span class="when">${x.bpm[0]}–${x.bpm[1]} BPM</span>` : ""}</span><span class="desc">${x.desc}</span><span class="when">어울림: ${x.when}</span></button>`; }).join("")}</div>
         <div class="row2" style="margin-top:14px">${field("BPM", `<input type="number" data-v="music.bpm" data-num value="${m.bpm ?? ""}" min="40" max="200">`, mood?.bpm ? `${mood.name}: 보통 ${mood.bpm[0]}–${mood.bpm[1]}` : "")}${field("장르 · 악기", vin("music.genre", m.genre, "예: 어쿠스틱 기타 + 휘파람"))}</div>
         <div class="row2">${field("음원 출처", vin("music.source", m.source, "예: 유튜브 오디오 보관함, Epidemic Sound"))}${field("레퍼런스 곡", vin("music.refs", m.refs, "제목 · 링크"))}</div>
-        ${field("볼륨 규칙", vin("music.volume", m.volume, "예: 말할 때 음악은 -18dB 안팎으로 낮추기"))}
+        ${field("볼륨 규칙", vin("music.volume", m.volume, "예: 말할 때 음악은 -18dB 안팎, 최종 -14 LUFS · 피크 -1 dBTP"))}
         ${field("구간별 음악", vta("music.notes", m.notes, "예: 훅은 음악 없이 효과음만 → 과정 몽타주에서 비트 시작 → 공개 순간 드롭"))}`; },
     bind: b => {
       $$("[data-mood]").forEach(el => el.addEventListener("click", () => {
@@ -1200,7 +772,7 @@ const SECTIONS = {
       <div class="actions"><button class="btn" id="rule-add">+ 규칙 추가</button></div>
       <h2>이번 영상만의 메모</h2>${vta("notes", b.notes, "이번 영상에서 특히 신경 쓸 것")}
       <h2>새 영상의 기본값</h2>
-      <p class="note">지금 영상의 형식 · 스토리 구조 · 컷 편집 · 트랜지션 · 자막 · 배경음악 · 도구 선택을 <b>새 영상</b>을 만들 때 미리 채워 둡니다. 지금 기본값: ${defaultsSummary(st.defaults)}</p>
+      <p class="note">지금 영상의 형식 · 스토리 구조 · 컷 편집 · 트랜지션 · 효과 · 자막 · 배경음악 · 효과음 · 도구 선택을 <b>새 영상</b>을 만들 때 미리 채워 둡니다. 지금 기본값: ${defaultsSummary(st.defaults)}</p>
       <div class="actions"><button class="btn" id="set-defaults">지금 선택을 기본값으로</button>${Object.keys(st.defaults).length ? `<button class="btn danger" id="clear-defaults">기본값 비우기</button>` : ""}</div>`; },
     bind: b => {
       const st = state.video.style, touch = () => { state.styleDirty = true; vchanged(); };
@@ -1249,8 +821,20 @@ function briefMarkdown(b, name) {
     if (tr.avoid.length) add(`- 쓰지 않는다: ${tr.avoid.map(k => TRANS[k]?.name || k).join(", ")}`);
     if (tr.notes) add("", tr.notes);
   }
+  const ef = b.effects;
+  if (ef.use.length || ef.avoid.length || ef.notes) {
+    add("", "## 화면 효과", "");
+    ef.use.forEach(k => EFFECTS[k] && add(`- 쓴다: **${EFFECTS[k].name}** — ${EFFECTS[k].desc}${EFFECTS[k].avoid ? ` (주의: ${EFFECTS[k].avoid})` : ""}`));
+    if (ef.avoid.length) add(`- 쓰지 않는다: ${ef.avoid.map(k => EFFECTS[k]?.name || k).join(", ")}`);
+    if (ef.notes) add("", ef.notes);
+  }
   const cap = CAPS[b.captions.style];
-  if (cap || b.captions.notes) { add("", "## 자막", ""); if (cap) add(`- **${cap.name}** — ${cap.desc}`); if (b.captions.notes) add("", b.captions.notes); }
+  if (cap || b.captions.notes || b.format !== "long") {
+    add("", "## 자막", "");
+    if (cap) add(`- **${cap.name}** — ${cap.desc}`);
+    if (b.format !== "long") add("- 쇼츠 안전 영역: 위 약 15% · 아래 약 25% · 오른쪽 약 12%는 앱 버튼과 설명 글이 덮으므로 자막 · 얼굴 · 중요한 글자를 두지 않는다.");
+    if (b.captions.notes) add("", b.captions.notes);
+  }
   const m = b.music, mood = MOODS[m.mood];
   if (mood || m.bpm || m.genre || m.source || m.refs || m.volume || m.notes) {
     add("", "## 배경음악", "");
@@ -1258,6 +842,13 @@ function briefMarkdown(b, name) {
     if (m.bpm) add(`- BPM: ${m.bpm}`);
     [["장르 · 악기", m.genre], ["출처", m.source], ["레퍼런스 곡", m.refs], ["볼륨", m.volume]].forEach(([k, v]) => v && add(`- ${k}: ${v}`));
     if (m.notes) add("", m.notes);
+  }
+  const sx = b.sfx;
+  if (sx.use.length || sx.source || sx.volume || sx.notes) {
+    add("", "## 효과음", "");
+    if (sx.use.length) add(`- 쓴다: ${sx.use.map(k => SFX[k] ? `${SFX[k].name}(${SFX[k].desc})` : k).join(", ")}`);
+    [["출처", sx.source], ["크기", sx.volume]].forEach(([k, v]) => v && add(`- ${k}: ${v}`));
+    if (sx.notes) add("", sx.notes);
   }
   const t = b.tools, ed = EDITORS[t.editor], picks = TOOL_GROUPS.filter(([g]) => t.picks[g]?.length);
   if (ed || picks.length || t.notes) {
@@ -1276,28 +867,79 @@ function briefMarkdown(b, name) {
   return L.join("\n") + "\n";
 }
 
+/* ── 화면 효과 · 효과음 ─────────────────────────────────────────── */
+// sfx: 같이 쓰면 좋은 효과음
+const EFFECTS = {
+  glitch: { name: "글리치 (지지직)", desc: "화면 조각이 어긋나고 색이 튀며 순간 깨짐.", when: "반전 · 전환 · 테크 · 게임", avoid: "자주 쓰면 눈이 피로함", sfx: "static" },
+  rgb: { name: "RGB 분리 (색수차)", desc: "빨강 · 파랑 테두리가 갈라져 번짐.", when: "강조 문구 · 비트 순간 · 몽환", sfx: "stutter" },
+  vhs: { name: "VHS 비디오테이프", desc: "주사선, 색 번짐, 위아래로 지나가는 잡음 띠.", when: "회상 · 레트로 · 옛날 영상 느낌", sfx: "tape" },
+  static: { name: "TV 노이즈", desc: "화면 전체가 지지직 잡음으로 덮였다 돌아옴.", when: "장면 끊기 · 채널 바꾸듯 넘기기", sfx: "static" },
+  grain: { name: "필름 그레인 · 옛날 필름", desc: "잔 입자, 밝기 깜빡임, 세로 흠집, 누런 톤.", when: "감성 · 회상 · 다큐", sfx: "" },
+  crt: { name: "CRT 모니터", desc: "가는 주사선과 어두운 모서리, 미세한 깜빡임.", when: "게임 · 레트로 화면 녹화", sfx: "" },
+  shake: { name: "화면 흔들림", desc: "순간적으로 화면이 덜컹 흔들림.", when: "충격 · 착지 · 웃긴 순간", avoid: "말할 때 쓰면 읽기 어려움", sfx: "impact" },
+  zoompulse: { name: "비트 줌 (쿵)", desc: "박자마다 화면이 살짝 커졌다 돌아옴.", when: "음악 박자 · 강조 단어", sfx: "impact" },
+  strobe: { name: "플래시 · 스트로브", desc: "하얗게 여러 번 번쩍임.", when: "클라이맥스 · 공개 순간", avoid: "빛에 민감한 사람에게 위험 — 짧게, 1초에 3번 미만", sfx: "riser" },
+  invert: { name: "네거티브 반전", desc: "색이 순간 뒤집힘.", when: "충격 · 반전 · 비트 강조", sfx: "click" },
+  leak: { name: "라이트 릭", desc: "주황 · 분홍 빛이 화면을 스치고 지나감.", when: "감성 · 여행 · 부드러운 전환", sfx: "whoosh" },
+  letterbox: { name: "레터박스 (시네마 바)", desc: "위아래 검은 띠가 들어와 영화처럼.", when: "분위기 전환 · 진지한 장면 · 인트로", sfx: "" },
+  bw: { name: "흑백 → 컬러", desc: "흑백에서 천천히 색이 돌아옴.", when: "전후 · 회상에서 현재로", sfx: "riser" },
+  focus: { name: "포커스 인", desc: "흐릿한 화면이 선명해짐.", when: "오프닝 · 장면 시작 · 깨어남", sfx: "whoosh" },
+  ramp: { name: "스피드 램프", desc: "빨라졌다가 결정적 순간에 느려짐.", when: "동작 · 스포츠 · 요리 던지기", sfx: "whoosh" },
+  freeze: { name: "프리즈 프레임 + 강조", desc: "순간 멈추고 테두리 · 글자로 짚어 줌.", when: "\"잠깐!\" · 실수 · 핵심 장면", sfx: "pop" },
+};
+const SFX = {
+  whoosh: { name: "휙 (우쉬)", desc: "장면 전환 · 글자 등장" },
+  pop: { name: "뽁 (팝)", desc: "자막 · 스티커 · 아이콘 등장" },
+  ding: { name: "띵", desc: "정답 · 완성 · 포인트" },
+  click: { name: "딸깍", desc: "클릭 · 선택 · 셔터" },
+  static: { name: "지지직", desc: "글리치 · TV 노이즈와 함께" },
+  stutter: { name: "끊김 (스터터)", desc: "RGB 분리 · 디지털 오류" },
+  riser: { name: "라이저 (점점 올라감)", desc: "공개 직전 긴장 쌓기" },
+  impact: { name: "쿵 (임팩트)", desc: "공개 · 착지 · 비트 줌" },
+  tape: { name: "테이프 멈춤", desc: "되감기 · 멈춤 · VHS" },
+  scratch: { name: "레코드 스크래치", desc: "\"잠깐, 뭐라고?\" 장면 끊기" },
+  boing: { name: "띠용", desc: "코믹 · 실수 · 튕김" },
+  typing: { name: "타자 소리", desc: "글자가 한 자씩 나올 때" },
+};
+const fxPreview = k => `<div class="fx" data-fx="${k}" aria-hidden="true">${'<div class="sc"><b>A</b><i class="o"></i></div>'}<div class="sc s2"><b>A</b><i class="o"></i></div><div class="sc s3"><b>A</b><i class="o"></i></div><i class="ov"></i><i class="ov2"></i></div>`;
+
+// 효과음은 파일 없이 브라우저에서 합성합니다(느낌을 고르기 위한 견본).
+let audio;
+function sfxPlay(k) {
+  const c = audio ??= new (window.AudioContext || window.webkitAudioContext)(), t = c.currentTime + .02;
+  const out = c.createGain(); out.gain.value = .5; out.connect(c.destination);
+  const noise = sec => { const n = c.createBufferSource(), b = c.createBuffer(1, Math.ceil(c.sampleRate * sec), c.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; n.buffer = b; return n; };
+  const gain = (at, peak, attack, decay) => { const g = c.createGain(); g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(peak, at + attack); g.gain.exponentialRampToValueAtTime(.0001, at + attack + decay); return g; };
+  const filter = (type, f, q = 1) => { const x = c.createBiquadFilter(); x.type = type; x.frequency.value = f; x.Q.value = q; return x; };
+  const osc = (type, f) => { const o = c.createOscillator(); o.type = type; o.frequency.setValueAtTime(f, t); return o; };
+  const play = (src, at, dur) => { src.start(at); src.stop(at + dur); };
+  ({
+    whoosh() { const n = noise(.7), f = filter("bandpass", 300, 1.2); f.frequency.setValueAtTime(300, t); f.frequency.exponentialRampToValueAtTime(3500, t + .35); f.frequency.exponentialRampToValueAtTime(600, t + .6); n.connect(f).connect(gain(t, .9, .25, .35)).connect(out); play(n, t, .7); },
+    pop() { const o = osc("sine", 900); o.frequency.exponentialRampToValueAtTime(140, t + .09); o.connect(gain(t, .8, .005, .1)).connect(out); play(o, t, .15); },
+    ding() { for (const f of [1318, 2637]) { const o = osc("sine", f); o.connect(gain(t, f > 2000 ? .15 : .4, .005, 1.1)).connect(out); play(o, t, 1.2); } },
+    click() { const n = noise(.04); n.connect(filter("highpass", 3000)).connect(gain(t, .8, .001, .03)).connect(out); play(n, t, .04); },
+    static() { const n = noise(.7), g = c.createGain(); for (let i = 0; i < 28; i++) g.gain.setValueAtTime(Math.random() < .7 ? .1 + Math.random() * .4 : 0, t + i * .025); g.gain.setValueAtTime(0, t + .7); n.connect(filter("highpass", 900)).connect(g).connect(out); play(n, t, .7); },
+    stutter() { for (let i = 0; i < 7; i++) { const at = t + i * .055, o = osc("square", 200 + Math.random() * 1200); o.frequency.setValueAtTime(200 + Math.random() * 1200, at); o.connect(gain(at, .18, .002, .035)).connect(out); play(o, at, .045); } },
+    riser() { const o = osc("sawtooth", 150), f = filter("lowpass", 800); o.frequency.exponentialRampToValueAtTime(1400, t + 1.3); f.frequency.setValueAtTime(800, t); f.frequency.exponentialRampToValueAtTime(7000, t + 1.3); o.connect(f).connect(gain(t, .25, 1.25, .08)).connect(out); play(o, t, 1.4); },
+    impact() { const o = osc("sine", 120), n = noise(.2); o.frequency.exponentialRampToValueAtTime(35, t + .6); o.connect(gain(t, .9, .005, .65)).connect(out); n.connect(filter("lowpass", 500)).connect(gain(t, .6, .002, .15)).connect(out); play(o, t, .7); play(n, t, .2); },
+    tape() { const o = osc("sawtooth", 330), f = filter("lowpass", 2500); o.frequency.exponentialRampToValueAtTime(25, t + .8); f.frequency.setValueAtTime(2500, t); f.frequency.exponentialRampToValueAtTime(150, t + .8); o.connect(f).connect(gain(t, .3, .01, .8)).connect(out); play(o, t, .85); },
+    scratch() { const n = noise(.45), f = filter("bandpass", 600, 4); [600, 3000, 500, 2600, 700].forEach((x, i) => f.frequency.exponentialRampToValueAtTime(x, t + .02 + i * .09)); n.connect(f).connect(gain(t, .9, .01, .42)).connect(out); play(n, t, .45); },
+    boing() { const o = osc("sine", 180), lfo = osc("sine", 14), depth = c.createGain(); depth.gain.value = 60; o.frequency.exponentialRampToValueAtTime(520, t + .5); lfo.connect(depth).connect(o.frequency); o.connect(gain(t, .5, .01, .55)).connect(out); play(o, t, .6); play(lfo, t, .6); },
+    typing() { [0, .09, .16, .3, .37, .5, .56, .7].forEach(d => { const n = noise(.03); n.connect(filter("bandpass", 2500 + Math.random() * 1500, 2)).connect(gain(t + d, .7, .001, .025)).connect(out); play(n, t + d, .03); }); },
+  })[k]?.();
+}
+const ear = k => k && SFX[k] ? `<span class="ear">어울리는 소리 <button class="mini" data-hear="${k}" aria-label="${SFX[k].name} 들어 보기">▶ ${SFX[k].name}</button></span>` : "";
+function bindHear() { $$("[data-hear]").forEach(el => el.addEventListener("click", ev => { ev.stopPropagation(); sfxPlay(el.dataset.hear); })); }
+
 /* ── 이벤트 ────────────────────────────────────────────────────── */
-document.querySelectorAll(".apptab").forEach(t => t.addEventListener("click", () => showView(t.dataset.view)));
-window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
-$("#flow-select").addEventListener("change", e => showView(state.view, e.target.value));
-$("#run-select").addEventListener("change", e => loadRun(e.target.value));
-$("#reload-runs").addEventListener("click", async () => {
-  const data = await api(`/api/flow?name=${encodeURIComponent(state.name)}`); state.runs = data.runs; renderRuns();
-  if (state.runs.length) { $("#run-select").value = state.runs[0].id; await loadRun(state.runs[0].id); }
-  toast("실행 기록을 다시 읽었습니다");
-});
-$("#save").addEventListener("click", save);
-$("#add-node").addEventListener("click", addNode);
+$("#video-select").addEventListener("change", e => loadVideo(e.target.value));
 $("#add-video").addEventListener("click", newVideo);
-$("#connect").addEventListener("click", () => state.connecting ? stopConnecting() : startConnecting());
-$("#p-close").addEventListener("click", closePanel);
-document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => { state.tab = t.dataset.tab; renderPanel(); }));
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") { if (state.connecting) stopConnecting(); else closePanel(); }
-  if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); if (state.dirty) save(); }
-});
+$("#save").addEventListener("click", saveVideo);
+window.addEventListener("hashchange", () => loadVideo(decodeURIComponent(location.hash.slice(1))));
+document.addEventListener("keydown", e => { if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); if (state.dirty) saveVideo(); } });
 window.addEventListener("beforeunload", e => { if (state.dirty) { e.preventDefault(); e.returnValue = ""; } });
-loadFlows().then(() => showView(location.hash.slice(1))).catch(e => document.body.insertAdjacentHTML("afterbegin", `<p class="empty" style="margin:16px">불러오기 실패: ${esc(e.message)}</p>`));
+loadVideo(decodeURIComponent(location.hash.slice(1))).catch(e => $("#video").innerHTML = `<p class="empty">불러오기 실패: ${esc(e.message)}</p>`);
 </script>
 </body>
 </html>
