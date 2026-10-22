@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""flowboard — 프로젝트의 개발 흐름 · 인프라 · AI 워크플로우 · Claude 설정을 한 화면에서 보고 고칩니다.
+"""flowboard — 프로젝트의 개발 흐름 · 인프라 · AI 워크플로우 · 영상 기획 · Claude 설정을 한 화면에서 보고 고칩니다.
 
   flowboard                      # 지금 폴더를 프로젝트로 열기 → http://127.0.0.1:8790
   flowboard ~/Projects/my-app    # 다른 프로젝트 열기
   flowboard --port 9000 --no-open
-  flowboard init [프로젝트]       # workflow/ 에 기본 흐름(개발 · 인프라 · Claude) 만들기
+  flowboard init [프로젝트]       # workflow/ 에 기본 흐름(개발 · 인프라 · Claude), video/ 에 채널 규칙 만들기
 
 파이썬 기본 기능만 씁니다(설치 없음). 이 컴퓨터(127.0.0.1)에서만 열립니다.
-쓰기는 <프로젝트>/workflow/<흐름>/ 안의 flow.json 과 .md 파일, 그리고 프로젝트 CLAUDE.md 로 제한합니다.
+쓰기는 <프로젝트>/workflow/<흐름>/ 안의 flow.json 과 .md 파일, <프로젝트>/video/ 안의 style.json 과
+<영상>/brief.json · brief.md, 그리고 프로젝트 CLAUDE.md 로 제한합니다.
 """
 from __future__ import annotations
 
@@ -23,17 +24,19 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 HERE = pathlib.Path(__file__).resolve().parent
 EDITOR = HERE / "editor.html"
 TEMPLATES = HERE / "templates"
+VIDEO_STYLE = TEMPLATES / "video" / "style.json"
 HOME_CLAUDE = pathlib.Path.home() / ".claude"
 MAX_FILE_BYTES = 400_000          # 실행 기록 파일 하나를 화면에 보낼 때의 상한
 TABS = ("dev", "infra", "workflow", "claude")
 
 
 class Project:
-    """열린 프로젝트. 흐름은 <프로젝트>/<flows_dir>/<흐름>/flow.json 입니다."""
+    """열린 프로젝트. 흐름은 <프로젝트>/<flows_dir>/<흐름>/flow.json, 영상 기획은 <프로젝트>/video/ 입니다."""
 
     def __init__(self, root: pathlib.Path, flows_dir: str = "workflow"):
         self.root = root.resolve()
         self.flows = self.root / flows_dir
+        self.videos = self.root / "video"
 
     @property
     def main_checkout(self) -> pathlib.Path:
@@ -62,6 +65,33 @@ class Project:
             tab = data.get("tab") if data.get("tab") in TABS else "workflow"
             found.append({"name": path.parent.name, "tab": tab, "title": data.get("title") or path.parent.name})
         return found
+
+    def video_dir(self, name: str) -> pathlib.Path:
+        path = (self.videos / name).resolve()
+        if not name.strip() or name.startswith(".") or path.parent != self.videos.resolve():
+            raise ValueError(f"영상 이름 '{name}'은 쓸 수 없습니다.")
+        return path
+
+    def list_videos(self) -> list[dict]:
+        """영상 기획 목록. 최근에 고친 것부터."""
+        found = []
+        for path in sorted(self.videos.glob("*/brief.json"), key=lambda p: p.stat().st_mtime, reverse=True):
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                continue
+            found.append({"name": path.parent.name, "title": data.get("title") or path.parent.name, "format": data.get("format", "")})
+        return found
+
+    def video_style(self) -> dict:
+        """채널 규칙(늘 하는 말)과 새 영상 기본값. 아직 없으면 templates/video/style.json."""
+        path = self.videos / "style.json"
+        return json.loads((path if path.exists() else VIDEO_STYLE).read_text(encoding="utf-8"))
+
+    def ensure_video_style(self) -> None:
+        self.videos.mkdir(parents=True, exist_ok=True)
+        if not (self.videos / "style.json").exists():
+            shutil.copy(VIDEO_STYLE, self.videos / "style.json")
 
 
 PROJECT: Project
@@ -217,6 +247,11 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json(200, read_run(project.flow_dir(q["name"]), q["id"]))
             elif path == "/api/claude":
                 self.send_json(200, claude_overview(project))
+            elif path == "/api/videos":
+                self.send_json(200, {"dir": str(project.videos), "style": project.video_style(), "videos": project.list_videos()})
+            elif path == "/api/video":
+                folder = project.video_dir(q["name"])
+                self.send_json(200, {"brief": json.loads((folder / "brief.json").read_text(encoding="utf-8"))})
             else:
                 self.send_json(404, {"error": "없는 주소"})
         except (KeyError, ValueError, OSError) as error:
@@ -229,6 +264,27 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/claude-md":
                 (project.root / "CLAUDE.md").write_text(self.body().decode("utf-8"), encoding="utf-8")
                 self.send_json(200, {"saved": "CLAUDE.md"})
+                return
+            if path == "/api/video-style":
+                data = json.loads(self.body().decode("utf-8"))
+                if not isinstance(data.get("rules"), list):
+                    raise ValueError("style.json 에는 rules 목록이 있어야 합니다.")
+                project.videos.mkdir(parents=True, exist_ok=True)
+                (project.videos / "style.json").write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                self.send_json(200, {"saved": "video/style.json"})
+                return
+            if path == "/api/video":
+                folder = project.video_dir(q["name"])
+                data = json.loads(self.body().decode("utf-8"))
+                if not isinstance(data.get("brief"), dict):
+                    raise ValueError("brief 가 있어야 합니다.")
+                if q.get("create") and folder.exists():
+                    raise ValueError(f"'{q['name']}' 영상이 이미 있습니다.")
+                project.ensure_video_style()
+                folder.mkdir(exist_ok=True)
+                (folder / "brief.json").write_text(json.dumps(data["brief"], ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                (folder / "brief.md").write_text(str(data.get("markdown") or ""), encoding="utf-8")
+                self.send_json(200, {"saved": f"video/{folder.name}/brief.md"})
                 return
             flow = project.flow_dir(q["name"])
             if path == "/api/flow":
@@ -261,6 +317,12 @@ def init(project: Project) -> int:
             continue
         shutil.copytree(template, target)
         print(f"  만듦: {target}")
+    style = project.videos / "style.json"
+    if style.exists():
+        print(f"  있음 — 건너뜀: {style}")
+    else:
+        project.ensure_video_style()
+        print(f"  만듦: {style}")
     gitignore = project.root / ".gitignore"
     rule = f"{project.flows.relative_to(project.root)}/*/runs/"
     if not gitignore.exists() or rule not in gitignore.read_text(encoding="utf-8"):

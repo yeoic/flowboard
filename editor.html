@@ -28,7 +28,7 @@ a { color: var(--accent); }
 /* 상단 탭 */
 .apptabs { position: sticky; top: 0; z-index: 6; background: var(--panel); border-bottom: 1px solid var(--line); display: flex; align-items: stretch; gap: 2px; padding: 0 20px; }
 .apptabs .brand { font-weight: 700; color: var(--faint); align-self: center; margin-right: 16px; }
-.apptab { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; padding: 14px 16px 11px; font-size: 15px; font-weight: 700; color: var(--muted); cursor: pointer; min-height: 50px; }
+.apptab { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; padding: 14px 16px 11px; font-size: 15px; font-weight: 700; color: var(--muted); cursor: pointer; min-height: 50px; white-space: nowrap; }
 .apptab:hover { color: var(--text); }
 .apptab[aria-selected="true"] { color: var(--text); border-color: var(--emph); }
 .apptabs .grow { flex: 1; }
@@ -43,7 +43,9 @@ a { color: var(--accent); }
 .btn.primary:disabled { opacity: .4; cursor: default; }
 .btn.on { border-color: var(--accent); color: var(--accent); }
 .btn.danger { color: var(--danger); }
-select, input[type=text], textarea { background: var(--bg); border: 1px solid var(--lane); border-radius: 8px; padding: 7px 10px; }
+select, input[type=text], input[type=number], textarea { background: var(--bg); border: 1px solid var(--lane); border-radius: 8px; padding: 7px 10px; }
+input[type=number] { width: 100%; font-size: 13.5px; }
+input[type=range] { width: 100%; accent-color: var(--emph); }
 select { min-height: 40px; }
 textarea { width: 100%; min-height: 80px; resize: vertical; line-height: 1.5; font-size: 13.5px; }
 textarea.code { min-height: 320px; font-size: 13px; }
@@ -148,6 +150,133 @@ th { color: var(--muted); font-weight: 600; font-size: 12px; }
 .empty { color: var(--muted); border: 1px dashed var(--lane); border-radius: 8px; padding: 14px; font-size: 13.5px; }
 .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 9px 16px; border-radius: 8px; z-index: 20; font-weight: 700; opacity: 0; transition: opacity .2s; pointer-events: none; }
 .toast.show { opacity: 1; }
+/* 영상 기획 */
+:root { --f0: #0e7490; --f1: #c2410c; --f2: #7c3aed; --f3: #15803d; --f4: #be185d; --f5: #a16207; }
+#video { max-width: 1240px; }
+.vnav { display: flex; flex-wrap: wrap; gap: 2px; border-bottom: 1px solid var(--line); margin: 0 0 16px; }
+.vnav button { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; padding: 9px 12px; font-weight: 700; color: var(--muted); cursor: pointer; font-size: 13.5px; }
+.vnav button:hover { color: var(--text); }
+.vnav button[aria-selected="true"] { color: var(--text); border-color: var(--emph); }
+.vnav .count { font-size: 11px; color: var(--emph); margin-left: 5px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr)); gap: 10px; }
+.card { appearance: none; text-align: left; border: 1px solid var(--line); background: var(--panel); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+button.card { cursor: pointer; }
+.card:hover { border-color: var(--lane); }
+.card.on { border-color: var(--emph); box-shadow: 0 0 0 1px var(--emph) inset; }
+.card.avoid { border-color: var(--danger); }
+.card .name { font-weight: 700; font-size: 14.5px; line-height: 1.35; }
+.card .desc { font-size: 12.5px; color: var(--muted); }
+.card .when { font-size: 12px; color: var(--faint); font-weight: 500; }
+.card .pick { display: flex; gap: 6px; margin-top: auto; padding-top: 4px; }
+.mini { appearance: none; border: 1px solid var(--lane); background: var(--bg); border-radius: 6px; padding: 3px 10px; font-size: 12.5px; cursor: pointer; min-height: 32px; }
+.mini:hover { border-color: var(--muted); }
+.mini.on { border-color: var(--emph); color: var(--emph); font-weight: 700; }
+.mini.no { border-color: var(--danger); color: var(--danger); font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.fmt { display: flex; gap: 8px; align-items: flex-end; height: 70px; }
+.fmt i { border: 2px solid var(--emph); border-radius: 5px; background: color-mix(in srgb, var(--emph) var(--tint), transparent); }
+.fmt-shorts i:first-child { width: 40px; height: 70px; } .fmt-long i:first-child { width: 112px; height: 63px; } .fmt-both i:first-child { width: 96px; height: 54px; }
+.fmt-shorts i:last-child, .fmt-long i:last-child { display: none; } .fmt-both i:last-child { width: 32px; height: 56px; }
+/* 스토리 그림 */
+.diagram { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 10px 12px; }
+.diagram svg { width: 100%; height: auto; display: block; }
+.mini-svg svg { width: 100%; height: 56px; display: block; }
+.sv-curve { fill: none; stroke: var(--emph); stroke-width: 2.5; }
+.sv-area { fill: color-mix(in srgb, var(--emph) 12%, transparent); }
+.sv-dot { fill: var(--bg); stroke: var(--emph); stroke-width: 2.5; }
+.sv-name { font: 700 15px var(--mono); fill: var(--text); }
+.sv-time { font: 12px var(--mono); fill: var(--muted); }
+.sv-div { stroke: var(--lane); stroke-dasharray: 3 4; }
+.sv-hook { fill: color-mix(in srgb, var(--warn) 14%, transparent); }
+.sv-hook-t { font: 700 12px var(--mono); fill: var(--warn); }
+.beats { display: flex; flex-direction: column; gap: 6px; margin: 12px 0 8px; }
+.beat { display: grid; grid-template-columns: 26px minmax(100px, 1fr) 78px 110px minmax(150px, 2.2fr) auto; gap: 8px; align-items: center; border-left: 4px solid var(--c); padding: 6px 8px; background: var(--panel); border-radius: 8px; }
+.beat.head { background: none; border-left-color: transparent; font-size: 12px; color: var(--muted); padding-top: 0; padding-bottom: 0; }
+.beat .bi { font-weight: 700; color: var(--c); }
+.beat .bt { display: flex; gap: 4px; }
+@media (max-width: 800px) { .beat { grid-template-columns: 26px 1fr 78px; } .beat > :nth-child(n+4) { grid-column: 2 / -1; } .beat.head { display: none; } }
+/* 트랜지션 미리보기: A 화면 → B 화면 */
+.tp, .cp .scr, .capv { position: relative; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #000; }
+.tp .f { position: absolute; inset: 0; display: grid; place-items: center; font-size: 30px; font-weight: 700; color: rgba(255,255,255,.75); }
+.tp .fa { background: linear-gradient(135deg, var(--f0), #082f49); }
+.tp .fb { background: linear-gradient(135deg, var(--f1), #431407); opacity: 0; }
+.tp .o, .cp .o { position: absolute; width: 20%; aspect-ratio: 1; border-radius: 50%; left: 62%; top: 22%; background: rgba(255,255,255,.28); }
+.tp .fb .o { background: rgba(253,230,138,.65); }
+.tp .m { position: absolute; inset: 0; background: #0b1220; transform: translateX(-101%); }
+.tp::after { content: ""; position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+.tp .f, .tp .m, .tp::after { animation-duration: 2.8s; animation-iteration-count: infinite; animation-fill-mode: both; animation-timing-function: ease-in-out; }
+.tp[data-a="cut"] .fb, .tp[data-a="flash"] .fb, .tp[data-a="match"] .fb, .tp[data-a="mask"] .fb { animation-name: t-cut; }
+.tp[data-a="dissolve"] .fb { animation-name: t-in; }
+.tp[data-a="fadeblack"] .fa { animation-name: t-fade-a; } .tp[data-a="fadeblack"] .fb { animation-name: t-fade-b; }
+.tp[data-a="flash"]::after { animation-name: t-flash; }
+.tp[data-a="whip"] .fa { animation-name: t-whip-a; } .tp[data-a="whip"] .fb { animation-name: t-whip-b; }
+.tp[data-a="zoom"] .fa { animation-name: t-zoom-a; } .tp[data-a="zoom"] .fb { animation-name: t-zoom-b; }
+.tp[data-a="push"] .fa { animation-name: t-push-a; } .tp[data-a="push"] .fb { animation-name: t-push-b; }
+.tp[data-a="wipe"] .fb { animation-name: t-wipe; }
+.tp[data-a="iris"] .fb { animation-name: t-iris; }
+.tp[data-a="glitch"] .fa { animation-name: t-glitch-a; } .tp[data-a="glitch"] .fb { animation-name: t-glitch-b; }
+.tp[data-a="spin"] .fa { animation-name: t-spin-a; } .tp[data-a="spin"] .fb { animation-name: t-spin-b; }
+.tp[data-a="blur"] .fa { animation-name: t-blur-a; } .tp[data-a="blur"] .fb { animation-name: t-blur-b; }
+.tp[data-a="mask"] .m { animation-name: t-mask; animation-timing-function: linear; }
+.tp[data-a="match"] .o { width: 30%; left: 35%; top: 20%; }
+@keyframes t-cut { 0%, 49.9% { opacity: 0 } 50%, 100% { opacity: 1 } }
+@keyframes t-in { 0%, 35% { opacity: 0 } 65%, 100% { opacity: 1 } }
+@keyframes t-fade-a { 0%, 30% { opacity: 1 } 48%, 100% { opacity: 0 } }
+@keyframes t-fade-b { 0%, 52% { opacity: 0 } 70%, 100% { opacity: 1 } }
+@keyframes t-flash { 0%, 46% { opacity: 0 } 50% { opacity: 1 } 68%, 100% { opacity: 0 } }
+@keyframes t-whip-a { 0%, 40% { transform: none; filter: none } 52%, 100% { transform: translateX(-110%); filter: blur(8px) } }
+@keyframes t-whip-b { 0%, 42% { opacity: 1; transform: translateX(110%); filter: blur(8px) } 54%, 100% { opacity: 1; transform: none; filter: none } }
+@keyframes t-zoom-a { 0%, 40% { opacity: 1; transform: none; filter: none } 50% { opacity: 1; transform: scale(2.4); filter: blur(5px) } 50.1%, 100% { opacity: 0; transform: scale(2.4) } }
+@keyframes t-zoom-b { 0%, 49.9% { opacity: 0; transform: scale(2); filter: blur(5px) } 50% { opacity: 1; transform: scale(2); filter: blur(5px) } 62%, 100% { opacity: 1; transform: none; filter: none } }
+@keyframes t-push-a { 0%, 38% { transform: none } 60%, 100% { transform: translateX(-100%) } }
+@keyframes t-push-b { 0%, 38% { opacity: 1; transform: translateX(100%) } 60%, 100% { opacity: 1; transform: none } }
+@keyframes t-wipe { 0%, 38% { opacity: 1; clip-path: inset(0 100% 0 0) } 62%, 100% { opacity: 1; clip-path: inset(0 0 0 0) } }
+@keyframes t-iris { 0%, 38% { opacity: 1; clip-path: circle(0% at 50% 50%) } 62%, 100% { opacity: 1; clip-path: circle(75% at 50% 50%) } }
+@keyframes t-glitch-a { 0%, 42% { transform: none; filter: none } 44% { transform: translate(-6px, 2px); filter: hue-rotate(90deg) saturate(3) } 46% { transform: translate(5px, -3px) skewX(8deg); filter: none } 48% { transform: translate(-3px, 1px); filter: hue-rotate(-60deg) } 50%, 100% { transform: none; filter: none } }
+@keyframes t-glitch-b { 0%, 49.9% { opacity: 0 } 50% { opacity: 1; transform: translate(6px, 0) skewX(-10deg); filter: hue-rotate(120deg) saturate(3) } 52% { transform: translate(-4px, 2px); filter: none } 54% { transform: translate(2px, -1px); filter: hue-rotate(-40deg) } 56%, 100% { opacity: 1; transform: none; filter: none } }
+@keyframes t-spin-a { 0%, 38% { opacity: 1; transform: none } 50%, 100% { opacity: 0; transform: rotate(180deg) scale(.3) } }
+@keyframes t-spin-b { 0%, 50% { opacity: 0; transform: rotate(-180deg) scale(.3) } 62%, 100% { opacity: 1; transform: none } }
+@keyframes t-blur-a { 0%, 35% { filter: none } 65%, 100% { filter: blur(12px) } }
+@keyframes t-blur-b { 0%, 35% { opacity: 0; filter: blur(12px) } 65%, 100% { opacity: 1; filter: none } }
+@keyframes t-mask { 0%, 36% { transform: translateX(-101%) } 64%, 100% { transform: translateX(101%) } }
+/* 컷 편집 미리보기: 화면 + 작은 타임라인 */
+.cp .in { position: absolute; inset: 0; background: var(--c, var(--f0)); display: grid; place-items: center; }
+.cp .lt { font-size: 20px; font-weight: 700; color: rgba(255,255,255,.8); }
+.cp .snd { position: absolute; left: 8px; bottom: 6px; font-size: 11px; color: #fff; background: rgba(0,0,0,.5); padding: 0 6px; border-radius: 4px; }
+.cp .snd:empty { display: none; }
+.tl { margin-top: 8px; display: flex; flex-direction: column; gap: 3px; }
+.trk { display: flex; align-items: center; gap: 6px; }
+.trk .tn { width: 34px; font-size: 10.5px; color: var(--faint); flex: none; }
+.clips { position: relative; flex: 1; display: flex; height: 18px; }
+.clips b { height: 100%; background: var(--c); border-right: 1px solid var(--panel); font-size: 9.5px; color: rgba(255,255,255,.9); overflow: hidden; white-space: nowrap; padding-left: 3px; line-height: 18px; font-weight: 600; border-radius: 2px; }
+.clips b.gap { background: transparent; }
+.trk.au .clips { height: 13px; } .trk.au .clips b { background: color-mix(in srgb, var(--c) 50%, var(--panel)); line-height: 13px; }
+.clips .ph { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text); left: 0; }
+/* 자막 미리보기 */
+.capv { background: linear-gradient(160deg, #1e3a5f, #3f1d38); }
+.capv.tall { width: 135px; height: 240px; aspect-ratio: auto; margin: 0 auto; }
+.capv .cap { position: absolute; inset: 0; }
+.capv .sub { position: absolute; left: 6%; right: 6%; bottom: 9%; text-align: center; font-size: 13px; font-weight: 700; color: #fff; text-shadow: 0 1px 3px #000, 0 0 2px #000; }
+.capv .top { position: absolute; left: 6%; right: 6%; top: 7%; text-align: center; font-size: 13px; font-weight: 700; color: #111; background: #fde047; padding: 2px 4px; border-radius: 4px; }
+.capv.tall .sub, .capv.tall .top { font-size: 11px; }
+.capv .pop, .capv .kw { position: absolute; inset: 0; display: grid; place-items: center; font-size: 22px; font-weight: 800; color: #fff; text-shadow: 0 2px 0 #000, 0 0 6px #000; animation: pop .25s ease-out; }
+.capv .pop em { font-style: normal; color: #fde047; }
+.capv .kw { color: #fde047; font-size: 24px; }
+@keyframes pop { from { transform: scale(.6); opacity: 0 } 70% { transform: scale(1.08); opacity: 1 } to { transform: none } }
+/* 배경음악: BPM 빠르기로 움직이는 막대 */
+.eq { display: flex; gap: 4px; align-items: flex-end; height: 40px; }
+.eq i { width: 8px; height: 100%; background: var(--emph); border-radius: 2px; transform-origin: bottom; animation: eq var(--beat, .5s) ease-in-out infinite; }
+.eq i:nth-child(2) { animation-delay: calc(var(--beat, .5s) * -.35); } .eq i:nth-child(3) { animation-delay: calc(var(--beat, .5s) * -.7); }
+.eq i:nth-child(4) { animation-delay: calc(var(--beat, .5s) * -.15); } .eq i:nth-child(5) { animation-delay: calc(var(--beat, .5s) * -.55); } .eq i:nth-child(6) { animation-delay: calc(var(--beat, .5s) * -.85); }
+.eq.off i { animation: none; transform: scaleY(.12); background: var(--lane); }
+@keyframes eq { 0%, 100% { transform: scaleY(.25) } 50% { transform: scaleY(1) } }
+@media (prefers-reduced-motion: reduce) { .tp:not(:hover) .f, .tp:not(:hover) .m, .tp:not(:hover)::after, .card:not(:hover) .eq i { animation-play-state: paused; } }
+/* 레퍼런스 · 규칙 */
+.ref { display: grid; grid-template-columns: 180px 1fr; gap: 14px; border: 1px solid var(--line); background: var(--panel); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+.ref .thumb { width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; background: var(--bg) center / cover no-repeat; border: 1px solid var(--line); display: grid; place-items: center; color: var(--faint); font-size: 12px; text-decoration: none; }
+.rule { display: grid; grid-template-columns: 130px 1fr auto; gap: 8px; align-items: center; margin-bottom: 6px; }
+pre.brief { max-height: none; }
+@media (max-width: 700px) { .ref { grid-template-columns: 1fr; } .rule { grid-template-columns: 1fr auto; } .rule select { grid-column: 1 / -1; } }
 @media (max-width: 700px) { .apptabs { padding: 0 10px; overflow-x: auto; } .bar, .main { padding-left: 16px; padding-right: 16px; } .row2 { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -157,6 +286,7 @@ th { color: var(--muted); font-weight: 600; font-size: 12px; }
   <button class="apptab" role="tab" data-view="dev">개발</button>
   <button class="apptab" role="tab" data-view="infra">인프라</button>
   <button class="apptab" role="tab" data-view="workflow">워크플로우</button>
+  <button class="apptab" role="tab" data-view="video">영상</button>
   <button class="apptab" role="tab" data-view="claude">Claude</button>
   <span class="grow"></span>
   <button class="btn theme-btn" id="theme" aria-label="밝기 바꾸기">Light</button>
@@ -169,6 +299,7 @@ th { color: var(--muted); font-weight: 600; font-size: 12px; }
   <button class="btn" id="reload-runs">기록 새로 읽기</button>
   <button class="btn" id="add-node">+ 칸 추가</button>
   <button class="btn" id="connect">선 잇기</button>
+  <button class="btn" id="add-video" hidden>+ 새 영상</button>
   <span class="grow"></span>
   <span class="save-state" id="save-state">저장됨</span>
   <button class="btn primary" id="save" disabled>저장</button>
@@ -194,6 +325,8 @@ th { color: var(--muted); font-weight: 600; font-size: 12px; }
   </div>
 </div>
 
+<div class="main" id="video" hidden></div>
+
 <aside class="panel" id="panel" aria-labelledby="p-name">
   <div class="panel-head">
     <div><div class="k" id="p-kind"></div><h3 id="p-name"></h3></div>
@@ -218,7 +351,8 @@ const STATUS_CLASS = { "동작함": "st-ok", "고치는 중": "st-warn", "명령
 const NODE_W = 172;
 
 const state = { view: null, name: null, flow: null, runs: [], runId: null, run: null, dirty: false, flows: [], info: null,
-  sel: null, tab: "role", connecting: false, source: null, claude: null };
+  sel: null, tab: "role", connecting: false, source: null, claude: null,
+  video: null, vname: null, brief: null, vsec: "basic", styleDirty: false };
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -248,6 +382,12 @@ $("#theme").addEventListener("click", () => applyTheme(document.documentElement.
 const TABS = ["dev", "infra", "workflow", "claude"];
 const flowsOf = view => state.flows.filter(f => f.tab === view);
 async function showView(view, flowName) {
+  if (view === "video") return showVideo(flowName);
+  if (state.view === "video") {
+    if (state.dirty && !confirm("저장 안 된 변경이 있습니다. 버리고 이동할까요?")) { history.replaceState(null, "", "#video"); return; }
+    setDirty(false); Object.assign(state, { view: null, name: null, brief: null, styleDirty: false });
+    $("#video").hidden = true; $("#add-video").hidden = true;
+  }
   if (!TABS.includes(view)) view = state.flows.length ? (state.flows.find(f => f.tab === "workflow") || state.flows[0]).tab : "workflow";
   const list = flowsOf(view);
   const want = flowName || (list.some(f => f.name === state.name) && view === state.view ? state.name : list[0]?.name) || null;
@@ -303,6 +443,7 @@ async function loadRun(id) {
   if (state.sel && state.tab === "run") renderPanel();
 }
 async function save() {
+  if (state.view === "video") return saveVideo();
   try { await api(`/api/flow?name=${encodeURIComponent(state.name)}`, { method: "PUT", body: JSON.stringify(state.flow) }); setDirty(false); toast("flow.json 저장됨"); }
   catch (e) { toast("저장 실패: " + e.message); }
 }
@@ -621,6 +762,520 @@ function bindClaudeMd() {
   });
 }
 
+/* ── 영상 기획: 고를 수 있는 것들 ──────────────────────────────── */
+const FORMATS = {
+  shorts: { name: "쇼츠 · 릴스", ratio: "9:16", dur: 45, desc: "세로 9:16 · 보통 15–60초 (유튜브 쇼츠는 3분까지)" },
+  long: { name: "롱폼", ratio: "16:9", dur: 480, desc: "가로 16:9 · 보통 5–20분" },
+  both: { name: "롱폼 + 쇼츠 잘라내기", ratio: "16:9 + 9:16", dur: 480, desc: "롱폼을 만들고 하이라이트를 세로로 따로 뽑기" },
+};
+// beats: [이름, 길이 비율, 긴장도 0–1, 설명]
+const STORIES = {
+  hook: { name: "훅 → 핵심 → 반전 → 행동", fit: "쇼츠 기본", desc: "첫 3초에 결과나 질문을 던지고, 핵심을 빠르게 보여 준 뒤 끝에서 한 번 더 놀라게 합니다.",
+    beats: [["훅", .07, .9, "결과 · 질문 · 이상한 장면을 먼저"], ["맥락", .18, .45, "무엇을 왜 하는지 한 줄"], ["핵심", .45, .7, "보여 줄 것의 대부분"], ["반전 · 결과", .2, 1, "가장 센 장면"], ["행동 유도 · 루프", .1, .55, "댓글 질문 또는 처음으로 이어지기"]] },
+  pas: { name: "문제 → 공감 → 해결", fit: "정보 · 리뷰", desc: "시청자가 겪는 문제를 꺼내고, 왜 답답한지 키운 다음 해결책을 보여 줍니다.",
+    beats: [["문제 제기", .1, .7, "\"이거 해 보셨죠?\""], ["공감 · 심화", .2, .85, "왜 문제인지, 흔한 실수"], ["해결", .4, .6, "방법을 단계별로"], ["증명", .2, .9, "전후 비교 · 결과"], ["정리 · 행동", .1, .5, "한 줄 요약과 다음 행동"]] },
+  three: { name: "3막 구조", fit: "롱폼 · 이야기", desc: "설정 → 갈등 → 해소. 긴 영상을 끝까지 보게 만드는 기본 뼈대.",
+    beats: [["설정", .15, .3, "인물 · 상황 · 목표"], ["사건", .1, .6, "일이 틀어지는 계기"], ["갈등 · 시도", .4, .75, "부딪히고 실패하고 다시"], ["클라이맥스", .2, 1, "결정적 장면"], ["해소", .15, .35, "결과와 여운"]] },
+  list: { name: "리스트 (Top N)", fit: "추천 · 비교", desc: "순위를 거꾸로 세며 갈수록 기대를 올립니다. 1위는 끝까지 아껴 둡니다.",
+    beats: [["훅 · 예고", .08, .8, "1위를 살짝 보여 주기"], ["5위", .14, .4], ["4위", .14, .5], ["3위", .15, .6], ["2위", .16, .75], ["1위", .23, 1], ["마무리", .1, .45, "다른 추천 · 질문"]] },
+  reveal: { name: "결과 먼저 → 과정 → 공개", fit: "요리 · 변신 · DIY", desc: "완성 장면을 먼저 보여 주고, 과정을 압축한 뒤 다시 크게 공개합니다.",
+    beats: [["결과 맛보기", .08, .9, "가장 멋진 1초"], ["처음 상태", .1, .35, "재료 · 전(before)"], ["과정 몽타주", .5, .6, "빠른 컷 + 음악"], ["공개", .2, 1, "완성 · 반응"], ["비교 · 한마디", .12, .5, "전후 나란히"]] },
+  tutorial: { name: "따라 하기 (레시피 · 강좌)", fit: "튜토리얼", desc: "완성을 미리 보여 주고, 단계마다 한 가지만 설명합니다.",
+    beats: [["완성 미리보기", .08, .8], ["준비물", .12, .4, "재료 · 도구 한 화면에"], ["1단계", .2, .55], ["2단계", .2, .6], ["3단계", .2, .7], ["완성", .12, .9], ["팁 · 마무리", .08, .45]] },
+  vlog: { name: "시간 순 (브이로그)", fit: "일상 · 여행", desc: "시간 순서로 가되, 하이라이트를 오프닝에 살짝 깔아 둡니다.",
+    beats: [["오프닝", .08, .6, "오늘 무엇을 하는지 + 하이라이트 예고"], ["시작", .2, .4], ["이동 · 사건", .22, .6], ["하이라이트", .3, .9], ["돌아보기", .2, .4]] },
+  question: { name: "질문 → 단서 → 답", fit: "궁금증 · 실험", desc: "질문을 던지고 답을 끝까지 미룹니다. 중간에 예상이 한 번 틀려야 재미있어요.",
+    beats: [["질문", .1, .85, "\"정말 될까?\""], ["단서 1", .2, .55], ["단서 2", .2, .7], ["엇나감", .15, .8, "예상이 틀리는 순간"], ["답", .25, 1], ["정리", .1, .45]] },
+  loop: { name: "루프 쇼츠", fit: "반복 시청", desc: "마지막 장면이 첫 장면으로 자연스럽게 이어져 다시 보게 만듭니다.",
+    beats: [["시작 (끝과 이어짐)", .15, .8], ["전개", .35, .6], ["절정", .3, .95], ["끝 → 처음으로", .2, .75, "첫 문장 · 장면과 맞물리게"]] },
+};
+// tracks: 위에 있는 영상 트랙이 화면에 보입니다. clip: [초, 색 번호(null 은 빈칸), 글자, { z: 확대, x: 옆으로, drift: 천천히 이동 }]
+const CUTS = {
+  fast: { name: "빠른 리듬 컷", desc: "컷 하나 0.5–2초. 같은 화면이 오래 머물지 않게.", when: "쇼츠 · 정보가 많은 짧은 영상",
+    tracks: [{ label: "영상", clips: [[.9, 0, "A"], [.6, 1, "B"], [1, 2, "C"], [.5, 3, "D"], [.8, 4, "E"], [.6, 1, "B"], [.9, 5, "F"], [.7, 0, "A"]] }] },
+  jump: { name: "점프컷", desc: "같은 앵글에서 말 사이 숨 · 군더더기를 잘라 붙입니다. 화면이 살짝 튀는 게 속도감이 됩니다.", when: "혼자 말하는 영상",
+    tracks: [{ label: "영상", clips: [[1.4, 0, "말"], [1.1, 0, "말", { x: -14, z: 1.05 }], [1.3, 0, "말", { x: 10 }], [1.2, 0, "말", { z: 1.12 }], [1, 0, "말", { x: -6 }]] },
+      { label: "소리", audio: true, clips: [[1.4, 0, "말"], [1.1, 0, "말"], [1.3, 0, "말"], [1.2, 0, "말"], [1, 0, "말"]] }] },
+  beat: { name: "비트 싱크 컷", desc: "음악 박자(또는 2박 · 4박)에 맞춰 컷을 바꿉니다.", when: "몽타주 · 하이라이트 · 제품 소개",
+    tracks: [{ label: "영상", clips: [[1, 0, "A"], [1, 1, "B"], [.5, 2, "C"], [.5, 3, "D"], [1, 4, "E"], [1, 5, "F"], [1, 0, "A"]] },
+      { label: "음악", audio: true, clips: Array.from({ length: 12 }, (_, i) => [.5, i % 2 ? 3 : 2, "♩"]) }] },
+  long: { name: "롱테이크", desc: "컷을 최소로. 카메라 움직임과 현장감으로 끌고 갑니다.", when: "몰입 · 분위기 · ASMR",
+    tracks: [{ label: "영상", clips: [[6, 0, "A", { drift: true }]] }] },
+  montage: { name: "몽타주", desc: "짧은 장면 여러 개를 음악 하나로 묶어 시간 · 과정을 압축합니다.", when: "과정 · 여행 · 하이라이트",
+    tracks: [{ label: "영상", clips: [[.45, 0], [.4, 1], [.5, 2], [.4, 3], [.45, 4], [.5, 5], [.4, 0], [.45, 2], [.5, 1], [.4, 4], [.6, 3]] },
+      { label: "음악", audio: true, clips: [[5.05, 2, "음악 한 곡"]] }] },
+  broll: { name: "A롤 + B롤", desc: "말하는 화면(A롤) 위에 자료 화면(B롤)을 덮어 지루함을 끊습니다. 소리는 계속 A롤.", when: "설명 · 리뷰 · 인터뷰",
+    tracks: [{ label: "B롤", clips: [[1.4, null], [1.3, 1, "B롤"], [1, null], [1.5, 3, "B롤"], [.8, null]] }, { label: "A롤", clips: [[6, 0, "말"]] },
+      { label: "소리", audio: true, clips: [[6, 0, "A롤 말소리"]] }] },
+  jcut: { name: "J컷", desc: "다음 장면 소리가 화면보다 먼저 들어옵니다. 장면이 자연스럽게 넘어가요.", when: "장면 전환 · 인터뷰 연결",
+    tracks: [{ label: "영상", clips: [[3, 0, "A"], [3, 1, "B"]] }, { label: "소리", audio: true, clips: [[2, 0, "A 소리"], [4, 1, "B 소리"]] }] },
+  lcut: { name: "L컷", desc: "앞 장면 소리가 다음 화면까지 이어집니다. 말이 끝나기 전에 반응 · 자료 화면을 보여 줄 때.", when: "리액션 · 설명 중 자료",
+    tracks: [{ label: "영상", clips: [[3, 0, "A"], [3, 1, "B"]] }, { label: "소리", audio: true, clips: [[4, 0, "A 소리"], [2, 1, "B 소리"]] }] },
+  punch: { name: "펀치 인 (확대 강조)", desc: "같은 샷을 확대한 컷으로 바꿔 말의 강조점을 찍습니다.", when: "핵심 문장 · 리액션",
+    tracks: [{ label: "영상", clips: [[1.8, 0, "A"], [1.1, 0, "A ×1.4", { z: 1.4 }], [1.6, 0, "A"], [1.1, 0, "A ×1.4", { z: 1.4 }]] }] },
+  cross: { name: "교차 편집", desc: "두 장면을 번갈아 보여 주며, 갈수록 컷을 짧게 해 긴장을 올립니다.", when: "비교 · 대결 · 동시에 일어나는 일",
+    tracks: [{ label: "영상", clips: [[1.2, 0, "A"], [1.1, 1, "B"], [.9, 0, "A"], [.8, 1, "B"], [.6, 0, "A"], [.5, 1, "B"], [.4, 0, "A"], [.4, 1, "B"]] }] },
+};
+const TRANS = {
+  cut: { name: "하드 컷", dur: "0프레임", desc: "아무 효과 없이 바로 넘김. 가장 기본이고 가장 많이 씁니다.", when: "거의 모든 곳" },
+  dissolve: { name: "크로스 디졸브", dur: "0.5–1초", desc: "두 화면이 겹치며 천천히 바뀜.", when: "시간이 흐름 · 감성", avoid: "남발하면 늘어지고 옛날 느낌" },
+  fadeblack: { name: "블랙 페이드", dur: "0.5–1초", desc: "어두워졌다가 다음 장면이 밝아짐.", when: "큰 단락의 끝 · 시작" },
+  flash: { name: "화이트 플래시", dur: "2–6프레임", desc: "하얗게 번쩍하며 넘어감.", when: "충격 · 회상 · 비트 강조" },
+  whip: { name: "휩 팬", dur: "6–10프레임", desc: "빠르게 옆으로 휙 밀리며 흐려짐.", when: "장소 이동 · 에너지 있는 전환" },
+  zoom: { name: "줌 트랜지션", dur: "6–12프레임", desc: "앞 화면이 확 다가오며 다음 화면으로 빨려 들어감.", when: "쇼츠 · 제품 · 하이라이트" },
+  push: { name: "푸시 (밀기)", dur: "0.3–0.5초", desc: "다음 화면이 앞 화면을 밀어냄.", when: "항목 넘기기 · 리스트" },
+  wipe: { name: "와이프", dur: "0.4–0.7초", desc: "선이 지나가며 화면을 갈아 끼움.", when: "전후 비교 · 장 바뀜" },
+  iris: { name: "원형 열기", dur: "0.4–0.6초", desc: "가운데서 원이 커지며 다음 화면이 열림.", when: "귀엽거나 레트로한 톤" },
+  glitch: { name: "글리치", dur: "4–8프레임", desc: "화면이 지지직 깨지며 넘어감.", when: "테크 · 게임 · 반전", avoid: "분위기가 안 맞으면 싸 보임" },
+  spin: { name: "스핀", dur: "8–12프레임", desc: "빙글 돌며 바뀜.", when: "코믹 · 과장", avoid: "정보 영상에는 과함" },
+  match: { name: "매치 컷", dur: "0프레임 · 촬영 때 맞춤", desc: "모양 · 위치 · 움직임이 같은 두 장면을 이어 붙임(동그라미 → 동그라미).", when: "세련된 장면 전환" },
+  blur: { name: "블러 디졸브", dur: "0.5–0.8초", desc: "흐려지며 겹쳐 넘어감.", when: "꿈 · 회상 · 부드러운 전환" },
+  mask: { name: "가리고 넘기기", dur: "지나가는 동안 · 촬영 때 준비", desc: "사람 · 물체가 카메라 앞을 지나가 화면을 가리는 순간 바꿈.", when: "자연스러운 장소 이동" },
+};
+const CAPS = {
+  full: { name: "말 자막 전체", desc: "말하는 내용을 아래에 전부. 소리 없이 봐도 이해됩니다.",
+    frames: [[1.7, '<span class="sub">오늘은 김치볶음밥을</span>'], [1.7, '<span class="sub">5분 만에 만들어 볼게요</span>'], [1.6, '<span class="sub">재료는 딱 세 가지</span>']] },
+  pop: { name: "단어 팝 (쇼츠)", desc: "화면 가운데에 단어를 하나씩 크게, 핵심어는 색으로.",
+    frames: ["오늘은", "<em>김치볶음밥</em>", "딱", "<em>5분</em>", "컷!"].map(w => [.5, `<span class="pop">${w}</span>`]).concat([[.6, ""]]) },
+  title: { name: "위 제목 고정 + 말 자막", desc: "화면 위에 영상 제목을 계속 띄우고 아래에 말 자막.",
+    frames: [[1.7, '<span class="top">김치볶음밥 5분 컷</span><span class="sub">재료는 딱 세 가지</span>'], [1.7, '<span class="top">김치볶음밥 5분 컷</span><span class="sub">밥은 찬밥이 좋아요</span>']] },
+  keyword: { name: "키워드만 크게", desc: "말 자막 없이 중요한 순간에만 큰 글자.",
+    frames: [[1.6, ""], [1.4, '<span class="kw">5분 완성</span>'], [1.4, ""], [1.2, '<span class="kw">찬밥 필수</span>']] },
+  none: { name: "자막 없음", desc: "화면과 현장음만으로.", frames: [[3, ""]] },
+};
+const MOODS = {
+  bright: { name: "밝고 경쾌", bpm: [110, 128], desc: "어쿠스틱 · 우쿨렐레 · 휘파람", when: "요리 · 일상 · 제품 소개" },
+  calm: { name: "잔잔 · 감성", bpm: [60, 80], desc: "피아노 · 기타 솔로", when: "브이로그 · 여행 · 여운" },
+  lofi: { name: "로파이", bpm: [70, 90], desc: "느슨한 드럼 + 따뜻한 잡음", when: "작업 · 공부 · 카페" },
+  hiphop: { name: "힙합 비트", bpm: [85, 100], desc: "묵직한 킥 · 스네어", when: "쇼츠 · 패션 · 스트리트" },
+  edm: { name: "신나는 일렉", bpm: [120, 130], desc: "빌드업 → 드롭", when: "하이라이트 · 몽타주 · 공개 순간" },
+  tension: { name: "긴장 · 서스펜스", bpm: [90, 110], desc: "낮은 현악 · 펄스", when: "반전 · 실험 · 미스터리" },
+  epic: { name: "웅장 · 시네마틱", bpm: [70, 100], desc: "오케스트라 · 타악", when: "도전 · 결과 공개 · 인트로" },
+  comic: { name: "코믹 · 통통", bpm: [100, 120], desc: "피치카토 · 마림바", when: "실수 · 리액션 · 귀여움" },
+  none: { name: "음악 없음", bpm: null, desc: "현장음 · 말 · 효과음만", when: "ASMR · 인터뷰 · 몰입" },
+};
+// 편집 프로그램: handoff 는 Claude 가 이 프로그램으로 넘겨줄 수 있는 것
+const EDITORS = {
+  capcut: { name: "CapCut", desc: "쇼츠 템플릿 · 자동 자막 · 효과가 많고 폰/PC 둘 다.", when: "쇼츠를 빠르게", handoff: "컷 목록(시간 · 장면 · 자막) 표, SRT 자막 파일" },
+  premiere: { name: "Premiere Pro", desc: "가장 널리 쓰는 프로 편집기. 다른 Adobe 도구와 잘 맞음.", when: "롱폼 · 협업", handoff: "SRT 자막, 마커 CSV, 컷 목록(EDL)" },
+  resolve: { name: "DaVinci Resolve", desc: "무료로도 충분하고 색보정이 강함.", when: "롱폼 · 색감이 중요할 때", handoff: "SRT 자막, 컷 목록(EDL), 마커 목록" },
+  fcp: { name: "Final Cut Pro", desc: "Mac 전용. 마그네틱 타임라인으로 빠른 편집.", when: "Mac에서 롱폼 · 쇼츠", handoff: "SRT 자막, FCPXML 마커 · 컷 목록" },
+  vrew: { name: "Vrew", desc: "말을 글자로 바꿔 글을 지우듯 컷 편집. 자동 자막이 강함.", when: "말하는 영상 · 점프컷", handoff: "대본 · 자를 문장 목록" },
+  remotion: { name: "Remotion (코드)", desc: "React 코드로 영상을 만듦. 자막 · 그래픽 · 템플릿을 코드로 반복.", when: "같은 형식 반복 · 자동화", handoff: "Claude가 Remotion 컴포넌트 · 렌더 명령까지 직접 작성" },
+  ffmpeg: { name: "ffmpeg · 파이썬 스크립트", desc: "자르기 · 붙이기 · 자막 입히기를 명령으로.", when: "대량 · 자동 처리", handoff: "Claude가 ffmpeg / MoviePy 스크립트를 직접 작성 · 실행" },
+};
+const TOOL_GROUPS = [
+  ["shoot", "촬영 · 소스", ["휴대폰", "미러리스 · 캠코더", "화면 녹화(OBS)", "스톡 영상", "웹캠"]],
+  ["caption", "자막 만들기", ["편집기 자동 자막", "Vrew", "Whisper(로컬)", "직접 입력"]],
+  ["voice", "목소리", ["내 목소리", "AI 음성(TTS)", "목소리 없음"]],
+  ["ai", "AI 생성", ["AI 이미지", "AI 영상 클립", "AI 음악", "AI 대본 초안"]],
+  ["thumb", "썸네일", ["Figma", "Canva", "Photoshop", "편집기 안에서"]],
+];
+const PLATFORMS = ["유튜브", "인스타그램", "틱톡", "기타"];
+const REF_TAKE = ["스토리", "컷", "트랜지션", "자막", "음악", "색감", "썸네일", "말투"];
+const RULE_AREAS = ["스토리", "컷", "트랜지션", "자막", "음악", "화면", "도구", "기타"];
+const VSECS = [["basic", "기본"], ["story", "스토리"], ["cut", "컷 편집"], ["trans", "트랜지션"], ["caption", "자막"], ["music", "배경음악"], ["tools", "도구"], ["refs", "레퍼런스"], ["rules", "늘 하는 말"], ["brief", "기획서"]];
+const DEFAULT_KEYS = ["format", "ratio", "duration", "platforms", "story", "cut", "transitions", "captions", "music", "tools"];
+const BEAT_C = ["frontend", "backend", "database", "cloud", "security", "messagebus"];
+
+const blankBrief = () => ({ title: "", logline: "", target: "", platforms: ["유튜브"], format: "shorts", ratio: "9:16", duration: 45,
+  story: { template: "", beats: [] }, cut: { styles: [], notes: "" }, transitions: { use: [], avoid: [], notes: "" },
+  captions: { style: "", notes: "" }, music: { mood: "", bpm: null, genre: "", source: "", refs: "", volume: "", notes: "" },
+  tools: { editor: "", picks: {}, notes: "" }, references: [], notes: "" });
+const clone = v => v == null ? v : JSON.parse(JSON.stringify(v));
+const isObj = v => v && typeof v === "object" && !Array.isArray(v);
+function normBrief(src) {
+  const b = blankBrief();
+  for (const [k, v] of Object.entries(src || {})) b[k] = isObj(b[k]) && isObj(v) ? { ...b[k], ...clone(v) } : clone(v);
+  return b;
+}
+const normStyle = s => ({ channel: "", ...s, rules: Array.isArray(s?.rules) ? s.rules : [], defaults: isObj(s?.defaults) ? s.defaults : {} });
+// 0:45 · 8:30, 반 초는 0:03.5
+const clock = s => { s = Math.max(0, Math.round((+s || 0) * 10) / 10); const m = Math.floor(s / 60), r = Math.round((s - m * 60) * 10) / 10;
+  return `${m}:${Number.isInteger(r) ? String(r).padStart(2, "0") : r.toFixed(1).padStart(4, "0")}`; };
+function parseClock(text) { const m = String(text).trim().match(/^(?:(\d+):)?(\d+(?:\.\d+)?)$/); return m ? +(m[1] || 0) * 60 + +m[2] : null; }
+const half = v => Math.max(.5, Math.round(v * 2) / 2);
+const beatSum = beats => beats.reduce((t, x) => t + (+x.sec || 0), 0);
+const tplBeats = (s, dur) => s.beats.map(([name, pct, tension, desc = ""]) => ({ name, sec: half(pct * dur), tension, desc }));
+const ytId = url => String(url || "").match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/|\/live\/)([\w-]{11})/)?.[1] || null;
+const safeUrl = url => /^https?:\/\//i.test(url || "") ? url : "";
+const $$ = s => [...document.querySelectorAll(s)];
+
+/* ── 스토리 그림: 구간 길이만큼 나눈 막대 + 긴장도 곡선 ───────── */
+function smooth(p) {
+  let d = `M${p[0][0]},${p[0][1]}`;
+  for (let i = 0; i < p.length - 1; i++) {
+    const a = p[i - 1] || p[i], b = p[i], c = p[i + 1], e = p[i + 2] || c, r = v => v.toFixed(1);
+    d += ` C${r(b[0] + (c[0] - a[0]) / 6)},${r(b[1] + (c[1] - a[1]) / 6)} ${r(c[0] - (e[0] - b[0]) / 6)},${r(c[1] - (e[1] - b[1]) / 6)} ${r(c[0])},${r(c[1])}`;
+  }
+  return d;
+}
+function storySvg(beats, { small = false, hook = false } = {}) {
+  if (!beats.length) return "";
+  const W = 1000, H = small ? 104 : 236, base = small ? 78 : 178, top = small ? 12 : 44, sum = beatSum(beats) || 1;
+  const y = t => base - Math.min(1, Math.max(0, t ?? .5)) * (base - top);
+  let x = 0, sec = 0, blocks = "", names = "", divs = "", dots = "";
+  const pts = beats.map((b, i) => {
+    const w = (+b.sec || 0) / sum * W, pt = [x + w / 2, y(b.tension)];
+    blocks += `<rect x="${(x + 1).toFixed(1)}" y="${base + (small ? 6 : 10)}" width="${Math.max(0, w - 2).toFixed(1)}" height="${small ? 12 : 16}" rx="3" fill="var(--${BEAT_C[i % 6]})"/>`;
+    if (!small) {
+      const max = Math.floor(w / 15), name = String(b.name || "");
+      const label = max >= 2 ? (name.length > max ? name.slice(0, max - 1) + "…" : name) : String(i + 1);
+      names += `<text class="sv-name" x="${pt[0].toFixed(1)}" y="${(pt[1] - 12).toFixed(1)}" text-anchor="middle">${esc(label)}</text>`;
+      if (w >= 46) names += `<text class="sv-time" x="${(x + 4).toFixed(1)}" y="${base + 44}">${clock(sec)}</text>`;
+      if (i) divs += `<line class="sv-div" x1="${x.toFixed(1)}" y1="${top - 22}" x2="${x.toFixed(1)}" y2="${base + 26}"/>`;
+      dots += `<circle class="sv-dot" cx="${pt[0].toFixed(1)}" cy="${pt[1].toFixed(1)}" r="6"/>`;
+    }
+    x += w; sec += +b.sec || 0; return pt;
+  });
+  const curve = smooth([[0, pts[0][1]], ...pts, [W, pts.at(-1)[1]]]);
+  const hookBox = hook && !small && sum > 3 ? `<rect class="sv-hook" x="0" y="${top - 22}" width="${(3 / sum * W).toFixed(1)}" height="${base + 48 - top}"/><text class="sv-hook-t" x="4" y="${top - 28}">첫 3초</text>` : "";
+  const end = small ? "" : `<text class="sv-time" x="${W - 2}" y="${base + 44}" text-anchor="end">${clock(sum)}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}"${small ? ' preserveAspectRatio="none"' : ""} role="img" aria-label="스토리 흐름: ${esc(beats.map(b => b.name).join(" → "))}">${hookBox}${divs}<path class="sv-area" d="${curve} L${W},${base} L0,${base} Z"/><path class="sv-curve" d="${curve}" vector-effect="non-scaling-stroke"/>${blocks}${dots}${names}${end}</svg>`;
+}
+
+/* ── 움직이는 미리보기(컷 편집 · 자막) ──────────────────────────── */
+const trackLen = tr => tr.clips.reduce((t, c) => t + c[0], 0);
+function cutPreview(k) {
+  const tracks = CUTS[k].tracks, len = Math.max(...tracks.map(trackLen));
+  return `<div class="cp" data-cp="${k}"><div class="scr"><div class="in"><b class="lt"></b><i class="o"></i></div><span class="snd"></span></div>
+    <div class="tl" aria-hidden="true">${tracks.map(tr => `<div class="trk${tr.audio ? " au" : ""}"><span class="tn">${tr.label}</span><div class="clips">${tr.clips.map(([d, f, t]) =>
+      `<b${f == null ? ' class="gap"' : ""} style="width:${(d / len * 100).toFixed(2)}%${f == null ? "" : `;--c:var(--f${f})`}">${esc(t || "")}</b>`).join("")}<i class="ph"></i></div></div>`).join("")}</div></div>`;
+}
+function clipAt(clips, p) { let s = 0; for (const c of clips) { if (p < s + c[0]) return { c, s }; s += c[0]; } return null; }
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+function tick(now) {
+  const t = now / 1000;
+  for (const el of document.querySelectorAll(".cp")) {
+    if (reducedMotion.matches && !el.matches(":hover")) continue;
+    const tracks = CUTS[el.dataset.cp].tracks, len = el._len ??= Math.max(...tracks.map(trackLen)), p = t % len;
+    el.querySelectorAll(".ph").forEach(ph => ph.style.left = (p / len * 100).toFixed(2) + "%");
+    let video = null, sound = null;
+    for (const tr of tracks) { const hit = clipAt(tr.clips, p); if (!hit || hit.c[1] == null) continue; if (tr.audio) sound ??= hit; else video ??= hit; }
+    if (video) {
+      const [d, f, label, fx = {}] = video.c, k = (p - video.s) / d, inner = el.querySelector(".in");
+      inner.style.setProperty("--c", `var(--f${f})`); inner.style.transform = `scale(${fx.z || 1})`;
+      el.querySelector(".lt").textContent = label || "";
+      el.querySelector(".o").style.transform = `translateX(${(fx.x || 0) + (fx.drift ? (k - .5) * 60 : 0)}px)`;
+    }
+    el.querySelector(".snd").textContent = sound && tracks.length > 1 ? "♪ " + (sound.c[2] || "") : "";
+  }
+  for (const el of document.querySelectorAll(".capv")) {
+    if (reducedMotion.matches && !el.matches(":hover")) continue;
+    const frames = CAPS[el.dataset.capv].frames, len = frames.reduce((s, f) => s + f[0], 0);
+    let p = t % len, i = 0;
+    while (i < frames.length - 1 && p >= frames[i][0]) p -= frames[i++][0];
+    if (el._i !== i) { el._i = i; el.querySelector(".cap").innerHTML = frames[i][1]; }
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+/* ── 영상 탭: 불러오기 · 저장 ──────────────────────────────────── */
+const FLOW_ONLY = ["#run-select", "#reload-runs", "#add-node", "#connect"];
+async function showVideo(name) {
+  if (state.view !== "video") {
+    if (state.dirty && !confirm("저장 안 된 변경이 있습니다. 버리고 이동할까요?")) { history.replaceState(null, "", "#" + state.view); return; }
+    setDirty(false); Object.assign(state, { name: null, brief: null });
+  } else if (state.dirty && name && name !== state.vname) {
+    if (!confirm("저장 안 된 변경이 있습니다. 버리고 이동할까요?")) { $("#flow-select").value = state.vname; return; }
+    setDirty(false); state.styleDirty = false;
+  }
+  state.view = "video";
+  document.querySelectorAll(".apptab").forEach(t => t.setAttribute("aria-selected", t.dataset.view === "video"));
+  if (location.hash !== "#video") history.replaceState(null, "", "#video");
+  closePanel();
+  $("#content").hidden = $("#empty").hidden = true; $("#video").hidden = false;
+  for (const id of FLOW_ONLY) $(id).hidden = true;
+  for (const id of ["#add-video", "#save", "#save-state"]) $(id).hidden = false;
+  $("#title").textContent = "영상";
+  if (!state.dirty) { state.video = await api("/api/videos"); state.video.style = normStyle(state.video.style); }
+  const list = state.video.videos;
+  const want = name || (list.some(v => v.name === state.vname) ? state.vname : list[0]?.name) || null;
+  $("#flow-select").innerHTML = list.map(v => `<option value="${esc(v.name)}"${v.name === want ? " selected" : ""}>${esc(v.title)}</option>`).join("");
+  $("#flow-select").hidden = list.length < 2;
+  if (!want) { Object.assign(state, { vname: null, brief: null }); return renderVideoEmpty(); }
+  if (!state.dirty || want !== state.vname) { state.brief = normBrief((await api(`/api/video?name=${encodeURIComponent(want)}`)).brief); state.vname = want; }
+  renderVideo();
+}
+function renderVideoEmpty() {
+  $("#video").innerHTML = `<p>이 프로젝트에는 아직 영상 기획이 없습니다.</p>
+    <p class="note"><b>+ 새 영상</b>을 누르면 <code>${esc(state.video.dir)}/&lt;이름&gt;/</code>에 기획서가 만들어집니다.
+    형식 · 스토리 · 컷 편집 · 트랜지션 · 자막 · 배경음악 · 도구 · 레퍼런스를 고르고, 매번 하는 지적은 <b>늘 하는 말</b>에 모아 두면 다음 영상부터 자동으로 들어갑니다.</p>
+    <div class="actions"><button class="btn primary" id="first-video">+ 첫 영상 만들기</button></div>`;
+  $("#first-video").addEventListener("click", newVideo);
+}
+async function newVideo() {
+  if (state.dirty && !confirm("저장 안 된 변경이 있습니다. 버리고 새로 만들까요?")) return;
+  const d = new Date(), stamp = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const raw = prompt("새 영상 이름 (폴더 이름이 됩니다)", `${stamp}-`)?.trim(); if (!raw) return;
+  const name = raw.replace(/[\s/\\]+/g, "-");
+  const brief = normBrief(state.video?.style.defaults); brief.title = raw.replace(/^\d{4}-\d{2}-\d{2}-?/, "") || raw;
+  try { await api(`/api/video?name=${encodeURIComponent(name)}&create=1`, { method: "PUT", body: JSON.stringify({ brief, markdown: briefMarkdown(brief, name) }) }); }
+  catch (e) { return toast(e.message); }
+  setDirty(false); state.styleDirty = false; state.vsec = "basic"; await showVideo(name);
+}
+async function saveVideo() {
+  try {
+    if (state.styleDirty) { await api("/api/video-style", { method: "PUT", body: JSON.stringify(state.video.style) }); state.styleDirty = false; }
+    if (state.brief) {
+      await api(`/api/video?name=${encodeURIComponent(state.vname)}`, { method: "PUT", body: JSON.stringify({ brief: state.brief, markdown: briefMarkdown(state.brief, state.vname) }) });
+      const o = $("#flow-select").selectedOptions[0]; if (o) o.textContent = state.brief.title || state.vname;
+    }
+    setDirty(false); toast("저장됨 — brief.json · brief.md");
+  } catch (e) { toast("저장 실패: " + e.message); }
+}
+
+/* ── 영상 탭: 그리기 ───────────────────────────────────────────── */
+function vbadge(k) {
+  const b = state.brief, n = { story: b.story.beats.length, cut: b.cut.styles.length, trans: b.transitions.use.length + b.transitions.avoid.length,
+    refs: b.references.length, rules: state.video.style.rules.length }[k];
+  const set = { basic: b.title || b.logline, caption: b.captions.style, music: b.music.mood, tools: b.tools.editor }[k];
+  return n ? String(n) : set ? "✓" : "";
+}
+function vchanged() { setDirty(); $$(".vnav [data-sec]").forEach(el => el.querySelector(".count").textContent = vbadge(el.dataset.sec)); }
+function renderVideo() {
+  $("#video").innerHTML = `<nav class="vnav" role="tablist" aria-label="기획 항목">${VSECS.map(([k, t]) => `<button role="tab" data-sec="${k}" aria-selected="${k === state.vsec}">${t}<span class="count">${vbadge(k)}</span></button>`).join("")}</nav><div id="vsec"></div>`;
+  $$(".vnav [data-sec]").forEach(el => el.addEventListener("click", () => { state.vsec = el.dataset.sec; renderVideo(); }));
+  renderSec();
+}
+const getP = (o, p) => p.split(".").reduce((x, k) => x?.[k], o);
+const setP = (o, p, v) => { const ks = p.split("."), last = ks.pop(); ks.reduce((x, k) => x[k] ??= {}, o)[last] = v; };
+const vin = (p, v, ph = "") => `<input type="text" data-v="${p}" value="${esc(v)}" placeholder="${esc(ph)}">`;
+const vta = (p, v, ph = "") => `<textarea data-v="${p}" placeholder="${esc(ph)}">${esc(v)}</textarea>`;
+function renderSec() {
+  const sec = SECTIONS[state.vsec] || SECTIONS.basic, b = state.brief;
+  $("#vsec").innerHTML = sec.html(b);
+  $("#vsec").querySelectorAll("[data-v]").forEach(el => el.addEventListener("input", () => {
+    setP(b, el.dataset.v, el.hasAttribute("data-num") ? (el.value === "" ? null : Number(el.value)) : el.value); vchanged();
+  }));
+  sec.bind?.(b);
+}
+const toggle = (list, k) => list.includes(k) ? list.filter(x => x !== k) : [...list, k];
+function defaultsSummary(d) {
+  if (!d || !Object.keys(d).length) return "없음";
+  return [FORMATS[d.format]?.name, STORIES[d.story?.template]?.name, d.cut?.styles?.length && `컷 ${d.cut.styles.length}개`, CAPS[d.captions?.style]?.name,
+    MOODS[d.music?.mood]?.name, EDITORS[d.tools?.editor]?.name].filter(Boolean).map(esc).join(" · ") || "형식만";
+}
+
+const SECTIONS = {
+  basic: {
+    html: b => `<div class="row2">${field("제목", vin("title", b.title))}${field("보는 사람", vin("target", b.target, "예: 요리 초보 자취생"))}</div>
+      ${field("한 줄 기획", vin("logline", b.logline, "무엇을 보여 주고, 왜 끝까지 보게 되는지 한 문장"))}
+      <h2>형식</h2>
+      <div class="cards">${Object.entries(FORMATS).map(([k, f]) => `<button class="card${b.format === k ? " on" : ""}" data-format="${k}" aria-pressed="${b.format === k}"><span class="fmt fmt-${k}"><i></i><i></i></span><span class="name">${f.name}</span><span class="desc">${f.desc}</span></button>`).join("")}</div>
+      <div class="row2" style="margin-top:14px">${field("길이", `<input type="text" id="v-dur" value="${clock(b.duration)}">`, "초(45) 또는 분:초(8:30)")}${field("화면 비율", vin("ratio", b.ratio))}</div>
+      ${field("올릴 곳", `<div class="checks">${PLATFORMS.map(p => `<label><input type="checkbox" data-plat="${esc(p)}"${b.platforms.includes(p) ? " checked" : ""}> ${p}</label>`).join("")}</div>`)}`,
+    bind: b => {
+      $$("[data-format]").forEach(el => el.addEventListener("click", () => {
+        const f = FORMATS[el.dataset.format]; if (!b.duration || b.duration === FORMATS[b.format]?.dur) b.duration = f.dur;
+        b.format = el.dataset.format; b.ratio = f.ratio; vchanged(); renderSec();
+      }));
+      $("#v-dur").addEventListener("input", e => { const s = parseClock(e.target.value); e.target.style.borderColor = s == null ? "var(--danger)" : ""; if (s != null) { b.duration = s; vchanged(); } });
+      $$("[data-plat]").forEach(el => el.addEventListener("change", () => { b.platforms = PLATFORMS.filter(p => $(`[data-plat="${p}"]`).checked); vchanged(); }));
+    },
+  },
+  story: {
+    html: b => {
+      const beats = b.story.beats;
+      return `<p class="note">구조를 고르면 구간이 채워지고 영상 길이(${clock(b.duration)})에 맞춰 나뉩니다. 구간 이름 · 시간 · 긴장도를 고치면 그림이 바로 바뀝니다.</p>
+        <div class="diagram" id="story-svg">${beats.length ? storySvg(beats, { hook: b.format !== "long" }) : `<p class="empty">아래에서 구조를 고르거나 구간을 추가하세요.</p>`}</div>
+        <p class="note" id="story-sum" style="margin-top:8px">${storySum(b)}</p>
+        <div class="beats">${beats.length ? `<div class="beat head"><span></span><span>구간</span><span>초</span><span>긴장도</span><span>무엇을 보여 주나</span><span></span></div>` : ""}${beats.map((x, i) => `
+          <div class="beat" style="--c:var(--${BEAT_C[i % 6]})"><span class="bi">${i + 1}</span>
+            <input type="text" data-b="name" data-i="${i}" value="${esc(x.name)}" aria-label="${i + 1}번 구간 이름">
+            <input type="number" data-b="sec" data-i="${i}" value="${x.sec}" min="0" step="0.5" aria-label="${i + 1}번 구간 초">
+            <input type="range" data-b="tension" data-i="${i}" value="${x.tension ?? .5}" min="0" max="1" step="0.05" aria-label="${i + 1}번 구간 긴장도">
+            <input type="text" data-b="desc" data-i="${i}" value="${esc(x.desc)}" placeholder="장면 · 대사 · 화면" aria-label="${i + 1}번 구간 내용">
+            <span class="bt"><button class="mini" data-bm="-1" data-i="${i}" aria-label="위로">↑</button><button class="mini" data-bm="1" data-i="${i}" aria-label="아래로">↓</button><button class="mini no" data-bd="${i}" aria-label="지우기">×</button></span>
+          </div>`).join("")}</div>
+        <div class="actions"><button class="btn" id="beat-add">+ 구간 추가</button>${beats.length ? `<button class="btn" id="beat-fit">영상 길이에 맞춰 나누기</button>` : ""}</div>
+        <h2>구조 고르기</h2>
+        <div class="cards">${Object.entries(STORIES).map(([k, s]) => { const on = b.story.template === k; return `<div class="card${on ? " on" : ""}">
+          <span class="name">${s.name}</span><span class="when">${s.fit}</span><div class="mini-svg">${storySvg(tplBeats(s, 60), { small: true })}</div>
+          <span class="desc">${s.desc}</span><span class="when">${s.beats.map(x => x[0]).join(" → ")}</span>
+          <div class="pick"><button class="mini${on ? " on" : ""}" data-story="${k}">${on ? "✓ 쓰는 중" : "이 구조로"}</button></div></div>`; }).join("")}</div>`;
+    },
+    bind: b => {
+      const beats = b.story.beats, redraw = () => { $("#story-svg").innerHTML = storySvg(beats, { hook: b.format !== "long" }); $("#story-sum").textContent = storySum(b); };
+      $$("[data-b]").forEach(el => el.addEventListener("input", () => { const k = el.dataset.b; beats[+el.dataset.i][k] = k === "sec" || k === "tension" ? +el.value || 0 : el.value; vchanged(); redraw(); }));
+      $$("[data-bm]").forEach(el => el.addEventListener("click", () => { const i = +el.dataset.i, j = i + +el.dataset.bm; if (j < 0 || j >= beats.length) return; [beats[i], beats[j]] = [beats[j], beats[i]]; vchanged(); renderSec(); }));
+      $$("[data-bd]").forEach(el => el.addEventListener("click", () => { beats.splice(+el.dataset.bd, 1); vchanged(); renderSec(); }));
+      $("#beat-add").addEventListener("click", () => { beats.push({ name: "새 구간", sec: half(b.duration / 8), tension: .5, desc: "" }); vchanged(); renderSec(); });
+      $("#beat-fit")?.addEventListener("click", () => {
+        const sum = beatSum(beats) || 1; beats.forEach(x => x.sec = half((+x.sec || 0) / sum * b.duration));
+        beats.at(-1).sec = Math.max(.5, beats.at(-1).sec + b.duration - beatSum(beats)); vchanged(); renderSec();
+      });
+      $$("[data-story]").forEach(el => el.addEventListener("click", () => {
+        const k = el.dataset.story; if (b.story.template === k) return;
+        if (beats.length && !confirm("지금 구간을 이 구조로 바꿀까요?")) return;
+        b.story = { template: k, beats: tplBeats(STORIES[k], b.duration) }; vchanged(); renderSec();
+      }));
+    },
+  },
+  cut: {
+    html: b => `<p class="note">이 영상에 쓸 컷 편집 방식을 고르세요(여러 개 가능). 미리보기 아래 줄은 편집 타임라인, 흰 세로선은 재생 위치입니다.</p>
+      <div class="cards">${Object.entries(CUTS).map(([k, c]) => { const on = b.cut.styles.includes(k); return `<div class="card${on ? " on" : ""}">${cutPreview(k)}
+        <span class="name">${c.name}</span><span class="desc">${c.desc}</span><span class="when">어울림: ${c.when}</span>
+        <div class="pick"><button class="mini${on ? " on" : ""}" data-cut="${k}" aria-pressed="${on}">${on ? "✓ 쓴다" : "쓰기"}</button></div></div>`; }).join("")}</div>
+      <h2>컷 편집 메모</h2>${vta("cut.notes", b.cut.notes, "예: 말 사이 0.2초 넘게 비면 자르기 / 한 컷 최대 3초")}`,
+    bind: b => $$("[data-cut]").forEach(el => el.addEventListener("click", () => { b.cut.styles = toggle(b.cut.styles, el.dataset.cut); vchanged(); renderSec(); })),
+  },
+  trans: {
+    html: b => `<p class="note">미리보기는 A 화면에서 B 화면으로 넘어가는 모습입니다. <b>쓴다</b> · <b>안 쓴다</b>를 골라 두면 기획서에 그대로 들어갑니다.</p>
+      <div class="cards">${Object.entries(TRANS).map(([k, x]) => { const use = b.transitions.use.includes(k), no = b.transitions.avoid.includes(k);
+        return `<div class="card${use ? " on" : no ? " avoid" : ""}"><div class="tp" data-a="${k}" aria-hidden="true"><div class="f fa">A<i class="o"></i></div><div class="f fb">B<i class="o"></i></div><i class="m"></i></div>
+          <span class="name">${x.name} <span class="when">${x.dur}</span></span><span class="desc">${x.desc}</span><span class="when">어울림: ${x.when}${x.avoid ? ` · 주의: ${x.avoid}` : ""}</span>
+          <div class="pick"><button class="mini${use ? " on" : ""}" data-tr="use" data-k="${k}" aria-pressed="${use}">${use ? "✓ " : ""}쓴다</button><button class="mini${no ? " no" : ""}" data-tr="avoid" data-k="${k}" aria-pressed="${no}">${no ? "✕ " : ""}안 쓴다</button></div></div>`; }).join("")}</div>
+      <h2>트랜지션 메모</h2>${vta("transitions.notes", b.transitions.notes, "예: 휩 팬은 장소가 바뀔 때만 / 디졸브는 마지막 장면에 한 번")}`,
+    bind: b => $$("[data-tr]").forEach(el => el.addEventListener("click", () => {
+      const { tr, k } = el.dataset, t = b.transitions, other = tr === "use" ? "avoid" : "use";
+      t[tr] = toggle(t[tr], k); t[other] = t[other].filter(x => x !== k); vchanged(); renderSec();
+    })),
+  },
+  caption: {
+    html: b => { const tall = b.format !== "long"; return `<p class="note">자막 방식을 하나 고르세요. 미리보기는 ${tall ? "세로 9:16" : "가로 16:9"} 화면입니다(형식에 따라 바뀜).</p>
+      <div class="cards">${Object.entries(CAPS).map(([k, c]) => `<button class="card${b.captions.style === k ? " on" : ""}" data-cap="${k}" aria-pressed="${b.captions.style === k}"><div class="capv${tall ? " tall" : ""}" data-capv="${k}" aria-hidden="true"><div class="cap"></div></div><span class="name">${c.name}</span><span class="desc">${c.desc}</span></button>`).join("")}</div>
+      <h2>자막 메모</h2>${vta("captions.notes", b.captions.notes, "글꼴 · 크기 · 색 · 위치. 예: 강조어는 노란색, 화면 아래 15% 위치")}`; },
+    bind: b => $$("[data-cap]").forEach(el => el.addEventListener("click", () => { b.captions.style = b.captions.style === el.dataset.cap ? "" : el.dataset.cap; vchanged(); renderSec(); })),
+  },
+  music: {
+    html: b => { const m = b.music, mood = MOODS[m.mood];
+      return `<p class="note">분위기를 고르면 막대가 그 빠르기(BPM)로 움직입니다.</p>
+        <div class="cards">${Object.entries(MOODS).map(([k, x]) => { const on = m.mood === k, bpm = on && m.bpm ? m.bpm : x.bpm ? (x.bpm[0] + x.bpm[1]) / 2 : 0;
+          return `<button class="card${on ? " on" : ""}" data-mood="${k}" aria-pressed="${on}"><span class="eq${x.bpm ? "" : " off"}"${on ? ' id="eq-on"' : ""}${bpm ? ` style="--beat:${(60 / bpm).toFixed(3)}s"` : ""} aria-hidden="true">${"<i></i>".repeat(6)}</span>
+            <span class="name">${x.name}${x.bpm ? ` <span class="when">${x.bpm[0]}–${x.bpm[1]} BPM</span>` : ""}</span><span class="desc">${x.desc}</span><span class="when">어울림: ${x.when}</span></button>`; }).join("")}</div>
+        <div class="row2" style="margin-top:14px">${field("BPM", `<input type="number" data-v="music.bpm" data-num value="${m.bpm ?? ""}" min="40" max="200">`, mood?.bpm ? `${mood.name}: 보통 ${mood.bpm[0]}–${mood.bpm[1]}` : "")}${field("장르 · 악기", vin("music.genre", m.genre, "예: 어쿠스틱 기타 + 휘파람"))}</div>
+        <div class="row2">${field("음원 출처", vin("music.source", m.source, "예: 유튜브 오디오 보관함, Epidemic Sound"))}${field("레퍼런스 곡", vin("music.refs", m.refs, "제목 · 링크"))}</div>
+        ${field("볼륨 규칙", vin("music.volume", m.volume, "예: 말할 때 음악은 -18dB 안팎으로 낮추기"))}
+        ${field("구간별 음악", vta("music.notes", m.notes, "예: 훅은 음악 없이 효과음만 → 과정 몽타주에서 비트 시작 → 공개 순간 드롭"))}`; },
+    bind: b => {
+      $$("[data-mood]").forEach(el => el.addEventListener("click", () => {
+        const k = el.dataset.mood, x = MOODS[k], m = b.music;
+        if (m.mood === k) m.mood = "";
+        else { m.mood = k; if (!x.bpm) m.bpm = null; else if (!m.bpm || m.bpm < x.bpm[0] || m.bpm > x.bpm[1]) m.bpm = Math.round((x.bpm[0] + x.bpm[1]) / 2); }
+        vchanged(); renderSec();
+      }));
+      $('[data-v="music.bpm"]').addEventListener("input", () => { const eq = $("#eq-on"); if (eq && b.music.bpm > 0) eq.style.setProperty("--beat", (60 / b.music.bpm).toFixed(3) + "s"); });
+    },
+  },
+  tools: {
+    html: b => { const t = b.tools; return `<p class="note">편집 프로그램을 고르면 Claude가 그 프로그램에 맞는 결과물(자막 파일 · 컷 목록 · 코드)을 넘겨주도록 기획서에 적힙니다.</p>
+      <h2>편집 프로그램</h2>
+      <div class="cards">${Object.entries(EDITORS).map(([k, x]) => `<button class="card${t.editor === k ? " on" : ""}" data-editor="${k}" aria-pressed="${t.editor === k}"><span class="name">${x.name}</span><span class="desc">${x.desc}</span><span class="when">어울림: ${x.when}</span><span class="when">Claude가 넘길 것: ${x.handoff}</span></button>`).join("")}</div>
+      ${TOOL_GROUPS.map(([g, label, items]) => `<h2>${label}</h2><div class="chips">${items.map(it => { const on = (t.picks[g] || []).includes(it); return `<button class="mini${on ? " on" : ""}" data-tg="${g}" data-it="${esc(it)}" aria-pressed="${on}">${on ? "✓ " : ""}${esc(it)}</button>`; }).join("")}</div>`).join("")}
+      <h2>도구 메모</h2>${vta("tools.notes", t.notes, "예: 프로젝트 파일은 ~/Movies/채널/ 에, 1080×1920 30fps로 내보내기, AI 음성은 Typecast '준우'")}`; },
+    bind: b => {
+      $$("[data-editor]").forEach(el => el.addEventListener("click", () => { b.tools.editor = b.tools.editor === el.dataset.editor ? "" : el.dataset.editor; vchanged(); renderSec(); }));
+      $$("[data-tg]").forEach(el => el.addEventListener("click", () => { const g = el.dataset.tg; b.tools.picks[g] = toggle(b.tools.picks[g] || [], el.dataset.it); vchanged(); renderSec(); }));
+    },
+  },
+  refs: {
+    html: b => `<p class="note">참고할 영상 링크와 <b>무엇을 가져올지</b>를 적어 두세요. 유튜브 링크는 썸네일이 보입니다.</p>
+      ${b.references.map((r, i) => { const id = ytId(r.url), url = safeUrl(r.url); return `<div class="ref">
+        <a class="thumb"${url ? ` href="${esc(url)}" target="_blank" rel="noopener"` : ""} style="${id ? `background-image:url(https://i.ytimg.com/vi/${id}/mqdefault.jpg)` : ""}">${id ? "" : "링크 없음"}</a>
+        <div><div class="row2">${field("링크", `<input type="text" data-r="url" data-i="${i}" value="${esc(r.url)}" placeholder="https://youtu.be/…">`)}${field("이름", `<input type="text" data-r="title" data-i="${i}" value="${esc(r.title)}" placeholder="채널 / 영상 제목">`)}</div>
+        ${field("가져올 것", `<div class="checks">${REF_TAKE.map(t => `<label><input type="checkbox" data-take="${esc(t)}" data-i="${i}"${(r.take || []).includes(t) ? " checked" : ""}> ${t}</label>`).join("")}</div>`)}
+        <div class="row2">${field("구간", `<input type="text" data-r="at" data-i="${i}" value="${esc(r.at)}" placeholder="예: 0:12–0:20">`)}${field("메모", `<input type="text" data-r="memo" data-i="${i}" value="${esc(r.memo)}" placeholder="이 부분의 무엇을 따라 할지">`)}</div>
+        <div class="actions"><button class="btn danger" data-rdel="${i}">지우기</button></div></div></div>`; }).join("") || `<p class="empty">아직 레퍼런스가 없습니다.</p>`}
+      <div class="actions"><button class="btn" id="ref-add">+ 레퍼런스 추가</button></div>`,
+    bind: b => {
+      $$("[data-r]").forEach(el => el.addEventListener("input", () => {
+        b.references[+el.dataset.i][el.dataset.r] = el.value; vchanged();
+        if (el.dataset.r !== "url") return;
+        const th = el.closest(".ref").querySelector(".thumb"), id = ytId(el.value), url = safeUrl(el.value);
+        th.style.backgroundImage = id ? `url(https://i.ytimg.com/vi/${id}/mqdefault.jpg)` : ""; th.textContent = id ? "" : "링크 없음";
+        if (url) { th.href = url; th.target = "_blank"; th.rel = "noopener"; } else th.removeAttribute("href");
+      }));
+      $$("[data-take]").forEach(el => el.addEventListener("change", () => {
+        const box = el.closest(".ref"); b.references[+el.dataset.i].take = REF_TAKE.filter(t => box.querySelector(`[data-take="${t}"]`).checked); vchanged();
+      }));
+      $$("[data-rdel]").forEach(el => el.addEventListener("click", () => { b.references.splice(+el.dataset.rdel, 1); vchanged(); renderSec(); }));
+      $("#ref-add").addEventListener("click", () => { b.references.push({ url: "", title: "", take: [], at: "", memo: "" }); vchanged(); renderSec(); });
+    },
+  },
+  rules: {
+    html: b => { const st = state.video.style; return `<p class="note">매번 하게 되는 지적을 여기 모아 두세요. 이 프로젝트의 <b>모든 영상</b> 기획서에 들어가고, Claude도 작업 전에 읽습니다(<code>video/style.json</code>).</p>
+      ${st.rules.map((r, i) => `<div class="rule"><select data-ra="${i}" aria-label="분야">${opt(RULE_AREAS.map(a => [a, a]), r.area)}</select><input type="text" data-rt="${i}" value="${esc(r.text)}" aria-label="규칙"><button class="mini no" data-rd="${i}" aria-label="지우기">×</button></div>`).join("") || `<p class="empty">아직 없습니다.</p>`}
+      <div class="actions"><button class="btn" id="rule-add">+ 규칙 추가</button></div>
+      <h2>이번 영상만의 메모</h2>${vta("notes", b.notes, "이번 영상에서 특히 신경 쓸 것")}
+      <h2>새 영상의 기본값</h2>
+      <p class="note">지금 영상의 형식 · 스토리 구조 · 컷 편집 · 트랜지션 · 자막 · 배경음악 · 도구 선택을 <b>새 영상</b>을 만들 때 미리 채워 둡니다. 지금 기본값: ${defaultsSummary(st.defaults)}</p>
+      <div class="actions"><button class="btn" id="set-defaults">지금 선택을 기본값으로</button>${Object.keys(st.defaults).length ? `<button class="btn danger" id="clear-defaults">기본값 비우기</button>` : ""}</div>`; },
+    bind: b => {
+      const st = state.video.style, touch = () => { state.styleDirty = true; vchanged(); };
+      $$("[data-ra]").forEach(el => el.addEventListener("change", () => { st.rules[+el.dataset.ra].area = el.value; touch(); }));
+      $$("[data-rt]").forEach(el => el.addEventListener("input", () => { st.rules[+el.dataset.rt].text = el.value; touch(); }));
+      $$("[data-rd]").forEach(el => el.addEventListener("click", () => { st.rules.splice(+el.dataset.rd, 1); touch(); renderSec(); }));
+      $("#rule-add").addEventListener("click", () => { st.rules.push({ area: "기타", text: "" }); touch(); renderSec(); $$("[data-rt]").at(-1)?.focus(); });
+      $("#set-defaults").addEventListener("click", () => { st.defaults = Object.fromEntries(DEFAULT_KEYS.map(k => [k, clone(b[k])])); touch(); renderSec(); toast("기본값으로 정했습니다. 저장하면 반영됩니다."); });
+      $("#clear-defaults")?.addEventListener("click", () => { st.defaults = {}; touch(); renderSec(); });
+    },
+  },
+  brief: {
+    html: b => `<p class="note">저장하면 <code>${esc(state.video.dir)}/${esc(state.vname)}/brief.md</code>에 이 내용이 같이 저장됩니다. Claude에게 <code>video/${esc(state.vname)}/brief.md 읽고 시작해</code>라고 하면 됩니다.</p>
+      <div class="actions" style="margin-bottom:10px"><button class="btn" id="brief-copy">기획서 복사</button></div><pre class="brief">${esc(briefMarkdown(b, state.vname))}</pre>`,
+    bind: b => $("#brief-copy").addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(briefMarkdown(b, state.vname)); toast("복사했습니다"); } catch { toast("복사하지 못했습니다"); }
+    }),
+  },
+};
+function storySum(b) {
+  if (!b.story.beats.length) return "";
+  const s = beatSum(b.story.beats), d = s - b.duration;
+  return `구간 합계 ${clock(s)} / 목표 ${clock(b.duration)}${Math.abs(d) >= 1 ? ` — ${clock(Math.abs(d))} ${d > 0 ? "넘침" : "모자람"}` : ""}`;
+}
+
+/* ── 기획서(brief.md): 사람과 Claude가 읽는 글 ───────────────────── */
+function briefMarkdown(b, name) {
+  const L = [], add = (...x) => L.push(...x), cell = s => String(s ?? "").replace(/\|/g, "\\|").replace(/\n/g, " ");
+  add(`# ${b.title || name}`, "");
+  if (b.logline) add(`> ${b.logline}`, "");
+  add(`- 형식: ${FORMATS[b.format]?.name || "정하지 않음"} · ${b.ratio || "-"} · ${clock(b.duration)}`);
+  if (b.platforms.length) add(`- 올릴 곳: ${b.platforms.join(", ")}`);
+  if (b.target) add(`- 보는 사람: ${b.target}`);
+  const beats = b.story.beats;
+  if (beats.length) {
+    add("", `## 스토리 — ${STORIES[b.story.template]?.name || "직접 구성"}`, "", "| # | 구간 | 시간 | 무엇을 보여 주나 | 긴장도 |", "|---|---|---|---|---|");
+    let t = 0;
+    beats.forEach((x, i) => { const s = t; t += +x.sec || 0; add(`| ${i + 1} | ${cell(x.name)} | ${clock(s)}–${clock(t)} | ${cell(x.desc)} | ${"▮".repeat(Math.round((x.tension ?? .5) * 5)) || "·"} |`); });
+  }
+  const c = b.cut;
+  if (c.styles.length || c.notes) { add("", "## 컷 편집", ""); c.styles.forEach(k => CUTS[k] && add(`- **${CUTS[k].name}** — ${CUTS[k].desc}`)); if (c.notes) add("", c.notes); }
+  const tr = b.transitions;
+  if (tr.use.length || tr.avoid.length || tr.notes) {
+    add("", "## 트랜지션", "");
+    if (tr.use.length) add(`- 쓴다: ${tr.use.map(k => TRANS[k] ? `${TRANS[k].name}(${TRANS[k].dur})` : k).join(", ")}`, "- 그 밖의 트랜지션은 먼저 물어보고 쓴다.");
+    if (tr.avoid.length) add(`- 쓰지 않는다: ${tr.avoid.map(k => TRANS[k]?.name || k).join(", ")}`);
+    if (tr.notes) add("", tr.notes);
+  }
+  const cap = CAPS[b.captions.style];
+  if (cap || b.captions.notes) { add("", "## 자막", ""); if (cap) add(`- **${cap.name}** — ${cap.desc}`); if (b.captions.notes) add("", b.captions.notes); }
+  const m = b.music, mood = MOODS[m.mood];
+  if (mood || m.bpm || m.genre || m.source || m.refs || m.volume || m.notes) {
+    add("", "## 배경음악", "");
+    if (mood) add(`- 분위기: **${mood.name}** — ${mood.desc}`);
+    if (m.bpm) add(`- BPM: ${m.bpm}`);
+    [["장르 · 악기", m.genre], ["출처", m.source], ["레퍼런스 곡", m.refs], ["볼륨", m.volume]].forEach(([k, v]) => v && add(`- ${k}: ${v}`));
+    if (m.notes) add("", m.notes);
+  }
+  const t = b.tools, ed = EDITORS[t.editor], picks = TOOL_GROUPS.filter(([g]) => t.picks[g]?.length);
+  if (ed || picks.length || t.notes) {
+    add("", "## 도구", "");
+    if (ed) add(`- 편집 프로그램: **${ed.name}**`, `- Claude가 넘길 것: ${ed.handoff}`);
+    picks.forEach(([g, label]) => add(`- ${label}: ${t.picks[g].join(", ")}`));
+    if (t.notes) add("", t.notes);
+  }
+  if (b.references.length) {
+    add("", "## 레퍼런스", "");
+    b.references.forEach(r => add(`- ${r.title || r.url || "(이름 없음)"}${r.url && r.title ? ` — ${r.url}` : ""}${r.at ? ` · 구간 ${r.at}` : ""}${r.take?.length ? ` · 가져올 것: ${r.take.join(", ")}` : ""}${r.memo ? `\n  - ${r.memo}` : ""}`));
+  }
+  const rules = (state.video?.style.rules || []).filter(r => r.text?.trim());
+  if (rules.length) { add("", "## 늘 지키는 것 (채널 규칙)", ""); rules.forEach(r => add(`- [${r.area}] ${r.text.trim()}`)); }
+  if (b.notes) add("", "## 이번 영상 메모", "", b.notes);
+  return L.join("\n") + "\n";
+}
+
 /* ── 이벤트 ────────────────────────────────────────────────────── */
 document.querySelectorAll(".apptab").forEach(t => t.addEventListener("click", () => showView(t.dataset.view)));
 window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
@@ -633,6 +1288,7 @@ $("#reload-runs").addEventListener("click", async () => {
 });
 $("#save").addEventListener("click", save);
 $("#add-node").addEventListener("click", addNode);
+$("#add-video").addEventListener("click", newVideo);
 $("#connect").addEventListener("click", () => state.connecting ? stopConnecting() : startConnecting());
 $("#p-close").addEventListener("click", closePanel);
 document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => { state.tab = t.dataset.tab; renderPanel(); }));
