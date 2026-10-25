@@ -279,6 +279,74 @@ pre.brief { max-height: none; }
     repeating-linear-gradient(45deg, rgba(251,113,133,.45) 0 4px, transparent 4px 8px) bottom / 100% 25% no-repeat,
     repeating-linear-gradient(45deg, rgba(251,113,133,.45) 0 4px, transparent 4px 8px) right / 12% 100% no-repeat; }
 @media (prefers-reduced-motion: reduce) { .fx:not(:hover) * { animation-play-state: paused !important; } }
+/* 콘티 · 1차 안: 화면(stage) + 재생 · 볼륨 + 타임라인 */
+.pv { display: grid; grid-template-columns: auto minmax(240px, 1fr); gap: 16px; align-items: start; border: 1px solid var(--line); background: var(--panel); border-radius: 12px; padding: 12px; }
+.pv.long { grid-template-columns: 1fr; }
+.stage { position: relative; overflow: hidden; background: #000; border-radius: 8px; aspect-ratio: 9 / 16; height: min(68vh, 600px); margin: 0 auto; container-type: size; }
+.pv.long .stage { aspect-ratio: 16 / 9; height: auto; width: 100%; max-width: 860px; }
+@media (max-width: 800px) { .pv { grid-template-columns: 1fr; } .stage { height: auto; width: min(100%, 340px); } .pv.long .stage { width: 100%; } }
+.stage .pv-layer { position: absolute; inset: 0; aspect-ratio: auto; border-radius: 0; }
+.stage .pv-layer .sc, .shot-thumb { background: #000; }
+.stage.paused .pv-layer * { animation-play-state: paused !important; }
+.cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.cam > svg, .cam > img, .cam > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.pv-title { position: absolute; inset: 0; display: grid; place-items: center; padding: 8%; text-align: center; font-weight: 800; font-size: 9cqw; line-height: 1.25; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,.5); word-break: keep-all; }
+.pv-flash, .pv-mask { position: absolute; pointer-events: none; }
+.pv-flash { inset: 0; background: #fff; opacity: 0; }
+.pv-mask { top: 0; bottom: 0; left: 0; width: 120%; background: #0b1220; transform: translateX(-200%); }
+.pv-cap { position: absolute; inset: 0; pointer-events: none; }
+.pv-cap em, .pv-title em { font-style: normal; color: #fde047; }
+.pv-sub, .pv-top { position: absolute; left: 6%; right: 6%; text-align: center; font-weight: 700; }
+.pv-sub { bottom: 8%; color: #fff; font-size: 3.2cqw; text-shadow: 0 1px 3px #000, 0 0 2px #000; }
+.pv-top { top: 6%; color: #111; background: #fde047; padding: .2em .4em; border-radius: 4px; font-size: 3cqw; }
+.pv-pop, .pv-kw { position: absolute; inset: 0 6%; display: grid; place-items: center; text-align: center; font-weight: 800; color: #fff; font-size: 6cqw; text-shadow: 0 2px 0 #000, 0 0 6px #000; animation: pop .25s ease-out; }
+.pv-kw { color: #fde047; }
+.stage.tall .pv-sub { bottom: 28%; right: 14%; font-size: 5.6cqw; } .stage.tall .pv-top { top: 16%; right: 14%; font-size: 5.2cqw; }
+.stage.tall .pv-pop, .stage.tall .pv-kw { font-size: 11cqw; right: 14%; } .stage.tall .pv-title { font-size: 12cqw; }
+.pv-hud { position: absolute; left: 8px; top: 8px; max-width: calc(100% - 16px); font: 700 11px var(--mono); color: #fff; background: rgba(0,0,0,.6); padding: 2px 7px; border-radius: 4px; pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pv-hud.miss { background: rgba(190,18,60,.85); }
+.stage.safe::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(45deg, rgba(251,113,133,.45) 0 4px, transparent 4px 8px) top / 100% 15% no-repeat,
+    repeating-linear-gradient(45deg, rgba(251,113,133,.45) 0 4px, transparent 4px 8px) bottom / 100% 25% no-repeat,
+    repeating-linear-gradient(45deg, rgba(251,113,133,.45) 0 4px, transparent 4px 8px) right / 12% 100% no-repeat; }
+.pv-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.pv-ctrl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pv-time { font-weight: 700; font-variant-numeric: tabular-nums; }
+.pv-now { border-left: 4px solid var(--c, var(--lane)); padding: 6px 10px; background: var(--bg); border-radius: 8px; font-size: 13px; }
+.pv-now b { display: block; }
+.pv-music { font-size: 12.5px; color: var(--muted); }
+.vol { display: grid; grid-template-columns: 56px 1fr; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); }
+.ptl { margin-top: 12px; user-select: none; touch-action: none; }
+.ptl .row { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+.ptl .tn { width: 44px; font-size: 10.5px; color: var(--faint); flex: none; }
+.ptl .lane { position: relative; flex: 1; height: 26px; cursor: pointer; }
+.ptl .lane.sm { height: 16px; }
+.ptl .lane.ruler { height: 14px; }
+.ptl .lane > b { position: absolute; top: 0; bottom: 0; background: var(--c); border-radius: 3px; border-right: 1px solid var(--panel); font-size: 10.5px; color: rgba(255,255,255,.92); overflow: hidden; white-space: nowrap; padding: 0 4px; line-height: 26px; font-weight: 600; }
+.ptl .mus > b { line-height: 16px; background: color-mix(in srgb, var(--emph) 45%, var(--panel)); }
+.ptl .mus > b.low { background: color-mix(in srgb, var(--emph) 18%, var(--panel)); color: var(--muted); }
+.ptl .mus > b.off { background: repeating-linear-gradient(45deg, var(--lane) 0 3px, transparent 3px 6px); }
+.ptl .cue { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--warn); }
+.ptl .cue span { position: absolute; left: 4px; top: 0; font-size: 10px; line-height: 16px; color: var(--warn); white-space: nowrap; }
+.ptl .tick { position: absolute; top: 0; font-size: 10px; color: var(--faint); border-left: 1px solid var(--lane); padding-left: 3px; line-height: 14px; }
+.ptl .head { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text); left: 0; pointer-events: none; }
+.shots { display: flex; flex-direction: column; gap: 10px; margin: 12px 0 8px; }
+.shot { display: grid; grid-template-columns: 110px 1fr; gap: 12px; border: 1px solid var(--line); border-left: 4px solid var(--c); background: var(--panel); border-radius: 10px; padding: 10px; }
+.shot.long { grid-template-columns: 190px 1fr; }
+.shot.now { border-color: var(--emph); border-left-color: var(--c); }
+.shot-thumb { position: relative; border-radius: 6px; overflow: hidden; aspect-ratio: 9 / 16; container-type: size; align-self: start; }
+.shot.long .shot-thumb { aspect-ratio: 16 / 9; }
+.shot-top { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+.shot-top .bi { font-weight: 700; color: var(--c); min-width: 18px; }
+.shot-top input[data-s="name"] { flex: 1 1 160px; width: auto; }
+.shot-top input[data-s="sec"] { width: 80px; }
+.shot .g { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr)); gap: 0 10px; }
+.shot select { width: 100%; }
+.st { font-weight: 700; margin-left: 4px; } .st.ok { color: var(--emph); } .st.miss { color: var(--danger); } .st.todo { color: var(--warn); }
+.cues { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.cueed { display: inline-flex; gap: 4px; align-items: center; border: 1px solid var(--lane); border-radius: 8px; padding: 3px 5px; font-size: 12px; color: var(--muted); }
+.cueed select { min-height: 32px; padding: 2px 6px; width: auto; } .cueed input { width: 66px; padding: 4px 6px; }
+@media (max-width: 700px) { .shot, .shot.long { grid-template-columns: 1fr; } .shot-thumb { width: 120px; } .shot.long .shot-thumb { width: 200px; } }
 @media (max-width: 700px) { .bar, .main { padding-left: 16px; padding-right: 16px; } .row2 { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -297,7 +365,7 @@ pre.brief { max-height: none; }
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-const state = { video: null, vname: null, brief: null, vsec: "basic", dirty: false, styleDirty: false, safe: false };
+const state = { video: null, vname: null, brief: null, vsec: "basic", dirty: false, styleDirty: false, safe: false, assets: [] };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 async function api(path, opts = {}) {
@@ -429,20 +497,21 @@ const TOOL_GROUPS = [
 const PLATFORMS = ["유튜브", "인스타그램", "틱톡", "기타"];
 const REF_TAKE = ["스토리", "컷", "트랜지션", "자막", "음악", "색감", "썸네일", "말투"];
 const RULE_AREAS = ["스토리", "컷", "트랜지션", "자막", "음악", "화면", "도구", "기타"];
-const VSECS = [["basic", "기본"], ["story", "스토리"], ["cut", "컷 편집"], ["trans", "트랜지션"], ["fx", "효과"], ["caption", "자막"], ["music", "배경음악"], ["sfx", "효과음"], ["tools", "도구"], ["refs", "레퍼런스"], ["rules", "늘 하는 말"], ["brief", "기획서"]];
+const VSECS = [["basic", "기본"], ["story", "스토리"], ["cut", "컷 편집"], ["trans", "트랜지션"], ["fx", "효과"], ["caption", "자막"], ["music", "배경음악"], ["sfx", "효과음"], ["conti", "콘티 · 1차 안"], ["tools", "도구"], ["refs", "레퍼런스"], ["rules", "늘 하는 말"], ["brief", "기획서"]];
 const DEFAULT_KEYS = ["format", "ratio", "duration", "platforms", "story", "cut", "transitions", "effects", "captions", "music", "sfx", "tools"];
 const BEAT_C = ["c1", "c2", "c3", "c4", "c5", "c6"];
 
 const blankBrief = () => ({ title: "", logline: "", target: "", platforms: ["유튜브"], format: "shorts", ratio: "9:16", duration: 45,
   story: { template: "", beats: [] }, cut: { styles: [], notes: "" }, transitions: { use: [], avoid: [], notes: "" }, effects: { use: [], avoid: [], notes: "" },
-  captions: { style: "", notes: "" }, music: { mood: "", bpm: null, genre: "", source: "", refs: "", volume: "", notes: "" },
-  sfx: { use: [], source: "", volume: "", notes: "" },
+  captions: { style: "", notes: "" }, music: { mood: "", bpm: null, genre: "", source: "", refs: "", volume: "", notes: "", file: "" },
+  sfx: { use: [], source: "", volume: "", notes: "" }, shots: [],
   tools: { editor: "", picks: {}, notes: "" }, references: [], notes: "" });
 const clone = v => v == null ? v : JSON.parse(JSON.stringify(v));
 const isObj = v => v && typeof v === "object" && !Array.isArray(v);
 function normBrief(src) {
   const b = blankBrief();
   for (const [k, v] of Object.entries(src || {})) b[k] = isObj(b[k]) && isObj(v) ? { ...b[k], ...clone(v) } : clone(v);
+  b.shots = Array.isArray(b.shots) ? b.shots.filter(isObj).map(x => { const s = newShot(x); s.sfx = Array.isArray(s.sfx) ? s.sfx.filter(q => q?.k) : []; return s; }) : [];
   return b;
 }
 const normStyle = s => ({ channel: "", ...s, rules: Array.isArray(s?.rules) ? s.rules : [], defaults: isObj(s?.defaults) ? s.defaults : {} });
@@ -538,7 +607,9 @@ async function loadVideo(name) {
   $("#video-select").innerHTML = list.map(v => `<option value="${esc(v.name)}"${v.name === want ? " selected" : ""}>${esc(v.title)}</option>`).join("");
   $("#video-select").hidden = list.length < 2;
   if (!want) { Object.assign(state, { vname: null, brief: null }); return renderVideoEmpty(); }
+  pvReset();
   state.brief = normBrief((await api(`/api/video?name=${encodeURIComponent(want)}`)).brief); state.vname = want;
+  await loadAssets();
   if (location.hash !== "#" + encodeURIComponent(want)) history.replaceState(null, "", "#" + encodeURIComponent(want));
   renderVideo();
 }
@@ -573,7 +644,7 @@ async function saveVideo() {
 /* ── 그리기 ───────────────────────────────────────────── */
 function vbadge(k) {
   const b = state.brief, n = { story: b.story.beats.length, cut: b.cut.styles.length, trans: b.transitions.use.length + b.transitions.avoid.length,
-    fx: b.effects.use.length + b.effects.avoid.length, sfx: b.sfx.use.length, refs: b.references.length, rules: state.video.style.rules.length }[k];
+    fx: b.effects.use.length + b.effects.avoid.length, sfx: b.sfx.use.length, conti: b.shots.length, refs: b.references.length, rules: state.video.style.rules.length }[k];
   const set = { basic: b.title || b.logline, caption: b.captions.style, music: b.music.mood, tools: b.tools.editor }[k];
   return n ? String(n) : set ? "✓" : "";
 }
@@ -589,6 +660,7 @@ const vin = (p, v, ph = "") => `<input type="text" data-v="${p}" value="${esc(v)
 const vta = (p, v, ph = "") => `<textarea data-v="${p}" placeholder="${esc(ph)}">${esc(v)}</textarea>`;
 function renderSec() {
   const sec = SECTIONS[state.vsec] || SECTIONS.basic, b = state.brief;
+  if (state.vsec !== "conti") pvPause();
   $("#vsec").innerHTML = sec.html(b);
   $("#vsec").querySelectorAll("[data-v]").forEach(el => el.addEventListener("input", () => {
     setP(b, el.dataset.v, el.hasAttribute("data-num") ? (el.value === "" ? null : Number(el.value)) : el.value); vchanged();
@@ -720,6 +792,8 @@ const SECTIONS = {
         <div class="row2" style="margin-top:14px">${field("BPM", `<input type="number" data-v="music.bpm" data-num value="${m.bpm ?? ""}" min="40" max="200">`, mood?.bpm ? `${mood.name}: 보통 ${mood.bpm[0]}–${mood.bpm[1]}` : "")}${field("장르 · 악기", vin("music.genre", m.genre, "예: 어쿠스틱 기타 + 휘파람"))}</div>
         <div class="row2">${field("음원 출처", vin("music.source", m.source, "예: 유튜브 오디오 보관함, Epidemic Sound"))}${field("레퍼런스 곡", vin("music.refs", m.refs, "제목 · 링크"))}</div>
         ${field("볼륨 규칙", vin("music.volume", m.volume, "예: 말할 때 음악은 -18dB 안팎, 최종 -14 LUFS · 피크 -1 dBTP"))}
+        ${field("1차 안에 깔 음원 파일", `<input type="text" data-v="music.file" value="${esc(m.file)}" list="audio-list" placeholder="예: assets/bgm.mp3">${assetLists()}`,
+          `<code>video/${esc(state.vname)}/</code> 안 경로. 비워 두면 콘티 미리보기에서 고른 분위기 · BPM으로 임시 비트를 합성해 깝니다.`)}
         ${field("구간별 음악", vta("music.notes", m.notes, "예: 훅은 음악 없이 효과음만 → 과정 몽타주에서 비트 시작 → 공개 순간 드롭"))}`; },
     bind: b => {
       $$("[data-mood]").forEach(el => el.addEventListener("click", () => {
@@ -812,6 +886,7 @@ function briefMarkdown(b, name) {
     let t = 0;
     beats.forEach((x, i) => { const s = t; t += +x.sec || 0; add(`| ${i + 1} | ${cell(x.name)} | ${clock(s)}–${clock(t)} | ${cell(x.desc)} | ${"▮".repeat(Math.round((x.tension ?? .5) * 5)) || "·"} |`); });
   }
+  if (b.shots.length) contiMarkdown(b, name, add, cell);
   const c = b.cut;
   if (c.styles.length || c.notes) { add("", "## 컷 편집", ""); c.styles.forEach(k => CUTS[k] && add(`- **${CUTS[k].name}** — ${CUTS[k].desc}`)); if (c.notes) add("", c.notes); }
   const tr = b.transitions;
@@ -836,11 +911,11 @@ function briefMarkdown(b, name) {
     if (b.captions.notes) add("", b.captions.notes);
   }
   const m = b.music, mood = MOODS[m.mood];
-  if (mood || m.bpm || m.genre || m.source || m.refs || m.volume || m.notes) {
+  if (mood || m.bpm || m.genre || m.source || m.refs || m.volume || m.notes || m.file) {
     add("", "## 배경음악", "");
     if (mood) add(`- 분위기: **${mood.name}** — ${mood.desc}`);
     if (m.bpm) add(`- BPM: ${m.bpm}`);
-    [["장르 · 악기", m.genre], ["출처", m.source], ["레퍼런스 곡", m.refs], ["볼륨", m.volume]].forEach(([k, v]) => v && add(`- ${k}: ${v}`));
+    [["장르 · 악기", m.genre], ["출처", m.source], ["레퍼런스 곡", m.refs], ["볼륨", m.volume], ["1차 안 음원", m.file]].forEach(([k, v]) => v && add(`- ${k}: ${v}`));
     if (m.notes) add("", m.notes);
   }
   const sx = b.sfx;
@@ -905,9 +980,10 @@ const fxPreview = k => `<div class="fx" data-fx="${k}" aria-hidden="true">${'<di
 
 // 효과음은 파일 없이 브라우저에서 합성합니다(느낌을 고르기 위한 견본).
 let audio;
-function sfxPlay(k) {
-  const c = audio ??= new (window.AudioContext || window.webkitAudioContext)(), t = c.currentTime + .02;
-  const out = c.createGain(); out.gain.value = .5; out.connect(c.destination);
+const actx = () => audio ??= new (window.AudioContext || window.webkitAudioContext)();
+function sfxPlay(k, when, dest) {
+  const c = actx(), t = (when ?? c.currentTime) + .02;
+  const out = c.createGain(); out.gain.value = .5; out.connect(dest || c.destination);
   const noise = sec => { const n = c.createBufferSource(), b = c.createBuffer(1, Math.ceil(c.sampleRate * sec), c.sampleRate), d = b.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; n.buffer = b; return n; };
   const gain = (at, peak, attack, decay) => { const g = c.createGain(); g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(peak, at + attack); g.gain.exponentialRampToValueAtTime(.0001, at + attack + decay); return g; };
@@ -932,12 +1008,464 @@ function sfxPlay(k) {
 const ear = k => k && SFX[k] ? `<span class="ear">어울리는 소리 <button class="mini" data-hear="${k}" aria-label="${SFX[k].name} 들어 보기">▶ ${SFX[k].name}</button></span>` : "";
 function bindHear() { $$("[data-hear]").forEach(el => el.addEventListener("click", ev => { ev.stopPropagation(); sfxPlay(el.dataset.hear); })); }
 
+/* ── 콘티 · 1차 안: 컷마다 화면 · 소재 · 카메라 · 자막 · 트랜지션 · 효과 · 효과음 · 음악 ── */
+// file: 소재가 파일일 수 있는 화면
+const SHOT_KINDS = {
+  talk: { name: "말하는 사람 (A롤)", file: true, hint: "촬영 파일 또는 무엇을 찍을지" },
+  photo: { name: "사진", file: true, hint: "assets/seoul.jpg · https://… · 어떤 사진인지" },
+  clip: { name: "영상 클립 (B롤)", file: true, hint: "assets/street.mp4 · 어떤 장면인지" },
+  map: { name: "지도", hint: "장소 · 경로 (예: 서울역 → 남산타워)" },
+  model: { name: "3D 모델 · 장면", file: true, hint: "assets/pin.glb · 무엇을 만들지" },
+  screen: { name: "화면 녹화", file: true, hint: "assets/demo.mp4 · 어떤 화면인지" },
+  text: { name: "글자 화면", hint: "화면에 크게 나올 글자 (비우면 컷 이름)" },
+};
+const CAMS = { none: "고정", in: "줌 인 (다가감)", out: "줌 아웃 (멀어짐)", left: "왼쪽으로 이동", right: "오른쪽으로 이동", up: "위로 (틸트 업)", down: "아래로 (틸트 다운)", orbit: "돌아보기 (3D 궤도)" };
+const MUSIC_LV = { "": "음악 그대로", low: "음악 작게 (말 · 강조)", off: "음악 끔" };
+const LV_GAIN = { "": 1, low: .3, off: 0 };
+// 1차 안에서 트랜지션이 걸리는 시간(초). 들어오는 컷의 처음에 겁니다.
+const TR_SEC = { cut: 0, match: 0, dissolve: .6, fadeblack: .8, flash: .25, whip: .3, zoom: .35, push: .4, wipe: .5, iris: .5, glitch: .25, spin: .45, blur: .6, mask: .45 };
+const IMG_RE = /\.(png|jpe?g|gif|webp|avif|svg)$/i, VID_RE = /\.(mp4|webm|mov|m4v)$/i, AUD_RE = /\.(mp3|wav|m4a|aac|ogg|flac)$/i;
+const isUrl = a => /^https?:\/\//i.test(a);
+const newShot = (o = {}) => ({ name: "새 컷", sec: 2, kind: "talk", asset: "", camera: "none", caption: "", trans: "", fx: "", music: "", sfx: [], desc: "", ...o });
+const shotSec = s => Math.max(.1, +s.sec || 0);
+function timeline(shots = state.brief.shots) { let t = 0; return shots.map((s, i) => { const start = t; t += shotSec(s); return { s, i, start, end: t }; }); }
+const shotsTotal = () => state.brief.shots.reduce((t, s) => t + shotSec(s), 0);
+const trim = (t, n) => (t = String(t ?? "")).length > n ? t.slice(0, n - 1) + "…" : t;
+const hl = t => esc(t).replace(/\*([^*]+)\*/g, "<em>$1</em>");
+
+/* 소재: video/<영상>/ 안의 파일 · 링크 · 설명 */
+async function loadAssets() { try { state.assets = (await api(`/api/assets?name=${encodeURIComponent(state.vname)}`)).files.map(f => f.path); } catch { state.assets = []; } }
+function assetRel(a) { const r = String(a || "").trim().replace(/^\.\//, ""), pre = `video/${state.vname}/`; return r.startsWith(pre) ? r.slice(pre.length) : r; }
+const assetSrc = a => isUrl(a) ? a : state.assets.includes(assetRel(a)) ? `/api/file?name=${encodeURIComponent(state.vname)}&path=${encodeURIComponent(assetRel(a))}` : "";
+function assetStatus(s) {
+  const kind = SHOT_KINDS[s.kind] || SHOT_KINDS.talk, a = String(s.asset || "").trim();
+  if (s.kind === "text") return { cls: "ok", text: "✓" };
+  if (!a) return { cls: "todo", text: "미정" };
+  if (!kind.file) return { cls: "ok", text: "✓" };
+  if (isUrl(a)) return { cls: "ok", text: "링크" };
+  if (/\.[a-z0-9]{2,5}$/i.test(a)) return state.assets.includes(assetRel(a)) ? { cls: "ok", text: "파일 있음" } : { cls: "miss", text: "파일 없음" };
+  return { cls: "todo", text: "설명만 · 파일 미정" };
+}
+const assetLists = () => `<datalist id="asset-list">${state.assets.map(a => `<option value="${esc(a)}">`).join("")}</datalist><datalist id="audio-list">${state.assets.filter(a => AUD_RE.test(a)).map(a => `<option value="${esc(a)}">`).join("")}</datalist>`;
+
+/* 컷 화면: 파일이 있으면 그 사진 · 영상, 없으면 화면 종류별 SVG 자리 표시 */
+const hash = t => [...String(t)].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
+const rnd = seed => () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32;
+const frameSize = () => state.brief.format !== "long" ? [90, 160] : [160, 90];
+function shotContent(s, i, thumb = false) {
+  const [W, H] = frameSize(), u = Math.min(W, H) / 100, a = String(s.asset || "").trim(), src = assetSrc(a), bg = `var(--f${i % 6})`;
+  const svg = body => `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${body}</svg>`;
+  const label = (t, y = W < H ? H * .8 : H - 12 * u) => t ? `<text x="${W / 2}" y="${y}" text-anchor="middle" style="font:700 ${6.5 * u}px var(--mono);fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.6);stroke-width:${1.4 * u}px">${esc(trim(t, W > H ? 30 : 16))}</text>` : "";
+  if (src && VID_RE.test(a)) return `<video src="${esc(src)}" muted playsinline preload="${thumb ? "metadata" : "auto"}"></video>`;
+  if (src && (IMG_RE.test(a) || s.kind === "photo")) return `<img src="${esc(src)}" alt="">`;
+  const full = `width="${W}" height="${H}"`;
+  switch (s.kind) {
+    case "text": return `<div class="pv-title" style="background:${bg}"><span>${hl(a || s.name)}</span></div>`;
+    case "photo": return svg(`<rect ${full} style="fill:#1f2937"/><rect x="${6 * u}" y="${6 * u}" width="${W - 12 * u}" height="${H - 12 * u}" rx="${2 * u}" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="${.8 * u}" stroke-dasharray="${2.5 * u} ${2 * u}"/>
+      <circle cx="${W * .68}" cy="${H * .36}" r="${7 * u}" fill="#fde68a" opacity=".8"/><path d="M${8 * u} ${H * .74} L${W * .36} ${H * .46} L${W * .56} ${H * .64} L${W * .7} ${H * .54} L${W - 8 * u} ${H * .74} Z" fill="rgba(255,255,255,.35)"/>${label(a || "사진")}`);
+    case "clip": { let holes = ""; for (let y = 3 * u; y < H; y += 9 * u) holes += `<rect x="${2 * u}" y="${y}" width="${4 * u}" height="${5 * u}" rx="${u}" fill="rgba(255,255,255,.3)"/><rect x="${W - 6 * u}" y="${y}" width="${4 * u}" height="${5 * u}" rx="${u}" fill="rgba(255,255,255,.3)"/>`;
+      return svg(`<rect ${full} style="fill:${bg}"/><rect ${full} fill="rgba(0,0,0,.35)"/>${holes}<path d="M${W / 2 - 7 * u} ${H / 2 - 10 * u} L${W / 2 + 10 * u} ${H / 2} L${W / 2 - 7 * u} ${H / 2 + 10 * u} Z" fill="rgba(255,255,255,.75)"/>${label(a || "영상 클립")}`); }
+    case "screen": { let lines = ""; for (let k = 0; k < 5; k++) lines += `<rect x="${14 * u}" y="${24 * u + k * 9 * u}" width="${(W - 28 * u) * (.4 + (hash(a + k) % 60) / 100)}" height="${3.5 * u}" rx="${u}" fill="rgba(255,255,255,.22)"/>`;
+      return svg(`<rect ${full} style="fill:#0f172a"/><rect x="${8 * u}" y="${8 * u}" width="${W - 16 * u}" height="${H - 16 * u}" rx="${3 * u}" fill="#1e293b" stroke="#334155" stroke-width="${.6 * u}"/><rect x="${8 * u}" y="${8 * u}" width="${W - 16 * u}" height="${8 * u}" rx="${3 * u}" fill="#334155"/>
+        ${["#fb7185", "#fbbf24", "#34d399"].map((c, k) => `<circle cx="${14 * u + k * 6 * u}" cy="${12 * u}" r="${1.8 * u}" fill="${c}"/>`).join("")}${lines}${label(a || "화면 녹화")}`); }
+    case "map": return mapSvg(s, W, H, u, thumb, svg, label);
+    case "model": return svg(`<rect ${full} style="fill:#0b1020"/><rect ${full} style="fill:${bg};opacity:.25"/>
+      <ellipse cx="${W / 2}" cy="${H * .46 + Math.min(W, H) * .34}" rx="${Math.min(W, H) * .36}" ry="${Math.min(W, H) * .08}" fill="rgba(0,0,0,.45)"/>
+      <g class="pv-cube">${cubeSvg(.6, W, H)}</g>${label("3D · " + (a || s.name))}`);
+    default: { const cy = H * .46, r = 14 * u;  // talk
+      return svg(`<rect ${full} style="fill:${bg}"/><rect y="${H * .6}" width="${W}" height="${H * .4}" fill="rgba(0,0,0,.25)"/><circle cx="${W / 2}" cy="${cy}" r="${r}" fill="rgba(255,255,255,.32)"/>
+        <path d="M${W / 2 - 32 * u} ${H} Q${W / 2 - 32 * u} ${cy + r + 6 * u} ${W / 2} ${cy + r + 4 * u} Q${W / 2 + 32 * u} ${cy + r + 6 * u} ${W / 2 + 32 * u} ${H} Z" fill="rgba(255,255,255,.32)"/>${label(a || "A롤 · 말하는 사람", H * .14 + 6 * u)}`); }
+  }
+}
+// 지도: 장소 글자로 정해지는 가짜 지도 + 출발 → 도착 경로가 그려지고 핀이 꽂힘
+function mapSvg(s, W, H, u, thumb, svg, label) {
+  const r = rnd(hash(s.asset || s.name)), at = (lo, hi) => lo + r() * (hi - lo);
+  let body = `<rect width="${W}" height="${H}" fill="#e7e2d6"/>`;
+  for (let k = 0; k < 2; k++) body += `<ellipse cx="${at(0, W)}" cy="${at(0, H)}" rx="${at(10, 22) * u}" ry="${at(8, 16) * u}" fill="#c9dfb5"/>`;
+  body += `<path d="M-5 ${at(0, H)} C${W * .3} ${at(0, H)} ${W * .6} ${at(0, H)} ${W + 5} ${at(0, H)}" fill="none" stroke="#9cc3dc" stroke-width="${8 * u}"/>`;
+  for (let k = 0; k < 4; k++) body += `<line x1="-5" y1="${at(0, H)}" x2="${W + 5}" y2="${at(0, H)}" stroke="#fff" stroke-width="${at(1.2, 2.6) * u}"/><line x1="${at(0, W)}" y1="-5" x2="${at(0, W)}" y2="${H + 5}" stroke="#fff" stroke-width="${at(1.2, 2.6) * u}"/>`;
+  const [x1, y1, x2, y2] = [W * at(.15, .3), H * at(.7, .85), W * at(.65, .85), H * at(.18, .32)];
+  body += `<path class="pv-route" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${thumb ? 0 : 1}" d="M${x1} ${y1} C${at(0, W)} ${at(0, H)} ${at(0, W)} ${at(0, H)} ${x2} ${y2}" fill="none" stroke="#ef4444" stroke-width="${2.4 * u}" stroke-linecap="round"/>
+    <circle cx="${x1}" cy="${y1}" r="${2.4 * u}" fill="#fff" stroke="#ef4444" stroke-width="${1.2 * u}"/>
+    <g class="pv-pin" style="transform-origin:${x2}px ${y2}px;transform:scale(${thumb ? 1 : 0})"><path d="M${x2} ${y2} L${x2 - 4 * u} ${y2 - 8 * u} A${5.5 * u} ${5.5 * u} 0 1 1 ${x2 + 4 * u} ${y2 - 8 * u} Z" fill="#ef4444" stroke="#fff" stroke-width="${.8 * u}"/><circle cx="${x2}" cy="${y2 - 11.5 * u}" r="${2 * u}" fill="#fff"/></g>`;
+  return svg(body + label(s.asset || "지도 · 장소 미정"));
+}
+// 3D 자리: 도는 상자(정사영, 먼 면부터 칠함)
+function cubeSvg(ang, W, H) {
+  const s = Math.min(W, H) * .2, cx = W / 2, cy = H * .46, tilt = .5, { cos, sin } = Math;
+  const P = [[-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1], [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]].map(([x, y, z]) => {
+    const x1 = x * cos(ang) + z * sin(ang), z1 = z * cos(ang) - x * sin(ang);
+    return [cx + x1 * s, cy - (y * cos(tilt) - z1 * sin(tilt)) * s, y * sin(tilt) + z1 * cos(tilt)];
+  });
+  const faces = [[0, 1, 2, 3, "#0369a1"], [5, 4, 7, 6, "#0284c7"], [4, 0, 3, 7, "#0ea5e9"], [1, 5, 6, 2, "#0c4a6e"], [3, 2, 6, 7, "#7dd3fc"], [4, 5, 1, 0, "#075985"]];
+  return faces.map(f => ({ f, z: f.slice(0, 4).reduce((t, k) => t + P[k][2], 0) })).sort((p, q) => p.z - q.z)
+    .map(({ f }) => `<polygon points="${f.slice(0, 4).map(k => P[k][0].toFixed(1) + "," + P[k][1].toFixed(1)).join(" ")}" fill="${f[4]}" stroke="#e0f2fe" stroke-width="${(s * .03).toFixed(2)}" stroke-linejoin="round"/>`).join("");
+}
+const thumbHtml = (s, i) => `<div class="cam">${shotContent(s, i, true)}</div>`;
+function camTf(cam, k) {
+  switch (cam) {
+    case "in": return `scale(${1 + .3 * k})`;
+    case "out": return `scale(${1.3 - .3 * k})`;
+    case "left": return `scale(1.2) translateX(${(k - .5) * 12}%)`;  // 카메라가 왼쪽으로 가면 화면은 오른쪽으로 흐름
+    case "right": return `scale(1.2) translateX(${(.5 - k) * 12}%)`;
+    case "up": return `scale(1.2) translateY(${(k - .5) * 12}%)`;
+    case "down": return `scale(1.2) translateY(${(.5 - k) * 12}%)`;
+    case "orbit": return `perspective(800px) rotateY(${(k - .5) * 24}deg) scale(1.15)`;
+    default: return "";
+  }
+}
+const pinScale = k => { const t = Math.min(1, Math.max(0, (k - .7) / .2)); return t && Math.max(0, 1 + 2.7 * (t - 1) ** 3 + 1.7 * (t - 1) ** 2); };
+// 트랜지션: p 0 → 1 동안 a(앞 컷) · b(이번 컷) 레이어 모양. flash · mask 는 위에 덮는 판
+function transStyle(k, p) {
+  const e = p < .5 ? 2 * p * p : 1 - (2 - 2 * p) ** 2 / 2, hump = Math.sin(Math.PI * p), first = p < .5, q = first ? p * 2 : p * 2 - 1, hide = { opacity: 0 };
+  const j = () => (Math.random() - .5) * 14 * hump;
+  switch (k) {
+    case "dissolve": return { b: { opacity: e } };
+    case "fadeblack": return first ? { a: { opacity: 1 - q }, b: hide } : { a: hide, b: { opacity: q } };
+    case "flash": return { a: first ? {} : hide, b: first ? hide : {}, flash: hump };
+    case "whip": return { a: { transform: `translateX(${-110 * e}%)`, filter: `blur(${8 * hump}px)` }, b: { transform: `translateX(${110 * (1 - e)}%)`, filter: `blur(${8 * hump}px)` } };
+    case "zoom": return first ? { a: { transform: `scale(${1 + 1.6 * q * q})`, filter: `blur(${5 * q}px)` }, b: hide } : { a: hide, b: { transform: `scale(${1 + (1 - q) ** 2})`, filter: `blur(${5 * (1 - q)}px)` } };
+    case "push": return { a: { transform: `translateX(${-100 * e}%)` }, b: { transform: `translateX(${100 * (1 - e)}%)` } };
+    case "wipe": return { b: { clip: `inset(0 ${(100 * (1 - e)).toFixed(1)}% 0 0)` } };
+    case "iris": return { b: { clip: `circle(${(75 * e).toFixed(1)}% at 50% 50%)` } };
+    case "glitch": return first ? { a: { transform: `translate(${j()}px, ${j() / 3}px) skewX(${j()}deg)`, filter: `hue-rotate(${90 * hump}deg) saturate(${1 + 2 * hump})` }, b: hide }
+      : { a: hide, b: { transform: `translate(${j()}px, ${j() / 3}px)`, filter: `hue-rotate(${-60 * hump}deg) saturate(${1 + 2 * hump})` } };
+    case "spin": return first ? { a: { transform: `rotate(${180 * q}deg) scale(${1 - .7 * q})`, opacity: 1 - q }, b: hide } : { a: hide, b: { transform: `rotate(${-180 * (1 - q)}deg) scale(${.3 + .7 * q})`, opacity: q } };
+    case "blur": return { a: { filter: `blur(${12 * e}px)` }, b: { opacity: e, filter: `blur(${12 * (1 - e)}px)` } };
+    case "mask": return { a: first ? {} : hide, b: first ? hide : {}, mask: -110 + 220 * p };  // 앞을 지나가는 물체가 화면을 다 가렸을 때 바뀜
+    default: return { a: hide };
+  }
+}
+function capHtml(s, k) {
+  const style = state.brief.captions.style, text = String(s.caption || "").trim();
+  const top = style === "title" && state.brief.title ? `<span class="pv-top">${esc(state.brief.title)}</span>` : "";
+  if (!text || style === "none") return top;
+  if (style === "pop") { const words = text.split(/\s+/); return top + `<span class="pv-pop">${hl(words[Math.min(words.length - 1, Math.floor(k * words.length))])}</span>`; }
+  if (style === "keyword") return top + `<span class="pv-kw">${hl(text)}</span>`;
+  return top + `<span class="pv-sub">${hl(text)}</span>`;
+}
+
+/* 재생: 오디오 시계(AudioContext) 기준. 효과음 · 임시 비트는 0.3초 앞까지 미리 예약 */
+const player = { playing: false, pos: 0, t0: 0, until: 0, bus: null, bgm: null, bgmSrc: "", lvl: null, cur: -1, musicVol: .7, sfxVol: .9, info: true, drag: false };
+const pvNow = () => player.playing ? actx().currentTime - player.t0 : player.pos;
+const bpmOf = m => m.bpm || (MOODS[m.mood]?.bpm ? Math.round((MOODS[m.mood].bpm[0] + MOODS[m.mood].bpm[1]) / 2) : 0);
+const musicFile = () => { const f = String(state.brief.music.file || "").trim(); return f ? assetSrc(f) : ""; };
+function musicLabel() {
+  const m = state.brief.music, f = String(m.file || "").trim(), mood = MOODS[m.mood];
+  if (f && musicFile()) return `♪ ${f}`;
+  const beat = mood?.bpm ? `임시 비트: ${mood.name} · ${bpmOf(m)} BPM (브라우저 합성 — 실제 곡 아님)` : "";
+  if (f) return `♪ ${f} — 파일이 없어 ${beat || "음악 없이"} 재생`;
+  return beat ? `♪ ${beat}` : "♪ 음악 없음 — 배경음악 칸에서 분위기를 고르거나 음원 파일을 적으면 깔립니다";
+}
+function pvReset() { pvPause(); Object.assign(player, { pos: 0, cur: -1 }); player.bgm?.pause(); player.bgm = null; player.bgmSrc = ""; }
+async function pvPlay() {
+  if (player.playing || !state.brief?.shots.length) return;
+  const c = actx(); await c.resume?.();
+  if (player.playing) return;
+  if (player.pos >= shotsTotal() - .05) player.pos = 0;
+  const m = c.createGain(), x = c.createGain(), lvl = c.createGain();
+  m.gain.value = player.musicVol; x.gain.value = player.sfxVol; lvl.connect(m).connect(c.destination); x.connect(c.destination);
+  Object.assign(player, { bus: { m, x, lvl }, lvl: null, t0: c.currentTime - player.pos, until: player.pos, playing: true });
+  const src = musicFile();
+  if (src) {
+    if (player.bgmSrc !== src) { player.bgm?.pause(); player.bgm = new Audio(src); player.bgmSrc = src; }
+    player.bgm.currentTime = player.pos; player.bgm.volume = player.musicVol; player.bgm.play().catch(() => {});
+  } else if (player.bgm) { player.bgm.pause(); player.bgm = null; player.bgmSrc = ""; }
+  pvButtons(); requestAnimationFrame(pvLoop);
+}
+function pvPause() {
+  if (!player.playing) return;
+  player.pos = pvNow(); player.playing = false;
+  player.bus.m.disconnect(); player.bus.x.disconnect(); player.bus = null;  // 미리 예약해 둔 소리도 같이 끊김
+  player.bgm?.pause(); $$("#stage video").forEach(v => v.pause());
+  pvButtons(); drawFrame(player.pos);
+}
+const pvToggle = () => player.playing ? pvPause() : pvPlay();
+function pvSeek(t) { const was = player.playing; pvPause(); player.pos = Math.min(Math.max(0, t), shotsTotal()); drawFrame(player.pos); if (was) pvPlay(); }
+function pvButtons() { const b = $("#pv-play"); if (b) b.textContent = player.playing ? "❚❚ 멈춤" : "▶ 재생"; $("#stage")?.classList.toggle("paused", !player.playing); }
+function pvLoop() {
+  if (!player.playing) return;
+  if (!$("#stage")) return pvPause();
+  const pos = pvNow(), total = shotsTotal();
+  if (pos >= total) { pvPause(); player.pos = total; drawFrame(total); return; }
+  pvSchedule(pos + .3);
+  const bg = player.bgm;
+  if (bg && !bg.paused && bg.currentTime < bg.duration - .1 && Math.abs(bg.currentTime - pos) > .25) bg.currentTime = pos;
+  drawFrame(pos);
+  requestAnimationFrame(pvLoop);
+}
+function pvSchedule(to) {
+  const from = player.until; if (to <= from) return;
+  player.until = to;
+  for (const { s, start } of timeline()) for (const q of s.sfx) {
+    const at = start + (+q.at || 0);
+    if (SFX[q.k] && at >= from && at < to) sfxPlay(q.k, player.t0 + at, player.bus.x);
+  }
+  if (!player.bgm) musicSchedule(from, to, player.bus.lvl);
+}
+function drawFrame(pos) {
+  if (!$("#stage") || !state.brief.shots.length) return;
+  const T = timeline(), total = T.at(-1).end; pos = Math.min(Math.max(0, pos), total - .001);
+  const cur = T.find(x => pos < x.end) || T.at(-1), prev = T[cur.i - 1], into = pos - cur.start, k = into / shotSec(cur.s);
+  const dur = prev ? Math.min(TR_SEC[cur.s.trans] || 0, shotSec(cur.s) * .6, shotSec(prev.s) * .6) : 0;
+  const tr = dur && into < dur ? transStyle(cur.s.trans, into / dur) : null, lp = $("#ly-prev");
+  showLayer($("#ly-cur"), cur, pos, tr?.b || {});
+  if (tr) { lp.style.display = ""; showLayer(lp, prev, pos, tr.a || {}); } else if (lp.style.display !== "none") { lp.style.display = "none"; lp.querySelectorAll("video").forEach(v => v.pause()); }
+  $("#pv-flash").style.opacity = tr?.flash || 0;
+  $("#pv-mask").style.transform = `translateX(${tr?.mask ?? -200}%)`;
+  const cap = $("#pv-cap"), ch = capHtml(cur.s, k); if (cap._h !== ch) { cap._h = ch; cap.innerHTML = ch; }
+  const st = assetStatus(cur.s), hud = $("#pv-hud");
+  hud.hidden = !player.info; hud.classList.toggle("miss", st.cls === "miss");
+  hud.textContent = `${cur.i + 1}/${T.length} · ${SHOT_KINDS[cur.s.kind]?.name || cur.s.kind} · ${cur.s.name}${st.cls === "miss" ? " · ⚠ 소재 파일 없음" : st.cls === "todo" ? " · 소재 미정" : ""}`;
+  $("#pv-time").textContent = `${clock(pos)} / ${clock(total)}`;
+  $$(".ptl .head").forEach(h => h.style.left = (pos / total * 100).toFixed(2) + "%");
+  if (player.cur !== cur.i) {
+    player.cur = cur.i; $$(".shot").forEach((el, j) => el.classList.toggle("now", j === cur.i));
+    const now = $("#pv-now"); now.style.setProperty("--c", `var(--${BEAT_C[cur.i % 6]})`); now.innerHTML = nowHtml(cur);
+  }
+  const lvl = LV_GAIN[cur.s.music] ?? 1;
+  if (player.lvl !== lvl) { player.lvl = lvl; player.bus?.lvl.gain.setTargetAtTime(lvl, actx().currentTime, .06); if (player.bgm) player.bgm.volume = player.musicVol * lvl; }
+}
+function showLayer(el, { s, i, start }, pos, st) {
+  const key = `${i}|${state.brief.format}|${state.assets.length}|${JSON.stringify(s)}`;
+  if (el._key !== key) {
+    el._key = key; el.dataset.fx = s.fx || "";
+    const html = shotContent(s, i), copy = s.fx === "glitch" && !html.includes("<video");  // 글리치는 조각용 사본이 필요
+    el.querySelectorAll(".cam").forEach((c, j) => c.innerHTML = !j || copy ? html : "");
+  }
+  const local = pos - start, k = local / shotSec(s), [W, H] = frameSize(), tf = camTf(s.camera, Math.min(k, 1.2));
+  el.querySelectorAll(".cam").forEach(c => c.style.transform = tf);
+  el.querySelectorAll(".pv-cube").forEach(g => g.innerHTML = cubeSvg(.6 + local * (s.camera === "orbit" ? 1.8 : .5), W, H));
+  el.querySelectorAll(".pv-route").forEach(p => p.setAttribute("stroke-dashoffset", Math.max(0, 1 - k * 1.3).toFixed(3)));
+  el.querySelectorAll(".pv-pin").forEach(p => p.style.transform = `scale(${pinScale(k)})`);
+  const v = el.querySelector("video");
+  if (v) {
+    if (v.readyState && Math.abs(v.currentTime - local) > .3) v.currentTime = Math.min(local, (v.duration || 1e9) - .05);
+    if (player.playing && v.paused) v.play().catch(() => {}); else if (!player.playing && !v.paused) v.pause();
+  }
+  Object.assign(el.style, { opacity: st.opacity ?? "", transform: st.transform ?? "", filter: st.filter ?? "", clipPath: st.clip ?? "" });
+}
+function nowHtml({ s, i }) {
+  const st = assetStatus(s);
+  return `<b>${i + 1}. ${esc(s.name)}</b>${esc(SHOT_KINDS[s.kind]?.name || s.kind)} · 카메라 ${esc(CAMS[s.camera] || "고정")}${s.trans && TRANS[s.trans] ? ` · 들어올 때 ${esc(TRANS[s.trans].name)}` : ""}${s.fx && EFFECTS[s.fx] ? ` · ${esc(EFFECTS[s.fx].name)}` : ""}
+    ${s.asset ? `<br>소재: ${esc(s.asset)}<span class="st ${st.cls}">${st.text}</span>` : ""}${s.desc ? `<br><span class="when">${esc(s.desc)}</span>` : ""}`;
+}
+
+/* 임시 비트: 분위기마다 16칸 리듬 + 4마디 화음. 실제 곡을 고르기 전에 박자 · 분위기만 맞춰 보는 용도 */
+const PROG = {
+  major: [[0, 4, 7], [7, 11, 14], [9, 12, 16], [5, 9, 12]],            // C G Am F
+  minor: [[9, 12, 16], [5, 9, 12], [0, 4, 7], [7, 11, 14]],            // Am F C G
+  lofi: [[5, 9, 12, 16], [4, 7, 11, 14], [2, 5, 9, 12], [0, 4, 7, 11]], // Fmaj7 Em7 Dm7 Cmaj7
+  tension: [[9, 12, 16], [9, 12, 16], [5, 9, 12], [4, 8, 11]],         // Am Am F E
+};
+// k 킥 · s 스네어 · h 하이햇 · t 북 · b 베이스 · sub 808 · arp 펼침화음 · pz 피치카토 · stab 신스 화음 · pad 깔리는 화음
+const GROOVES = {
+  bright: { prog: "major", k: "x...x...x...x...", s: "....x.......x...", h: "..x...x...x...x.", b: "x.....x.x.......", arp: "x.x.x.x.x.x.x.x." },
+  calm: { prog: "major", pad: 1, arp: "x...x...x...x...", soft: 1 },
+  lofi: { prog: "lofi", k: "x......x..x.....", s: "....x.......x...", h: "x.x.x.x.x.x.x.x.", pad: 1, soft: 1 },
+  hiphop: { prog: "minor", k: "x.....x...x.....", s: "....x.......x...", h: "x.x.x.x.x.x.xxx.", sub: "x.....x...x....." },
+  edm: { prog: "minor", k: "x...x...x...x...", s: "....x.......x...", h: "..x...x...x...x.", b: "..x...x...x...x.", stab: "x..x..x...x..x.." },
+  tension: { prog: "tension", b: "x.x.x.x.x.x.x.x.", h: "....x.......x...", pad: 1, soft: 1 },
+  epic: { prog: "minor", t: "x..x..x.x..x..x.", k: "x.......x.......", b: "x.......x.......", pad: 1 },
+  comic: { prog: "major", k: "x.......x.......", pz: "x.x.x.x.x.x.x.x." },
+};
+let noiseBuf;
+const syn = {
+  lp(c, f) { const x = c.createBiquadFilter(); x.type = "lowpass"; x.frequency.value = f; return x; },
+  voice(c, out, type, f, at, peak, d, { a = .005, f2, fd, lp } = {}) {
+    const o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.setValueAtTime(f, at);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, at + (fd || a + d));
+    g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(peak, at + a); g.gain.exponentialRampToValueAtTime(.0001, at + a + d);
+    (lp ? o.connect(syn.lp(c, lp)) : o).connect(g).connect(out); o.start(at); o.stop(at + a + d + .05);
+  },
+  pad(c, out, f, at, peak, d) {
+    const o = c.createOscillator(), g = c.createGain(); o.type = "sawtooth"; o.frequency.value = f; o.detune.value = (Math.random() - .5) * 14;
+    g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(peak, at + .4); g.gain.setValueAtTime(peak, at + d - .3); g.gain.linearRampToValueAtTime(0, at + d);
+    o.connect(syn.lp(c, 1000)).connect(g).connect(out); o.start(at); o.stop(at + d + .05);
+  },
+  noise(c, out, at, peak, d, type, f) {
+    if (!noiseBuf || noiseBuf.sampleRate !== c.sampleRate) { noiseBuf = c.createBuffer(1, c.sampleRate, c.sampleRate); const ch = noiseBuf.getChannelData(0); for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1; }
+    const n = c.createBufferSource(), x = c.createBiquadFilter(), g = c.createGain(); n.buffer = noiseBuf; x.type = type; x.frequency.value = f;
+    g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(peak, at + .002); g.gain.exponentialRampToValueAtTime(.0001, at + .002 + d);
+    n.connect(x).connect(g).connect(out); n.start(at, Math.random() * .5); n.stop(at + d + .05);
+  },
+  kick(c, out, at, v) { syn.voice(c, out, "sine", 150, at, v, .3, { f2: 42, fd: .1 }); },
+  snare(c, out, at, v) { syn.noise(c, out, at, v, .15, "highpass", 1400); syn.voice(c, out, "triangle", 190, at, v * .5, .08); },
+  hat(c, out, at, v) { syn.noise(c, out, at, v, .035, "highpass", 7000); },
+  tom(c, out, at, v) { syn.voice(c, out, "sine", 110, at, v, .4, { f2: 65 }); syn.noise(c, out, at, v * .3, .12, "lowpass", 600); },
+};
+function musicSchedule(from, to, out) {
+  const m = state.brief.music, g = GROOVES[m.mood], bpm = bpmOf(m); if (!g || !bpm) return;
+  const step = 60 / bpm / 4;
+  for (let n = Math.ceil(from / step); n * step < to; n++) grooveStep(g, n, player.t0 + n * step, step, out);
+}
+function grooveStep(g, n, at, step, out) {
+  const c = actx(), s = n % 16, ch = PROG[g.prog][Math.floor(n / 16) % 4], hit = p => p?.[s] === "x", v = g.soft ? .55 : 1, f = semi => 130.81 * 2 ** (semi / 12);
+  if (hit(g.k)) syn.kick(c, out, at, .9 * v);
+  if (hit(g.s)) syn.snare(c, out, at, .45 * v);
+  if (hit(g.h)) syn.hat(c, out, at, .2 * v);
+  if (hit(g.t)) syn.tom(c, out, at, .7);
+  if (hit(g.b)) syn.voice(c, out, "triangle", f(ch[0]) / 2, at, .4 * v, step * 1.8, { lp: 700 });
+  if (hit(g.sub)) syn.voice(c, out, "sine", f(ch[0]) / 2, at, .6, step * 5, { f2: f(ch[0]) / 2.1 });
+  if (hit(g.arp)) syn.voice(c, out, "triangle", f(ch[(s >> 1) % ch.length]) * 2, at, .16 * v, .35);
+  if (hit(g.pz)) syn.voice(c, out, "sine", f(ch[s % 4 < 2 ? 0 : 2]) * 2, at, .3, .12);
+  if (hit(g.stab)) ch.forEach(x => syn.voice(c, out, "square", f(x) * 2, at, .045, .16, { lp: 2200 }));
+  if (g.pad && s === 0) ch.forEach(x => syn.pad(c, out, f(x) * 2, at, .045, step * 16));
+}
+
+/* 콘티 칸 */
+function ptlHtml() {
+  const T = timeline(), total = T.at(-1)?.end || 1, pct = x => (x / total * 100).toFixed(3) + "%", music = state.brief.music.file || GROOVES[state.brief.music.mood];
+  const every = total <= 15 ? 1 : total <= 40 ? 5 : total <= 120 ? 10 : total <= 600 ? 60 : 300;
+  let ticks = ""; for (let t = 0; t < total; t += every) ticks += `<span class="tick" style="left:${pct(t)}">${clock(t)}</span>`;
+  const span = (start, end) => `left:${pct(start)};width:${pct(end - start)}`;
+  const cues = T.flatMap(({ s, start }) => s.sfx.filter(q => SFX[q.k]).map(q => { const at = start + (+q.at || 0);
+    return at >= 0 && at <= total ? `<i class="cue" style="left:${pct(at)}" title="${esc(SFX[q.k].name)} ${clock(at)}"><span>${esc(SFX[q.k].name.split(" ")[0])}</span></i>` : ""; })).join("");
+  const lane = (label, cls, inner) => `<div class="row"><span class="tn">${label}</span><div class="lane${cls}">${inner}<i class="head"></i></div></div>`;
+  return `<div class="ptl" id="ptl" aria-label="타임라인 — 누르면 그 위치로">${lane("", " ruler", ticks)}
+    ${lane("컷", "", T.map(({ s, i, start, end }) => `<b style="${span(start, end)};--c:var(--f${i % 6})" title="${esc(s.name)}">${i + 1} ${esc(s.name)}</b>`).join(""))}
+    ${lane("효과음", " sm", cues)}
+    ${lane("음악", " sm mus", music ? T.map(({ s, start, end }) => `<b class="${s.music}" style="${span(start, end)}">${s.music === "low" ? "작게" : ""}</b>`).join("") : "")}</div>`;
+}
+function bindPtl() {
+  const el = $("#ptl"); if (!el) return;
+  const at = e => { const r = el.querySelector(".lane").getBoundingClientRect(); return (e.clientX - r.left) / r.width * shotsTotal(); };
+  el.addEventListener("pointerdown", e => { player.drag = player.playing; pvPause(); player.pos = Math.min(Math.max(0, at(e)), shotsTotal()); drawFrame(player.pos); el.setPointerCapture(e.pointerId); });
+  el.addEventListener("pointermove", e => { if (!el.hasPointerCapture(e.pointerId)) return; player.pos = Math.min(Math.max(0, at(e)), shotsTotal()); drawFrame(player.pos); });
+  el.addEventListener("pointerup", () => { if (player.drag) { player.drag = false; pvPlay(); } });
+}
+function playerHtml(b) {
+  const tall = b.format !== "long";
+  const layer = id => `<div class="fx pv-layer" id="${id}">${'<div class="sc"><div class="cam"></div></div>'}<div class="sc s2"><div class="cam"></div></div><div class="sc s3"><div class="cam"></div></div><i class="ov"></i><i class="ov2"></i></div>`;
+  return `<div class="pv${tall ? "" : " long"}">
+    <div class="stage paused${tall ? " tall" : ""}${tall && state.safe ? " safe" : ""}" id="stage">${layer("ly-prev")}${layer("ly-cur")}<i class="pv-mask" id="pv-mask"></i><i class="pv-flash" id="pv-flash"></i><div class="pv-cap" id="pv-cap"></div><span class="pv-hud" id="pv-hud"></span></div>
+    <div class="pv-side">
+      <div class="pv-ctrl"><button class="btn primary" id="pv-play">▶ 재생</button><button class="btn" id="pv-start">⏮ 처음</button><span class="pv-time" id="pv-time"></span></div>
+      <div class="pv-now" id="pv-now"></div>
+      <div class="pv-music" id="pv-music">${esc(musicLabel())}</div>
+      <label class="vol">음악<input type="range" id="pv-mvol" min="0" max="1" step="0.05" value="${player.musicVol}"></label>
+      <label class="vol">효과음<input type="range" id="pv-svol" min="0" max="1" step="0.05" value="${player.sfxVol}"></label>
+      <div class="checks"><label><input type="checkbox" id="pv-info"${player.info ? " checked" : ""}> 컷 정보 표시</label>${tall ? `<label><input type="checkbox" id="pv-safe"${state.safe ? " checked" : ""}> 쇼츠 안전 영역</label>` : ""}</div>
+      <p class="note" style="margin:0">스페이스: 재생 · 멈춤. 타임라인을 누르거나 끌면 그 위치로 갑니다. 효과음 · 임시 비트는 브라우저 합성 견본이고, 사진 · 영상은 소재 파일이 있으면 그대로 보입니다.</p>
+    </div></div>${ptlHtml()}`;
+}
+function pickOpts(list, sel, cur, none, skip = []) {
+  const rank = k => sel.use.includes(k) ? 0 : sel.avoid.includes(k) ? 2 : 1;
+  const keys = Object.keys(list).filter(k => !skip.includes(k)).sort((a, b) => rank(a) - rank(b));
+  return (none ? `<option value="">${esc(none)}</option>` : "") + keys.map(k => { const r = rank(k);
+    return `<option value="${k}"${k === cur ? " selected" : ""}${r === 2 && k !== cur ? " disabled" : ""}>${r === 0 ? "✓ " : r === 2 ? "✕ " : ""}${esc(list[k].name)}</option>`; }).join("");
+}
+function shotHtml(s, i, b, seg) {
+  const st = assetStatus(s), kind = SHOT_KINDS[s.kind] || SHOT_KINDS.talk;
+  const sel = (k, list) => `<select data-s="${k}">${Object.entries(list).map(([v, t]) => `<option value="${v}"${v === s[k] ? " selected" : ""}>${esc(t.name || t)}</option>`).join("")}</select>`;
+  const cues = s.sfx.map((q, j) => `<span class="cueed"><button class="mini" data-chear="${i}:${j}" aria-label="들어 보기">▶</button><select data-c="k" data-ij="${i}:${j}" aria-label="효과음">${pickOpts(SFX, { use: b.sfx.use, avoid: [] }, q.k)}</select>
+    <input type="number" data-c="at" data-ij="${i}:${j}" value="${+q.at || 0}" step="0.1" aria-label="시점(초)">초<button class="mini no" data-cdel="${i}:${j}" aria-label="지우기">×</button></span>`).join("");
+  return `<div class="shot${b.format === "long" ? " long" : ""}" data-shot="${i}" style="--c:var(--${BEAT_C[i % 6]})">
+    <div class="shot-thumb" data-thumb aria-hidden="true">${thumbHtml(s, i)}</div>
+    <div><div class="shot-top"><span class="bi">${i + 1}</span><input type="text" data-s="name" value="${esc(s.name)}" aria-label="${i + 1}번 컷 이름"><input type="number" data-s="sec" value="${s.sec}" min="0" step="0.5" aria-label="${i + 1}번 컷 초">
+      <span class="when" data-span>${clock(seg.start)}–${clock(seg.end)}</span><button class="mini" data-sgo="${i}">▶ 여기서</button><button class="mini" data-sm="-1" data-i="${i}" aria-label="위로">↑</button><button class="mini" data-sm="1" data-i="${i}" aria-label="아래로">↓</button><button class="mini no" data-sd="${i}" aria-label="지우기">×</button></div>
+      <div class="g">${field("화면", sel("kind", SHOT_KINDS))}
+        ${field(`소재<span class="st ${st.cls}">${st.text}</span>`, `<input type="text" data-s="asset" value="${esc(s.asset)}" list="asset-list" placeholder="${esc(kind.hint)}">`)}
+        ${field("카메라", sel("camera", CAMS))}
+        ${field("자막", `<input type="text" data-s="caption" value="${esc(s.caption)}" placeholder="*강조할 말*은 별표로">`)}
+        ${field("들어올 때 (트랜지션)", `<select data-s="trans">${pickOpts(TRANS, b.transitions, s.trans, "하드 컷 (기본)", ["cut"])}</select>`)}
+        ${field("효과", `<select data-s="fx">${pickOpts(EFFECTS, b.effects, s.fx, "효과 없음")}</select>`)}
+        ${field("음악", sel("music", MUSIC_LV))}</div>
+      ${field(`효과음 <span class="help">시점은 컷 시작 기준 초 · 음수면 컷 앞에서(라이저처럼 미리 깔 때)</span>`, `<div class="cues">${cues}<button class="mini" data-cadd="${i}">+ 효과음</button></div>`)}
+      ${field("메모", `<input type="text" data-s="desc" value="${esc(s.desc)}" placeholder="장면 · 대사 · 3D · 촬영 메모">`)}
+    </div></div>`;
+}
+function contiSum(b) {
+  if (!b.shots.length) return "";
+  const s = shotsTotal(), d = s - b.duration, n = { ok: 0, miss: 0, todo: 0 };
+  b.shots.forEach(x => n[assetStatus(x).cls]++);
+  return `컷 ${b.shots.length}개 · ${clock(s)} / 목표 ${clock(b.duration)}${Math.abs(d) >= 1 ? ` — ${clock(Math.abs(d))} ${d > 0 ? "넘침" : "모자람"}` : ""}
+    · 소재 준비 ${n.ok}${n.miss ? ` · <span class="st miss">없는 파일 ${n.miss}</span>` : ""}${n.todo ? ` · <span class="st todo">미정 ${n.todo}</span>` : ""}`;
+}
+function refreshConti() {
+  const T = timeline();
+  $$("[data-span]").forEach((el, i) => el.textContent = `${clock(T[i].start)}–${clock(T[i].end)}`);
+  $("#conti-sum").innerHTML = contiSum(state.brief);
+  if ($("#ptl")) { $("#ptl").outerHTML = ptlHtml(); bindPtl(); }
+  if ($("#pv-music")) $("#pv-music").textContent = musicLabel();
+  player.cur = -1; if (!player.playing) drawFrame(player.pos);
+}
+function shotChanged(i) {
+  vchanged();
+  const s = state.brief.shots[i], card = $(`[data-shot="${i}"]`), st = assetStatus(s);
+  card.querySelector("[data-thumb]").innerHTML = thumbHtml(s, i);
+  Object.assign(card.querySelector(".st"), { className: "st " + st.cls, textContent: st.text });
+  card.querySelector('[data-s="asset"]').placeholder = (SHOT_KINDS[s.kind] || SHOT_KINDS.talk).hint;
+  refreshConti();
+}
+SECTIONS.conti = {
+  html: b => `<p class="note">컷마다 화면(사람 · 사진 · 지도 · 3D …) · 소재 · 카메라 · 자막 · 트랜지션 · 효과 · 효과음을 정하면, 렌더하기 전에 <b>배경음악 · 효과음이 들어간 1차 안</b>을 여기서 바로 돌려 볼 수 있습니다.
+      소재 파일은 <code>video/${esc(state.vname)}/</code> 안 경로로 적으세요(예: <code>assets/seoul.jpg</code>). 없는 파일은 빨갛게 표시됩니다.</p>
+    ${b.shots.length ? playerHtml(b) : `<p class="empty">아직 컷이 없습니다. ${b.story.beats.length ? "<b>스토리 구간으로 컷 만들기</b>나 " : ""}<b>+ 컷 추가</b>로 시작하세요.</p>`}
+    <p class="note" id="conti-sum" style="margin-top:10px">${contiSum(b)}</p>
+    <div class="shots">${timeline().map(seg => shotHtml(seg.s, seg.i, b, seg)).join("")}</div>
+    <div class="actions"><button class="btn" id="shot-add">+ 컷 추가</button>${b.story.beats.length ? `<button class="btn" id="shot-story">스토리 구간으로 컷 만들기</button>` : ""}${b.shots.length ? `<button class="btn" id="shot-fit">영상 길이에 맞춰 나누기</button>` : ""}<button class="btn" id="asset-reload">소재 다시 찾기</button></div>
+    ${assetLists()}`,
+  bind: b => {
+    const sh = b.shots, ij = v => v.split(":").map(Number);
+    $$("[data-s]").forEach(el => el.addEventListener("input", () => {
+      const i = +el.closest("[data-shot]").dataset.shot, k = el.dataset.s, s = sh[i];
+      s[k] = k === "sec" ? Math.max(0, +el.value || 0) : el.value;
+      const q = k === "fx" && EFFECTS[s.fx]?.sfx;
+      if (q && !s.sfx.some(x => x.k === q)) { s.sfx.push({ k: q, at: 0 }); vchanged(); renderSec(); return toast(`어울리는 효과음 '${SFX[q].name}'도 넣었습니다`); }
+      shotChanged(i);
+    }));
+    $$("[data-c]").forEach(el => el.addEventListener("input", () => { const [i, j] = ij(el.dataset.ij), q = sh[i].sfx[j]; q[el.dataset.c] = el.dataset.c === "at" ? +el.value || 0 : el.value; vchanged(); refreshConti(); }));
+    $$("[data-cdel]").forEach(el => el.addEventListener("click", () => { const [i, j] = ij(el.dataset.cdel); sh[i].sfx.splice(j, 1); vchanged(); renderSec(); }));
+    $$("[data-chear]").forEach(el => el.addEventListener("click", () => { const [i, j] = ij(el.dataset.chear); sfxPlay(sh[i].sfx[j].k); }));
+    $$("[data-cadd]").forEach(el => el.addEventListener("click", () => { sh[+el.dataset.cadd].sfx.push({ k: b.sfx.use[0] || "whoosh", at: 0 }); vchanged(); renderSec(); }));
+    $$("[data-sgo]").forEach(el => el.addEventListener("click", () => { pvSeek(timeline()[+el.dataset.sgo].start); pvPlay(); }));
+    $$("[data-sm]").forEach(el => el.addEventListener("click", () => { const i = +el.dataset.i, j = i + +el.dataset.sm; if (j < 0 || j >= sh.length) return; [sh[i], sh[j]] = [sh[j], sh[i]]; vchanged(); renderSec(); }));
+    $$("[data-sd]").forEach(el => el.addEventListener("click", () => { sh.splice(+el.dataset.sd, 1); vchanged(); renderSec(); }));
+    $("#shot-add").addEventListener("click", () => { sh.push(newShot()); vchanged(); renderSec(); });
+    $("#shot-story")?.addEventListener("click", () => {
+      if (sh.length && !confirm("지금 컷을 스토리 구간으로 바꿀까요?")) return;
+      b.shots = b.story.beats.map(x => newShot({ name: x.name, sec: +x.sec || 2, desc: x.desc || "" })); pvSeek(0); vchanged(); renderSec();
+    });
+    $("#shot-fit")?.addEventListener("click", () => {
+      const sum = shotsTotal() || 1; sh.forEach(x => x.sec = half(shotSec(x) / sum * b.duration));
+      sh.at(-1).sec = Math.max(.5, sh.at(-1).sec + b.duration - shotsTotal()); vchanged(); renderSec();
+    });
+    $("#asset-reload").addEventListener("click", async () => { await loadAssets(); renderSec(); toast(`소재 파일 ${state.assets.length}개를 찾았습니다`); });
+    if (!sh.length) return;
+    $("#pv-play").addEventListener("click", pvToggle);
+    $("#pv-start").addEventListener("click", () => pvSeek(0));
+    $("#pv-mvol").addEventListener("input", e => { player.musicVol = +e.target.value; if (player.bus) player.bus.m.gain.value = player.musicVol; if (player.bgm) player.bgm.volume = player.musicVol * (player.lvl ?? 1); });
+    $("#pv-svol").addEventListener("input", e => { player.sfxVol = +e.target.value; if (player.bus) player.bus.x.gain.value = player.sfxVol; });
+    $("#pv-info").addEventListener("change", e => { player.info = e.target.checked; drawFrame(pvNow()); });
+    $("#pv-safe")?.addEventListener("change", e => { state.safe = e.target.checked; $("#stage").classList.toggle("safe", state.safe); });
+    bindPtl(); player.cur = -1; pvButtons(); drawFrame(pvNow());
+  },
+};
+function contiMarkdown(b, name, add, cell) {
+  const T = timeline(b.shots), sec = x => `${+x >= 0 ? "+" : ""}${(+x || 0).toFixed(1)}초`;
+  add("", `## 콘티 — 컷 ${T.length}개 · ${clock(T.at(-1).end)}`, "", "| # | 시간 | 장면 | 화면 · 소재 | 카메라 | 자막 | 트랜지션 · 효과 | 효과음 | 음악 |", "|---|---|---|---|---|---|---|---|---|");
+  T.forEach(({ s, i, start, end }) => {
+    const st = assetStatus(s), look = [TRANS[s.trans] && `들어올 때 ${TRANS[s.trans].name}`, EFFECTS[s.fx]?.name].filter(Boolean).join(" · ");
+    const sfx = s.sfx.filter(q => SFX[q.k]).map(q => `${SFX[q.k].name} ${sec(q.at)}`).join(", ");
+    add(`| ${i + 1} | ${clock(start)}–${clock(end)} | ${cell(s.name)}${s.desc ? ` — ${cell(s.desc)}` : ""} | ${cell(SHOT_KINDS[s.kind]?.name || s.kind)}${s.asset ? `: ${cell(s.asset)}` : ""}${st.cls === "ok" ? "" : ` (${st.text})`} | ${cell(CAMS[s.camera] || "")} | ${cell(s.caption)} | ${cell(look)} | ${cell(sfx)} | ${s.music ? MUSIC_LV[s.music] || "" : ""} |`);
+  });
+  const miss = T.filter(x => assetStatus(x.s).cls === "miss"), todo = T.filter(x => assetStatus(x.s).cls === "todo");
+  add("");
+  if (miss.length) add(`- 없는 소재 파일(\`video/${name}/\` 기준): ${miss.map(x => `${x.i + 1}번 ${x.s.asset}`).join(", ")}`);
+  if (todo.length) add(`- 소재 미정: ${todo.map(x => `${x.i + 1}번(${SHOT_KINDS[x.s.kind]?.name || x.s.kind})`).join(", ")}`);
+  add("- 최종 결과물은 이 콘티의 컷 순서 · 길이 · 화면 · 소재 · 카메라 · 효과음 시점을 기준으로 만든다. 코드(Remotion 등)로 만들면 `brief.json` 의 `shots` 를 그대로 읽어 그리는 구조로 짠다.");
+}
+
 /* ── 이벤트 ────────────────────────────────────────────────────── */
 $("#video-select").addEventListener("change", e => loadVideo(e.target.value));
 $("#add-video").addEventListener("click", newVideo);
 $("#save").addEventListener("click", saveVideo);
 window.addEventListener("hashchange", () => loadVideo(decodeURIComponent(location.hash.slice(1))));
-document.addEventListener("keydown", e => { if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); if (state.dirty) saveVideo(); } });
+document.addEventListener("keydown", e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); if (state.dirty) saveVideo(); }
+  if (e.key === " " && $("#stage") && !e.target.closest("input, textarea, select, button")) { e.preventDefault(); pvToggle(); }
+});
 window.addEventListener("beforeunload", e => { if (state.dirty) { e.preventDefault(); e.returnValue = ""; } });
 loadVideo(decodeURIComponent(location.hash.slice(1))).catch(e => $("#video").innerHTML = `<p class="empty">불러오기 실패: ${esc(e.message)}</p>`);
 </script>

@@ -8,12 +8,15 @@
 
 파이썬 기본 기능만 씁니다(설치 없음). 이 컴퓨터(127.0.0.1)에서만 열립니다.
 쓰기는 <프로젝트>/video/ 안의 style.json 과 <영상>/brief.json · brief.md 로 제한합니다.
+콘티 미리보기가 쓰는 소재(사진 · 영상 · 음원 · 3D 파일)는 <영상>/ 폴더 안에서만 읽습니다.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import mimetypes
 import pathlib
+import re
 import shutil
 import sys
 import urllib.parse
@@ -23,6 +26,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 HERE = pathlib.Path(__file__).resolve().parent
 EDITOR = HERE / "editor.html"
 STYLE_TEMPLATE = HERE / "templates" / "style.json"
+# 콘티에 쓰는 소재: 사진 · 영상 · 음원 · 3D 파일
+MEDIA = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".svg",
+         ".mp4", ".webm", ".mov", ".m4v", ".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac",
+         ".glb", ".gltf", ".obj", ".fbx", ".usdz", ".blend"}
 
 
 class Project:
@@ -37,6 +44,27 @@ class Project:
         if not name.strip() or name.startswith(".") or path.parent != self.videos.resolve():
             raise ValueError(f"영상 이름 '{name}'은 쓸 수 없습니다.")
         return path
+
+    def asset(self, name: str, rel: str) -> pathlib.Path:
+        """<영상>/ 폴더 안의 소재 파일. 폴더 밖이나 소재가 아닌 파일은 거절합니다."""
+        folder = self.video_dir(name)
+        path = (folder / rel).resolve()
+        if not path.is_relative_to(folder) or path.suffix.lower() not in MEDIA or not path.is_file():
+            raise ValueError(f"소재 '{rel}'을 찾을 수 없습니다.")
+        return path
+
+    def list_assets(self, name: str) -> list[dict]:
+        """<영상>/ 폴더 안의 소재 파일(하위 폴더 포함). 경로는 <영상>/ 기준."""
+        folder = self.video_dir(name)
+        found = []
+        for path in sorted(folder.rglob("*")):
+            rel = path.relative_to(folder)
+            if any(part.startswith(".") for part in rel.parts) or path.suffix.lower() not in MEDIA or not path.is_file():
+                continue
+            found.append({"path": rel.as_posix(), "size": path.stat().st_size})
+            if len(found) >= 2000:
+                break
+        return found
 
     def list_videos(self) -> list[dict]:
         """영상 기획 목록. 최근에 고친 것부터."""
@@ -88,6 +116,39 @@ class Handler(BaseHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         return parsed.path, {k: v[0] for k, v in urllib.parse.parse_qs(parsed.query).items()}
 
+    def send_file(self, path: pathlib.Path) -> None:
+        """소재 파일. 음원 · 영상을 앞뒤로 옮겨 들을 수 있게 Range 요청을 받습니다."""
+        size = path.stat().st_size
+        start, end, status = 0, size - 1, 200
+        m = re.fullmatch(r"bytes=(\d*)-(\d*)", self.headers.get("Range") or "")
+        if m and (m[1] or m[2]):
+            start, end = (int(m[1]), int(m[2]) if m[2] else size - 1) if m[1] else (max(0, size - int(m[2])), size - 1)
+            end, status = min(end, size - 1), 206
+            if start > end:
+                self.send_response(416)
+                self.send_header("Content-Range", f"bytes */{size}")
+                self.end_headers()
+                return
+        self.send_response(status)
+        self.send_header("Content-Type", mimetypes.guess_type(path.name)[0] or "application/octet-stream")
+        self.send_header("Content-Length", str(end - start + 1))
+        self.send_header("Accept-Ranges", "bytes")
+        if status == 206:
+            self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+        self.send_header("Content-Security-Policy", "sandbox")  # SVG 안의 스크립트가 이 주소에서 돌지 않게
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        try:
+            with path.open("rb") as f:
+                f.seek(start)
+                left = end - start + 1
+                while left > 0 and (chunk := f.read(min(left, 1 << 16))):
+                    self.wfile.write(chunk)
+                    left -= len(chunk)
+        except (BrokenPipeError, ConnectionResetError):  # 브라우저가 음원 · 영상을 받다 끊는 일은 흔합니다
+            pass
+
     def body(self) -> object:
         return json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)).decode("utf-8"))
 
@@ -108,6 +169,10 @@ class Handler(BaseHTTPRequestHandler):
             elif path == "/api/video":
                 folder = project.video_dir(q["name"])
                 self.send_json(200, {"brief": json.loads((folder / "brief.json").read_text(encoding="utf-8"))})
+            elif path == "/api/assets":
+                self.send_json(200, {"files": project.list_assets(q["name"])})
+            elif path == "/api/file":
+                self.send_file(project.asset(q["name"], q["path"]))
             else:
                 self.send_json(404, {"error": "없는 주소"})
         except (KeyError, ValueError, OSError, json.JSONDecodeError) as error:
